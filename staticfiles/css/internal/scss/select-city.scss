@@ -1,0 +1,137 @@
+@import "variables";
+
+.select-city {
+  &__wrapper {
+    position: relative;
+  }
+
+  &__btn {
+    color: #000000;
+  }
+
+  &__cities {
+    width: 350px;
+    padding: 25px 40px;
+    text-align: center;
+    cursor: default !important;
+
+    &-title {
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    &-item {
+      margin-bottom: 4px;
+    }
+
+    &-value {
+      font-size: 13px;
+      line-height: 18px;
+      color: #333333;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+
+    &-input {
+      padding: 12px 0 12px 22px;
+      margin: 16px 0 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='15' viewBox='0 0 12 15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.90666 6.8444C9.90666 8.94676 8.15777 10.6888 5.95333 10.6888C3.74889 10.6888 2 8.94676 2 6.8444C2 4.74204 3.74889 3 5.95333 3C8.15777 3 9.90666 4.74204 9.90666 6.8444ZM8.1367 11.194C7.47804 11.5108 6.73693 11.6888 5.95333 11.6888C3.21768 11.6888 1 9.51989 1 6.8444C1 4.16891 3.21768 2 5.95333 2C8.68898 2 10.9067 4.16891 10.9067 6.8444C10.9067 8.39964 10.1573 9.7837 8.99246 10.6701L10.9995 13.4126L10.1925 14.0032L8.1367 11.194Z' fill='%23828282'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 1px center;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      transition: all 0.3s ease-in-out;
+
+      &:focus {
+        border-color: #333333;
+      }
+    }
+  }
+
+  &__modal {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 32px;
+    width: 270px;
+    padding: 20px;
+    line-height: 17px;
+    text-align: center;
+    color: #333333;
+    background: #FFFFFF;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.12);
+
+    &.active {
+      display: block;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 127px;
+      border-width: 0 .5rem .5rem .5rem;
+      border-color: transparent;
+      border-bottom-color: #fff;
+      border-style: solid;
+    }
+
+    &-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    &-btn {
+      margin-right: 16px;
+      padding: 4px 12px;
+      border: 1px solid #333333;
+    }
+
+    &-btn,
+    &-change {
+      color: #333333;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .select-city {
+    &__row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      line-height: 16px;
+      text-transform: uppercase;
+      color: #333;
+    }
+
+    &__btn {
+      color: #333;
+    }
+
+    &__modal {
+      &.active {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .select-city {
+    &__cities {
+      padding: 25px 16px;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<footer class="footer {% if not request.path == '/' %} footer_border {% endif %}" id="footer_vue">
+    <div class="n-main-container  footer__top">
+
+    </div>
+    <div class="footer__bottom">
+        <div class="footer__year">
+            © <span class="d-none  d-lg-inline">2017-</span>{{ current_year }}
+            <svg
+                    width="76"
+                    height="8"
+                    viewBox="0 0 76 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+            >
+                <defs>
+                    <clipPath id="clip0">
+                        <rect width="75.944" height="8" fill="white"/>
+                    </clipPath>
+                </defs>
+            </svg>
+        </div>
+    </div>
+</footer>

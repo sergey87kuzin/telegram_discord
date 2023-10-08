@@ -1,0 +1,48 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang=RU>
+    <head>
+        <title>
+            {% block title %}
+                "Сайт оплат доступа"
+            {% endblock %}
+        </title>
+        {% block head %}
+        {% endblock %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0"
+            name="viewport"
+        />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        {% include 'includes/styles.html' %}
+    </head>
+    <body class="home-body {% if display_form %}display_form{% endif %} {% if top_bar_settings.is_active %}has-topBar show-topBar{% endif %}">
+        {% include 'includes/header.html' %}
+        {% if not request.user.is_authenticated %}
+        {% include 'includes/auth.html' %}
+        {% endif %}
+        <div class="block-blur">
+            <div id="jGrowl">
+                <div id="notificationMainBackground"
+                     style="display: none; opacity: 1;right: 20px;top: 20px; position: fixed; z-index: 10001;background-color: #fffa9b; color: black; width: 240px;" >
+                    <button id="notificationMainClose" style="float: right; background: none; color:black; border-style: none; margin-top: 5px; margin-right: 5px">×</button>
+                    <div id="notificationMainMessage" style="margin: 10px 10px 10px 10px; font-size: 14px;"></div>
+                </div>
+            </div>
+            {% block content %}
+            {% endblock %}
+            <!-- footer section -->
+            {% include 'includes/footer.html' %}
+
+        </div>
+        {% include 'includes/scripts.html' %}
+
+        {% block extrajs %}
+        {% endblock %}
+    </body>
+</html>

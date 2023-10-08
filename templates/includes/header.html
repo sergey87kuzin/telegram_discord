@@ -1,0 +1,87 @@
+
+<div class="modal-overlay"></div>
+
+<div class="burger">
+    <div class="burger__row  d-lg-flex align-items-center justify-content-between">
+        <div class="burger__btn-box d-none d-lg-inline-block">
+            <button class="burger__btn  menu-btn-close">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3.64648 4.35359L4.35359 3.64648L10 9.29293L15.6465 3.64648L16.3536 4.35359L10.7071 10L16.3536 15.6465L15.6465 16.3536L10 10.7071L4.35359 16.3536L3.64648 15.6465L9.29293 10L3.64648 4.35359Z" fill="black"/>
+                </svg>
+            </button>
+            <button class="header__btn  header__btn_opacity  lexicon-close"></button>
+        </div>
+    </div>
+
+    <div class="burger__scroll"
+         id="currency-choice">
+
+        <div class="burger__wrapper">
+
+            <ul class="burger__menu  burger__menu_last">
+                <li class="burger__menu-item">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'users:detail-profile' %}" class="burger__menu-link">
+                        "Мой аккаунт"
+                    </a>
+                    {% else %}
+                    <button class="burger__menu-link  auth_open">
+                        "Войти"
+                    </button>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+<header class="header {% if request.path == '/' %} header_light {% endif %}">
+
+    <div class="header__content">
+
+        <div class="header__icons">
+            {% if not hide_burger %}
+                <div class="header__icons-item  header__icons-burger">
+                    <button class="header__btn  menu-btn-open">
+                        <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.5 6H25.5V7H0.5V6Z" fill="#000000"/>
+                            <path d="M0.5 12H20.5V13H0.5V12Z" fill="#000000"/>
+                        </svg>
+                    </button>
+                    <button class="header__btn  menu-btn-close d-lg-none">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.64648 4.35359L4.35359 3.64648L10 9.29293L15.6465 3.64648L16.3536 4.35359L10.7071 10L16.3536 15.6465L15.6465 16.3536L10 10.7071L4.35359 16.3536L3.64648 15.6465L9.29293 10L3.64648 4.35359Z" fill="black"/>
+                        </svg>
+                    </button>
+{#                    <button class="header__btn  header__btn_opacity  lexicon-close  d-lg-none"></button>#}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- logo -->
+        <div class="header__logo">
+            <a class="header__logo-link" href="{% url 'index' %}">
+                Мы научим тебя плохому
+            </a>
+        </div>
+
+
+        <div class="header__icons">
+
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'users:detail-profile' %}" class="header__icons-item  header__icons-auth">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15 3H5V7H4V3V2H5H15H16V3V17V18H15H5H4V17V13H5V17H15V3ZM12.5 9.96447L8.67157 6.42893L7.99115 7.13604L10.5 9.46447L2 9.49626V10.4963L10.5 10.4645L7.96446 12.7929L8.67157 13.5L12.5 9.96447Z" fill="black"/>
+                </svg>
+            </a>
+            {% else %}
+            <button class="header__icons-item  header__icons-auth  auth_open">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15 3H5V7H4V3V2H5H15H16V3V17V18H15H5H4V17V13H5V17H15V3ZM12.5 9.96447L8.67157 6.42893L7.99115 7.13604L10.5 9.46447L2 9.49626V10.4963L10.5 10.4645L7.96446 12.7929L8.67157 13.5L12.5 9.96447Z" fill="black"/>
+                </svg>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</header>

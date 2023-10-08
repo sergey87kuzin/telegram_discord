@@ -1,0 +1,279 @@
+@import "variables";
+
+.modal-login {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  height: calc(var(--vh,1vh)*100);
+  width: 410px;
+  transform: translateX(-100%);
+  transition: all 0.15s ease-in-out;
+  z-index: 1000;
+  overflow-y: auto;
+
+  &.active {
+    transition: all 0.3s ease-in-out;
+    transform: translateX(0);
+
+    .modal-login__content {
+      visibility: visible;
+    }
+  }
+
+  &__wrapper {
+    position: relative;
+    width: 100%;
+    margin: auto;
+  }
+
+  &__content {
+    visibility: hidden;
+    position: relative;
+    background: #fff;
+    transition: all 0.3s ease-in-out 0.1s;
+  }
+
+  &__container {
+    position: relative;
+    padding: 235px 41px 60px;
+    flex-grow: 1;
+    min-height: 100vh;
+    min-height: calc(var(--vh,1vh)*100);
+  }
+
+  &__private {
+    &-info {
+      display: none;
+      position: absolute;
+      top: 120px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    &-text {
+      max-width: 350px;
+      margin: 0 auto;
+      font-size: 11px;
+      line-height: 18px;
+      text-transform: uppercase;
+      color: #4f4f4f;
+    }
+  }
+
+  &__title {
+    display: none;
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+    text-transform: uppercase;
+    color: #000000;
+
+    &.active {
+      display: block;
+    }
+
+    &_recover {
+      padding-bottom: 10px;
+    }
+  }
+
+  &__link {
+    display: none;
+    font-size: $font-size-10;
+    line-height: $line-height-14;
+    text-transform: uppercase;
+    color: #828282;
+    cursor: pointer;
+
+    &.active {
+      display: block;
+    }
+
+    &-recover {
+      font-size: $font-size-12;
+      line-height: $line-height-15;
+      padding-left: 34px;
+      white-space: nowrap;
+      color: #828282;
+    }
+  }
+
+  &__col-box {
+    padding-top: 15px;
+  }
+
+  &__group {
+    padding-top: 22px;
+  }
+
+  &__col {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    .errorlist {
+      margin-bottom: 20px;
+    }
+  }
+
+  &__social {
+    padding-bottom: 0;
+  }
+
+  &__btn-box {
+    padding-bottom: 30px;
+  }
+
+  &__btn {
+    width: 100%;
+  }
+
+  &__policy {
+    width: 80%;
+    margin-top: 10px;
+
+    &-link {
+      color: #4f4f4f;
+      border-bottom: none;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+  }
+
+  &__info {
+    margin-bottom: 62px;
+    font-size: $font-size-12;
+    line-height: $line-height-15;
+    color: #000000;
+  }
+
+  &__check {
+    display: flex;
+    margin-bottom: 16px;
+
+    p {
+      font-size: 10px;
+      line-height: 14px;
+      color: #828282;
+    }
+
+    input[type=checkbox] {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin: 0 8px 0 0;
+      float: left;
+      border: 1px solid #BDBDBD;
+      border-radius: 0;
+      cursor: pointer;
+
+      &:checked {
+        background: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3.47059L4.6129 8L9 1' stroke='%234F4F4F' stroke-width='2'/%3E%3C/svg%3E") center no-repeat;
+      }
+    }
+  }
+
+  &__loyalty {
+    margin: 48px 0 32px;
+
+    .custom_form-group {
+      margin: 0;
+    }
+
+    .loyalty-phone-info {
+      margin: 0 0 16px;
+    }
+
+    &-btn {
+      flex-shrink: 0;
+      width: 110px;
+      margin-left: 8px;
+    }
+  }
+}
+
+
+@media screen and (max-width: 991px) {
+
+  .modal-login {
+    width: 100%;
+
+    &__container {
+      padding: 55px 65px;
+    }
+
+    &__private {
+      &-info {
+        position: static;
+        margin-bottom: 64px;
+      }
+    }
+  }
+}
+
+
+@media screen and (min-width: 992px) {
+
+  .modal-login {
+
+    &__close {
+
+      &.modal_close {
+        top: 20px;
+        left: 35px;
+      }
+
+      &::after {
+        display: none;
+      }
+
+      &::before {
+        width: 10px;
+        height: 10px;
+        border-top: 1px solid #000000;
+        border-right: 1px solid #000000;
+        transform: rotate(-135deg);
+        background: transparent;
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+
+  .modal-login {
+
+    &__container {
+      height: 100%;
+      min-height: 100vh;
+      min-height: calc(var(--vh,1vh)*100);
+      padding: 45px 16px 16px;
+    }
+
+    &__head {
+      padding: 0 20px 16px;
+    }
+
+    &__title,
+    &__link {
+      color: #4F4F4F;
+    }
+
+    &__col-box {
+      min-height: calc(100vh - 101px);
+      min-height: calc(var(--vh,1vh)*100 - 101px);
+      padding: 30px 20px 48px;
+      background: #fff;
+    }
+
+    &__group {
+      padding-top: 7px;
+    }
+  }
+}

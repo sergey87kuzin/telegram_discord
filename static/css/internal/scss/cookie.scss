@@ -1,0 +1,70 @@
+@import "variables";
+
+.n-cookie-modal {
+  width: 100%;
+  padding: 20px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333333;
+  border-top: 1px solid #E0E0E0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 21000;
+  transform: translateY(100%);
+  transition: all 0.3s ease-in-out;
+
+  &.active {
+    transform: translateY(0);
+  }
+
+  &__close {
+    position: absolute;
+    right: 34px;
+    top: 20px;
+    background: transparent;
+    border: none;
+  }
+
+  &__content {
+    display: flex;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    padding-right: 40px;
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+    text-transform: uppercase;
+  }
+
+  &__text {
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+
+    &:not(:last-child) {
+      margin-bottom: 4px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+
+  .n-cookie-modal {
+    padding-top: 16px;
+    padding-bottom: 16px;
+
+    &__close {
+      top: 11px;
+      right: 16px;
+    }
+
+    &__content {
+      flex-direction: column;
+    }
+
+    &__title {
+      padding-bottom: 8px;
+    }
+  }
+}

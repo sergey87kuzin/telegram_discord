@@ -1,0 +1,91 @@
+@import "variables";
+
+.collections {
+
+  &__title {
+    margin-bottom: 9px;
+    font-size: $font-size-11;
+    line-height: $line-height-16;
+    text-transform: uppercase;
+    color: #4F4F4F;
+    text-align: center;
+  }
+
+  &__list {
+    padding: 5px 15px 34px;
+  }
+
+  &__card {
+    display: block;
+    width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: 15px;
+    }
+  }
+
+  &__link {
+    display: block;
+  }
+
+  &__description {
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__name,
+  &__season {
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+    text-transform: uppercase;
+    color: #4F4F4F;
+  }
+
+  &__season {
+    padding-left: 5px;
+  }
+
+  &__cover {
+    width: 100%;
+  }
+
+  &__img {
+    width: 100%;
+    height: auto;
+    margin-bottom: -4px;
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+
+  .collections {
+
+    &__list {
+      padding-top: 24px;
+      padding-bottom: 14px;
+    }
+
+    &__card {
+
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
+    }
+
+    &__description {
+      padding: 15px 0;
+      justify-content: center;
+    }
+
+    &__name {
+      margin-right: 62px;
+    }
+
+    &__name,
+    &__season {
+      font-size: $font-size-11;
+    }
+  }
+}

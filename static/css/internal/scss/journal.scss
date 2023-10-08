@@ -1,0 +1,280 @@
+@import "variables";
+
+.journal {
+  padding-top: 20px;
+
+  @mixin text_size {
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+  }
+
+  &__text {
+    margin-bottom: 60px;
+
+    &-content {
+      width: 70%;
+      margin: 0 auto;
+      text-align: center;
+
+      h1, h2, h3, h4, h5, h6 {
+        padding: 0;
+        margin-bottom: 24px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #4F4F4F;
+      }
+
+      p {
+        margin: 0;
+        color: #333333;
+
+        &:not(:last-child) {
+          margin-bottom: 24px;
+        }
+      }
+
+      ol {
+        list-style-type: decimal;
+        @include text_size;
+        width: fit-content;
+        margin: 0 auto 24px;
+        padding-left: 16px;
+
+        li {
+          padding-left: 4px;
+          text-transform: none;
+          margin-bottom: 8px;
+          color: #333333;
+
+          &::marker {
+            font-weight: 500;
+            font-size: 14px;
+          }
+
+          ol,
+          ul {
+            margin-top: 16px;
+          }
+        }
+      }
+      ul {
+        @include text_size;
+        width: fit-content;
+        margin: 0 auto 24px;
+        padding-left: 16px;
+        li {
+          list-style-type: disc;
+          text-transform: none;
+          margin-bottom: 8px;
+          color: #333333;
+
+          ol,
+          ul {
+            margin-top: 16px;
+          }
+        }
+      }
+      a {
+        color: #000000;
+        border-bottom: 1px solid #333333;
+        transition: all 0.3s ease-in-out;
+
+        &:hover {
+          color: #333333;
+        }
+      }
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0;
+  }
+
+  &__product {
+    &-link {
+      display: block;
+    }
+
+    &-name {
+      margin: 8px 0 2px;
+    }
+
+    &-name,
+    &-price {
+      font-size: $font-size-10;
+      line-height: $line-height-14;
+      color: #333333;
+    }
+
+    &-price {
+      &:not(.journal__product-price_old) {
+        font-weight: 700;
+      }
+
+      &_old {
+        padding-left: 10px;
+        text-decoration-line: line-through;
+        color: #828282;
+      }
+    }
+  }
+
+  &__row {
+    display: grid;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 60px;
+
+    &.two-products {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.product-indents {
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    &.two-products-right,
+    &.two-products-left {
+      grid-template-columns: repeat(13, 1fr);
+    }
+
+    &.two-products-right {
+      .journal__product {
+        &:first-child {
+          grid-column: span 9;
+          grid-row: span 2;
+        }
+
+        &:not(:first-child) {
+          grid-column: span 4;
+        }
+
+        &:last-child {
+          margin-top: auto;
+        }
+      }
+    }
+
+    &.two-products-left {
+      .journal__product {
+        &:nth-child(2) {
+          grid-column: 5 / span 9;
+          grid-row: span 2;
+        }
+
+        &:not(:nth-child(2)) {
+          grid-column: span 4;
+        }
+
+        &:last-child {
+          margin-top: auto;
+        }
+      }
+    }
+
+    &.four-products-right {
+      grid-template-columns: repeat(21, 1fr);
+
+      .journal__product {
+        &:first-child {
+          grid-column: span 11;
+          grid-row: span 2;
+        }
+
+        &:not(:first-child) {
+          grid-column: span 5;
+        }
+
+        &:nth-child(4),
+        &:last-child {
+          margin-top: auto;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .journal {
+    &__wrapper {
+      padding: 0 340px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .journal {
+    &__text {
+      margin-bottom: 48px;
+
+      &-content {
+        width: 100%;
+      }
+    }
+
+    &__wrapper {
+      padding: 0 16px;
+    }
+
+    &__row {
+      gap: 8px;
+      margin-bottom: 48px;
+
+      &.product-indents {
+        width: 80%;
+      }
+
+      &.two-products-right,
+      &.two-products-left {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      &.two-products-right {
+        .journal__product {
+          &:first-child {
+            margin-bottom: 8px;
+            grid-column: span 2;
+          }
+
+          &:not(:first-child) {
+            grid-column: span 1;
+          }
+        }
+      }
+
+      &.two-products-left {
+        .journal__product {
+          &:nth-child(2) {
+            order: -1;
+            margin-bottom: 8px;
+            grid-column: span 2;
+          }
+
+          &:not(:nth-child(2)) {
+            grid-column: span 1;
+          }
+        }
+      }
+
+      &.four-products-right {
+        grid-template-columns: repeat(2, 1fr);
+
+        .journal__product {
+          margin-bottom: 8px;
+
+          &:first-child {
+            grid-column: span 2;
+          }
+
+          &:not(:first-child) {
+            grid-column: span 1;
+          }
+        }
+      }
+    }
+  }
+}

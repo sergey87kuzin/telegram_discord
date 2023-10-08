@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'HelveticaNeue';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/static/fonts/HelveticaNeue-Roman.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeue';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/static/fonts/HelveticaNeue-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Futura New';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/static/fonts/FuturaNewLight.woff2') format('woff2');
+}

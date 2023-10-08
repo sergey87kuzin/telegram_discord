@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% trans 'Авторизация' %} {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="n-container">
+        <div class="n-container-simple">
+            <div class="container-fluid">
+                <div class="page-login  mh">
+                    <h1 class="center">{% trans 'Авторизация' %}</h1>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            <div class="loginMessage">
+                                {{ form.non_field_errors }}
+                            </div>
+                            <form class="form" method="post">
+                                {% csrf_token %}
+                                {{ form.username }}
+                                {{ form.password }}
+                                <div class="modal-login__btn-box  login_other">
+                                    <input
+                                        type="submit"
+                                        name="Login"
+                                        value="{% trans 'Войти' %}"
+                                        class="btn"
+                                        style="margin-right: 20px"
+                                    />
+                                    <a class="page-login__link-recover" href="{% url 'users:user-restore-password' %}">{% trans 'Забыли пароль?' %}</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

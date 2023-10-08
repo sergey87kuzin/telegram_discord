@@ -1,0 +1,45 @@
+{% load i18n %}
+
+<form class="form ajax-login-form" data-url="{% url 'auth:ajax-login' %}" method="post">
+    {% csrf_token %}
+    <div class="loginMessage">
+        {{ form.non_field_errors }}
+    </div>
+    <div class="custom_form-group">
+        <input type="text"
+           name="username"
+           autofocus=""
+           autocapitalize="none"
+           autocomplete="username"
+           maxlength="254"
+           required=""
+           data-val=""
+           id="id_username"
+           class="custom_input"
+        >
+        <label class="custom_label" for="id_username">{% trans "Ваш ник telegram" %}</label>
+        <span class="error"></span>
+    </div>
+
+    <div class="custom_form-group last-group">
+        <input type="password"
+            name="password"
+            autocomplete="current-password"
+            required=""
+            data-val=""
+            id="id_password"
+            class="custom_input"
+        >
+        <label class="custom_label" for="id_password">{% trans "Пароль" %}</label>
+        <span class="error"></span>
+    </div>
+
+    <div class="modal-login__btn-box">
+        <div class="d-flex align-items-center">
+            <button type="button" id="login-modal-button" class="modal-login__btn  btn  btn-login">Войти</button>
+            <a class="modal-login__link-recover" href="">Забыли пароль?</a>
+        </div>
+        <p class="modal-login__policy  policy_links">{% trans "Нажимая кнопку Войти, я даю согласие на обработку и передачу моих" %}
+             <a class="modal-login__policy-link" href="{% if '/en/' in request.path %}/en{% endif %}/pages/policy/">{% trans "персональных данных" %}.</a></p>
+    </div>
+</form>

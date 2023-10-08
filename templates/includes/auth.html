@@ -1,0 +1,131 @@
+{% load static %}
+{% load i18n %}
+
+<div class="modal-login">
+    <div class="modal-login__wrapper">
+        <button class="modal-login__close  modal_close  close-btn"></button>
+        <div class="modal-login__content  d-md-flex">
+            <div class="modal-login__container">
+                <div class="modal-login__box">
+                    <div class="modal-login__head  d-flex  justify-content-between  align-items-center">
+                        <span class="modal-login__title  modal-login__title_recover">{% trans "Восстановление пароля" %}</span>
+                        <div class="modal-login__title-box">
+                            <span data-tab="login" class="modal-login__title  active">{% trans "Вход" %}</span>
+{#                            <span data-tab="sign" class="modal-login__title">{% trans "Регистрация" %}</span>#}
+                        </div>
+                        <div class="modal-login__link-box">
+                            <a href="login" class="modal-login__link  modal-login__tab-link">{% trans "Вход" %}</a>
+{#                            <a href="sign" class="modal-login__link  modal-login__tab-link  active">{% trans "Регистрация" %}</a>#}
+                        </div>
+                    </div>
+                    <div class="modal-login__col-box">
+                        <div class="modal-login__group">
+                            <div data-tab="login" class="modal-login__col  active">
+                                <div class="modal-login__extended">
+                                    {% include 'auth/login_extended.html' %}
+                                </div>
+                            </div>
+{#                            <div data-tab="sign" class="modal-login__col">#}
+{#                                <form class="form ajax-registration-form" data-url="{% url 'auth:registration-ajax' %}"#}
+{#                                      method="post">#}
+{#                                    {% csrf_token %}#}
+{#                                    <span class="error error-messages-registration message-top"></span>#}
+{#                                    <div class="custom_form-group">#}
+{#                                        <input class="custom_input"#}
+{#                                               type="text"#}
+{#                                               name="username"#}
+{#                                               id="username"#}
+{#                                               value=""#}
+{#                                               data-val=""#}
+{#                                               required=""#}
+{#                                        >#}
+{#                                        <label class="custom_label" for="first_name">{% trans "Ник telegram" %}</label>#}
+{#                                        <span class="error error-registration-firstname"></span>#}
+{#                                    </div>#}
+{#                                    <div class="custom_form-group">#}
+{#                                        <input type="password"#}
+{#                                               name="password1"#}
+{#                                               autocomplete="current-password"#}
+{#                                               required=""#}
+{#                                               data-val=""#}
+{#                                               id="password1"#}
+{#                                               class="custom_input"#}
+{#                                        >#}
+{#                                        <label class="custom_label" for="password1">{% trans "Пароль" %}</label>#}
+{#                                        <span class="error error-registration-password1"></span>#}
+{#                                    </div>#}
+{#                                    <div class="custom_form-group last-group">#}
+{#                                        <input type="password"#}
+{#                                               name="password2"#}
+{#                                               autocomplete="current-password"#}
+{#                                               required=""#}
+{#                                               data-val=""#}
+{#                                               id="password2"#}
+{#                                               class="custom_input"#}
+{#                                        >#}
+{#                                        <label class="custom_label" for="password2">{% trans "Подтверждение пароля" %}</label>#}
+{#                                        <span class="error error-registration-password2"></span>#}
+{#                                    </div>#}
+{##}
+{#                                    <div class="modal-login__loyalty" hidden="hidden">#}
+{#                                        <div class="loyalty-phone">#}
+{#                                            <div class="custom_form-group">#}
+{#                                                <input type="tel"#}
+{#                                                       name="phone"#}
+{#                                                       autofocus=""#}
+{#                                                       onblur="this.removeAttribute('autocomplete')"#}
+{#                                                       onfocus="this.setAttribute('autocomplete', 'new-password')"#}
+{#                                                       maxlength="254"#}
+{#                                                       data-val=""#}
+{#                                                       id="loyalty-phone"#}
+{#                                                       class="custom_input"#}
+{#                                                >#}
+{#                                                <label class="custom_label  custom_label_phone" for="loyalty-phone">{% trans "Телефон" %}</label>#}
+{#                                                <p id="loyalty-phone-intl-error" class="error" style="margin: -8px 0 8px"></p>#}
+{#                                                <p class="error error-registration-phone" style="margin: -8px 0 8px"></p>#}
+{#                                            </div>#}
+{##}
+{#                                            <button id="loyalty-phone-confirm" type="button"#}
+{#                                                    class="btn modal-login__loyalty-btn" disabled="disabled">{% trans "Подтвердить" %}</button>#}
+{#                                        </div>#}
+{##}
+{#                                        <p class="loyalty-phone-info">Для регистрации необходимо подтвердить аккаунт в телеграм.<br /> Мы отправим вам сообщение с кодом подтверждения.'</p>#}
+{#                                        <div id="loyalty-timer" class="error" style="display: none; margin: 8px 0 16px;">#}
+{#                                            Повторно запросить код вы можете через <span id="loyalty-timer-seconds">60</span> с.'#}
+{#                                        </div>#}
+{#                                        <div id="loyalty-phone-error" class="error" style="display: block; margin: 8px 0 16px;"></div>#}
+{#                                        <div class="custom_form-group code-confirm-form" style="display: none;">#}
+{#                                            <input class="custom_input" type="text" name="confirmation_code" id="code-confirm"#}
+{#                                                   autocomplete="code-confirm" value="" data-val="">#}
+{#                                            <label class="custom_label" for="code-confirm">{% trans "Код подтверждения" %}</label>#}
+{#                                            <span class="error error-registration-confirmation_code"></span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{##}
+{#                                    <div class="modal-login__btn-box">#}
+{#                                        <button type="submit" class="modal-login__btn  btn  btn-registration">#}
+{#                                            {% trans "Создать аккаунт" %}#}
+{#                                        </button>#}
+{#                                        <p class="modal-login__policy  policy_links">Нажимая кнопку Создать аккаунт, я даю согласие на обработку и передачу моих"#}
+{#                                            <a class="modal-login__policy-link" href="/pages/policy/">{% trans "персональных данных" %}.</a></p>#}
+{#                                    </div>#}
+{#                                </form>#}
+{#                            </div>#}
+                        </div>
+                        <div class="modal-login__col  modal-login__col_recover" id="passwordRestore" data-restore-pasw="{% url 'api-users:profile:account-restore' %}">
+                            <p class="modal-login__info">{% trans "Укажите ник telegram, и мы отправим вам ссылку на восстановление пароля" %}</p>
+                                <div class="custom_form-group last-group">
+                                    <input class="custom_input" name="telegram" id="id-recover-password-telegram" data-val="">
+                                    <label class="custom_label" for="id-recover-password-telegram">"Ваш telegram"</label>
+                                    <span class="error" id="id-error-recover-password"></span>
+                                </div>
+                                <button type="submit" name="login_fp" class="modal-login__btn  btn" id="id-recover-password-button"
+                                >{% trans "Восстановить" %}
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

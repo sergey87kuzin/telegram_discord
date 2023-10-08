@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+{% trans 'Регистрация' %} {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="n-container">
+        <div class="n-container-simple">
+            <div class="container-fluid">
+                <div class="breadcrumbs d-none d-sm-block">
+                    <ol class="breadcrumb" itemscope="" itemtype="http://schema.org/BreadcrumbList">
+                        <li class="breadcrumb__item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a class="breadcrumb__link" itemprop="item" href="{% url 'index' %}">
+                                <span itemprop="name">Домой</span>
+                            </a>
+                            <meta itemprop="position" content="1">
+                        </li>
+                        <li class="breadcrumb__item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a class="breadcrumb__link" itemprop="item" href="{% url 'auth:login' %}">
+                                <span itemprop="name">{% trans 'Авторизация' %}</span>
+                            </a>
+                            <meta itemprop="position" content="2">
+                        </li>
+                    </ol>
+                </div>
+                <div class="mh">
+                    <h1 class="center">{% trans 'Регистрация' %}</h1>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+                            <div class="alert alert-success text-center">
+                                {% trans 'Спасибо за регистрацию. На вашу электронную почту отправлено письмо со ссылкой на активацию аккаунта. Пройдите по этой ссылке, чтобы завершить регистрацию.' %}
+                            </div>
+                        </div>
+                    </div>
+{#                    <div class="sign-social">#}
+{#                        <span class="sign-social__title">Вход через соцсети</span>#}
+{#                        <div>#}
+{#                            {% include 'auth/_social_auth.html' %}#}
+{#                        </div>#}
+{#                    </div>#}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrajs %}
+    <script>
+    dataLayer.push({'event': 'reg'});
+    </script>
+{% endblock %}

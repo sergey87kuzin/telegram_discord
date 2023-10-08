@@ -1,0 +1,35 @@
+@import "variables";
+
+.breadcrumb {
+  display: flex;
+  padding-top: 20px;
+
+  &__item:not(:last-child)::after {
+    content: "/";
+    font-size: $font-size-10;
+    line-height: $line-height-14;
+    display: inline-block;
+    vertical-align: baseline;
+    padding: 0 4px;
+    color: #828282;
+    opacity: 0.8;
+  }
+
+  &__link {
+    font-size: $font-size-10;
+    line-height: $line-height-14;
+    color: #828282;
+  }
+
+  & > li:first-child span {
+    text-transform: uppercase;
+  }
+}
+
+@media screen and (max-width: 991px) {
+
+  .breadcrumbs {
+    width: 100%;
+    margin-bottom: 30px;
+  }
+}

@@ -1,0 +1,291 @@
+@import "variables";
+
+.page {
+  padding: 0 16px 100px;
+
+  &_care {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  &__head {
+    padding: 0 0 0 230px;
+
+    &_care {
+      padding-bottom: 40px;
+    }
+  }
+
+  &__title {
+    padding: 0 0 40px;
+
+    &_care {
+      font-size: $font-size-12;
+      line-height: $line-height-16;
+      text-transform: uppercase;
+      color: #4F4F4F;
+    }
+  }
+
+  &__menu {
+    position: relative;
+    padding-right: 40px;
+    width: 230px;
+
+    &_care {
+      padding-top: 54px;
+    }
+
+    &-list {
+      position: sticky;
+      top: 106px;
+    }
+
+    &-item {
+      padding: 12px 0;
+      font-size: $font-size-10;
+      line-height: $line-height-14;
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      .active {
+        color: #BDBDBD;
+      }
+    }
+
+    &-link {
+      font-size: $font-size-10;
+      line-height: $line-height-14;
+      text-transform: uppercase;
+      color: #333333;
+      transition: all 0.3s ease-in-out;
+
+      &:hover:not(.active) {
+        color: #000;
+      }
+
+      &.active {
+        color: #BDBDBD;
+      }
+    }
+  }
+
+  &__submenu {
+    padding-top: 14px;
+    padding-left: 15px;
+
+    &-item {
+      padding: 10px 0;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    &-link {
+      font-size: $font-size-10;
+      line-height: $line-height-14;
+      text-transform: uppercase;
+    }
+  }
+
+  &__content {
+    width: calc(100% - 460px);
+
+    &_care {
+      width: calc(100% - 230px);
+    }
+
+    .popup-list_open {
+      position: relative;
+      padding: 20px 40px 27px 0;
+    }
+
+    .popup-list_open,
+    .popup-list_open.active {
+      background-image: none;
+    }
+
+    .popup-list_open::before,
+    .popup-list_open::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      right: 14px;
+      width: 15px;
+      height: 1px;
+      background: #333333;
+      opacity: 1;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .popup-list_open::after {
+      transform: rotate(90deg);
+    }
+
+    .popup-list_open.active::after {
+      opacity: 0;
+    }
+
+    .popup-list_item .content {
+      padding-top: 24px;
+      padding-bottom: 24px;
+      border-top: 1px solid #e0e0e0;
+
+      br {
+        display: block;
+      }
+    }
+
+    & > *:last-child,
+    .popup-list_item .content *:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .content * {
+      color: #333333;
+    }
+
+    ol li::marker {
+      color: #BD944D;
+    }
+
+    .content .content_important,
+    .content .content_important * {
+      color: #BD944D;
+    }
+  }
+
+  &__group {
+    margin-bottom: 30px;
+  }
+
+  &__subcontent {
+    padding: 15px 0 0 10px;
+  }
+}
+
+
+@media screen and (max-width: 991px) {
+
+  .page {
+    padding-bottom: 40px;
+
+    &_care {
+      padding-bottom: 60px;
+    }
+
+    &__head {
+      padding-top: 24px;
+      padding-left: 0;
+      padding-bottom: 0;
+
+      &_care {
+        padding-bottom: 0;
+      }
+    }
+
+    &__title {
+      padding: 0;
+    }
+
+    &__menu {
+      width: 100%;
+      padding: 32px 0 52px;
+
+      &_care {
+        padding-top: 32px;
+      }
+
+      &-list {
+        position: static;
+        width: calc(100% + 30px);
+        margin: 0 -15px;
+      }
+
+      &-item {
+        padding: 12px 15px;
+      }
+
+      &-link {
+
+        &:hover:not(.active) {
+          color: #333333;
+        }
+      }
+    }
+
+    &__content {
+      width: 100%;
+
+      &_care {
+        width: 100%;
+      }
+
+      .popup-list_item {
+        &_border {
+          margin-bottom: 1px;
+          border-bottom: 1px solid #E0E0E0;
+          transition: all 0.3s ease-in-out;
+
+          &:not(:last-child) {
+            &.open {
+              border-bottom-color: transparent;
+            }
+          }
+        }
+      }
+
+      .popup-list_open {
+        padding: 14px 40px 14px 0;
+        font-size: $font-size-11;
+        line-height: $line-height-15;
+
+        &::before,
+        &::after {
+          top: 21px;
+        }
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+
+  .page {
+
+    &_care {
+      padding-bottom: 30px;
+    }
+
+    &__menu {
+      padding: 25px 0 20px;
+
+      &_care {
+        padding-top: 22px;
+      }
+    }
+
+    &__content {
+
+      .popup-list_open {
+        color: #000000;
+        padding-right: 30px;
+      }
+
+      .popup-list_open::before,
+      .popup-list_open::after {
+        right: 3px;
+      }
+
+      .popup-list_item .content {
+        padding-top: 14px;
+        padding-bottom: 20px;
+      }
+    }
+  }
+}

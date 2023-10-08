@@ -1,0 +1,101 @@
+{% extends 'natasha_base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %}
+    {% trans "Данные аккаунта" %} {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+<div class="n-container-desktop" id="profile" class="profile" data-profile="{% url 'api-users:profile:profile' %}"
+data-user-change-password="{% url 'api-users:profile:change-password' %}"
+data-user-id="{{ user.id }}">
+    <div class="profile__bg">
+        <div class="n-container">
+            <div class="container-fluid">
+                <div class="profile__username">
+                    <div class="row">
+                        <div class="col-12  right">
+                            <a href="{% url 'auth:logout' %}" class="profile__logout">{% trans 'Выход' %}</a>
+                        </div>
+                        <div class="col-12">
+                            <div class="profile__name">{% trans "Здравствуйте" %}, {{ request.user.username }}!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12  col-md-7  col-xl-6">
+        <a class="btn" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+        </div>
+        <div>
+        <a class="btn" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
+        </div>
+    </div>
+    <div class="n-container">
+        <div class="profile__content  mh">
+            <div class="container-fluid">
+                <form class="form ajax-login-form" data-url="{% url 'api-users:profile:profile-update' %}" method="post">
+                {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12  col-md-7  col-xl-6">
+                            <h1 class="profile__title">Личные данные</h1>
+                            <div class="row  no-gutters">
+                                <div class="col-12  col-md-10  col-lg-9  col-xl-7">
+                                    <div class="custom_form-group">
+                                        <input class="custom_input black_input" type="text" name="name" id="name" value="{{ user.date_of_payment }}" data-val="{{ user.date_of_payment }}" autocomplete="name" readonly>
+                                        <label class="custom_label" for="name">Дата последней оплаты</label>
+                                        <span class="error"></span>
+                                    </div>
+                                    <div class="custom_form-group">
+                                        <input class="custom_input black_input" type="text" name="surname" id="surname" value="{{ user.date_payment_expired }}" data-val="{{ user.date_payment_expired }}" autocomplete="surname" readonly>
+                                        <label class="custom_label" for="surname">Дата окончания оплаченного периода</label>
+                                        <span class="error"></span>
+                                    </div>
+                                    <div class="custom_form-group">
+                                        <input class="custom_input black_input" type="text" name="name" id="name" value="{{ user.first_name }}" data-val="{{ user.first_name }}" autocomplete="name">
+                                        <label class="custom_label" for="name">Имя</label>
+                                        <span class="error"></span>
+                                    </div>
+                                    <div class="custom_form-group">
+                                        <input class="custom_input black_input" type="text" name="surname" id="surname" value="{{ user.last_name }}" data-val="{{ user.last_name }}" autocomplete="surname">
+                                        <label class="custom_label" for="surname">Фамилия</label>
+                                        <span class="error"></span>
+                                    </div>
+                                    <div class="custom_form-group">
+                                        <input class="custom_input black_input" type="email" name="email" id="email" data-val="{{ user.email }}" value="{{ user.email }}" autocomplete="email">
+                                        <label class="custom_label" for="sbscrModal">Ваш e-mail</label>
+                                        <span class="error"></span>
+                                    </div>
+                                    <div class="updprof-error" style="margin-bottom: 10px;"></div>
+                                    <input type="submit" class="profile__submit btn" name="login-updprof-btn" value="Сохранить">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12  col-md-5  col-xl-6">
+                            <div class="row  no-gutters">
+                                <div class="col-12  col-lg-8  col-xl-7">
+                                    <h2 class="profile__title">Пароль</h2>
+                                    <div class="profile__col">
+                                        <button class="profile__change-password" type="button">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15 10H5L5 17H15V10ZM5 9C4.44772 9 4 9.44772 4 10V17C4 17.5523 4.44772 18 5 18H15C15.5523 18 16 17.5523 16 17V10C16 9.44772 15.5523 9 15 9H5Z" fill="#BD944D"/>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13 9V6C13 4.34315 11.6569 3 10 3C8.34315 3 7 4.34315 7 6V9H13ZM10 2C7.79086 2 6 3.79086 6 6V10H14V6C14 3.79086 12.2091 2 10 2Z" fill="#BD944D"/>
+                                            </svg>
+                                            <span>{% trans "Изменить пароль" %}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'users/modal-change-password.html' %}
+{% endblock %}

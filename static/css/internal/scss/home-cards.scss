@@ -1,0 +1,21 @@
+@import "variables";
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  &__link,
+  &__img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+
+@media screen and (max-width: 991px) {
+
+
+  .home-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,45 @@
+{% extends 'emails/base/base_email.html' %}
+
+{% load i18n %}
+{% load static %}
+{% block content %}
+<table cellspacing="0" cellpadding="0" style="padding:0;width:100%;margin:0">
+    <tbody>
+    <tr>
+        <td style="padding: 32px 0 0 0;text-align: center">
+            <p style="display: block;max-width: 520px;margin: 0 auto 0 auto;text-align: center;font-family:Arial;font-weight: 400;font-size: 20px;line-height: 34px;letter-spacing: 0.03em;text-transform: uppercase;color: #4F4F4F">
+                {% trans 'Для активации нового пароля пройдите по ссылке' %}:
+            </p>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="padding: 16px 0 56px 0;text-align: center">
+            <div>
+                <img style="display:block;width: 100%;margin:auto" src="{{email_settings.get_cover_url}}"
+                     alt="{{ domain }}">
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="padding: 0 0 0 0;text-align: center">
+            <div style="width: 290px;margin: 0 auto 0 auto;padding: 16px 0 16px 0;text-align: center;background:#000000;">
+                <a style="display:block;font-family:Arial;font-weight: 400;font-size: 14px;line-height: 18px;text-align: center;text-transform: uppercase;color: #FFFFFF;text-decoration:none;"
+                   href="{{domain}}{% url 'api-users:profile:account-restore-check' uidb64=uid token=token %}" target="_blank">
+                    {% trans 'АКТИВАЦИЯ' %}
+                </a>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="padding:32px 0 100px 0;text-align: center">
+            <p style="margin: 0 auto 0 auto;font-family:Arial;font-weight: 400;font-size: 12px;line-height: 15px;color: #4F4F4F;">
+                {% trans 'Если Вы не запрашивали это сообщение, то просто проигнорируйте его.' %}.
+            </p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}

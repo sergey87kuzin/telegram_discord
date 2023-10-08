@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang=RU>
+    <head>
+        <title>
+            {% block title %}
+                "Сайт оплат доступа"
+            {% endblock %}
+        </title>
+        {% block head %}
+        {% endblock %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {% include 'includes/styles.html' %}
+    </head>
+    <body class="{% if display_form %}display_form{% endif %} {% if top_bar_settings.is_active %}has-topBar show-topBar{% endif %}">
+        {% include 'includes/header.html' %}
+        {% if not request.user.is_authenticated %}
+        {% include 'includes/auth.html' %}
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+{% include 'includes/scripts.html' %}
+    </body>
+</html>

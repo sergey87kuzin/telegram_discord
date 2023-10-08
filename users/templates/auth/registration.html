@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+Регистрация{{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="n-container">
+        <div class="n-container-simple">
+            <div class="container-fluid">
+                <div class="breadcrumbs d-none d-sm-block">
+                    <ol class="breadcrumb" itemscope="" itemtype="http://schema.org/BreadcrumbList">
+                        <li class="breadcrumb__item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a class="breadcrumb__link" itemprop="item" href="/">
+                                <span itemprop="name">FotoStocker</span>
+                            </a>
+                            <meta itemprop="position" content="1">
+                        </li>
+                        <li class="breadcrumb__item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a class="breadcrumb__link" itemprop="item" href="{% url 'auth:login' %}">
+                                <span itemprop="name">Авторизация</span>
+                            </a>
+                            <meta itemprop="position" content="2">
+                        </li>
+                    </ol>
+                </div>
+                <div class="mh">
+                    <h1 class="center">Регистрация</h1>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-sm 8 col-md-6 col-lg-4">
+                            <div class="loginMessage">
+                                {{ form.non_field_errors }}
+                            </div>
+                            <form class="form" method="post" style="color: #aaaaaa">
+                                {% csrf_token %}
+                                {{ form.username }}
+                                <div class="error"> <span class="error">{{ form.username.errors }}</span></div>
+                                {{ form.password1 }}
+                                <div class="error"> <span class="error">{{ form.password1.errors }}</span></div>
+                                {{ form.password2 }}
+                                <div class="error"> <span class="error">{{ form.password2.errors }}</span></div>
+                                <div class="modal-login__btn-box  smt1" id="telegram-nick-confirm">
+                                    <input
+                                        type="button"
+                                        name="send_code"
+                                        value="Отправить код подтверждения"
+                                        class="btn"
+                                        style="margin-right: 20px"
+                                    />
+                                </div>
+                                {{ form.confirmation_code }}
+                                <div class="error" id="telegram-error"> <span class="error">{{ form.confirmation_code.errors }}</span></div>
+                                <div class="modal-login__btn-box  smt1">
+                                    <input
+                                        type="submit"
+                                        name="Login"
+                                        value="{% trans 'Создать аккаунт' %}"
+                                        class="btn"
+                                        style="margin-right: 20px"
+                                    />
+                                    <p class="modal-login__policy  policy_links">{% trans "Нажимая кнопку Создать аккаунт, я даю согласие на обработку и передачу моих" %}
+                                        <a class="modal-login__policy-link" href="{% if '/en/' in request.path %}/en{% endif %}/pages/policy/">{% trans "персональных данных" %}.</a></p>
+                                </div>
+                                <div class="center" style="padding-bottom: 20px;">
+                                    <a href="{% url 'auth:login' %}" style="color: #000000">Уже есть аккаунт?</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

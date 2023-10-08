@@ -1,0 +1,109 @@
+@import "variables";
+
+.hint-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  &__container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    height: calc(var(--vh,1vh)*100);
+  }
+
+  &__wrapper {
+    position: relative;
+    display: flex;
+    margin: auto;
+    width: 100%;
+    max-width: 430px;
+    height: auto;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  &__content {
+    flex-grow: 1;
+    padding: 60px 60px 75px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      position: absolute;
+      max-width: 0px;
+      max-height: 0;
+    }
+
+    &-end {
+      display: none;
+    }
+  }
+
+  &__title {
+    margin-bottom: 34px;
+    padding: 0;
+    font-size: $font-size-12;
+    line-height: $line-height-16;
+    text-transform: uppercase;
+    color: #000000;
+  }
+
+  &__info {
+    margin-bottom: 48px;
+    font-size: $font-size-12;
+    line-height: $line-height-15;
+  }
+
+  &__form {
+
+    &-group {
+      margin-bottom: 20px;
+
+      .iti {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__submit {
+    margin-top: -10px;
+  }
+}
+
+
+@media screen and (max-width: 567px) {
+
+  .hint-modal {
+
+    &__wrapper {
+      height: 100vh;
+      height: calc(var(--vh,1vh)*100);
+      max-width: 100%;
+    }
+
+    &__close {
+      top: 15px;
+    }
+
+    &__content {
+      max-height: 100%;
+      padding: 20px 16px;
+    }
+  }
+}
