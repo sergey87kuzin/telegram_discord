@@ -51,6 +51,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          cd telegram_to_discord/
           sudo docker-compose down
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/telegram:latest
           sudo docker-compose start ${{ secrets.DOCKER_USERNAME }}/telegram:latest
