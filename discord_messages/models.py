@@ -11,7 +11,7 @@ class Message(models.Model):
     images = models.CharField(
         "Список url вложенных файлов", max_length=2048, blank=True, null=True
     )
-    buttons = models.CharField("Коды кнопок ответа", max_length=2048, blank=True, null=True)
+    buttons = models.JSONField("Коды кнопок ответа", default=dict)
     answer_sent = models.BooleanField("Ответ отправлен", default=False)
 
     class Meta:

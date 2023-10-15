@@ -1,12 +1,6 @@
-import json
-import time
-
-import requests
-from django.conf import settings
 from rest_framework import serializers
 
 from discord_messages.discord_helper import send_message_to_discord
-from discord_messages.models import DiscordAccount, DiscordConnection
 
 
 class MessageSerializer(serializers.Serializer):

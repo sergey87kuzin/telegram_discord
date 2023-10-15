@@ -1,10 +1,11 @@
 import json
+import time
 from http import HTTPStatus
 
 import requests
 from django.conf import settings
 
-from discord_messages.models import DiscordAccount, DiscordConnection
+from discord_messages.models import DiscordAccount, DiscordConnection, Message
 
 
 class DiscordHelper:
@@ -13,11 +14,10 @@ class DiscordHelper:
         В зависимости от пользователя проверять, к какому акку дискорда подключен,
         возвращать его настройки
         """
-        account = DiscordAccount.objects.first()
+        account = user.account
         return account
 
-    def get_new_connection(self, user):
-        account = self.get_discord_auth_data(user)
+    def get_new_connection(self, account):
         login_url = "https://discord.com/api/v9/auth/login"
         data = {
             "gift_code_sku_id": None,
@@ -45,6 +45,13 @@ class DiscordHelper:
 
 
 def send_message_to_discord(text, account: DiscordAccount, connection: DiscordConnection):
+    """
+    Отправить текст в команду /imagine для получения первых картинок по запросу
+    :param text: Текст сообщения в /imagine
+    :param account: аккаунт, к которому подключен пользователь
+    :param connection: соединение аккаунта с сервером дискорда
+    :return:
+    """
     discord_url = f"https://discord.com/api/v9/interactions"
     data = {
         "type": 2,
@@ -89,4 +96,122 @@ def send_message_to_discord(text, account: DiscordAccount, connection: DiscordCo
         "Accept-Encoding": "gzip, deflate, br"
     }
     response = requests.post(discord_url, json=data, headers=headers)
+    return response.status_code
+
+
+def send_u_line_button_command_to_discord(
+        account: DiscordAccount,
+        message: Message,
+        button_key: str,
+        connection: DiscordConnection
+):
+    """
+    Имитация нажатия кнопок верхнего ряда полсле первой генерации (коды кнопок U1-U4)
+    :param account:
+    :param message:
+    :param button_key:
+    :param connection:
+    :return: status_code
+    """
+    button = message.buttons.get(button_key)
+    discord_url = f"https://discord.com/api/v9/interactions"
+    data = {
+        "application_id": "936929561302675456",
+        "channel_id": account.channel_id,
+        "guild_id": None,
+        "message_flags": 0,
+        "type": 3,
+        "session_id": account.session_id,
+        "message_id": message.discord_message_id,
+        "data": {
+            "component_type": button.get("type"),
+            "custom_id": button.get("custom_id")
+        }
+    }
+    headers = {
+        "Authorization": connection.token,
+        "Content-Type": "application/json",
+        "Accept-Encoding": "gzip, deflate, br"
+    }
+    response = requests.post(discord_url, json=data, headers=headers)
+    return response.status_code
+
+
+def send_v_line_button_command_to_discord(
+        account: DiscordAccount,
+        message: Message,
+        button_key: str,
+        connection: DiscordConnection,
+        new_text: str,
+):
+    """
+    Имитация нажатия кнопок верхнего ряда полсле первой генерации (коды кнопок U1-U4)
+    :param account:
+    :param message:
+    :param button_key:
+    :param connection:
+    :return: status_code
+    """
+    button = message.buttons.get(button_key)
+    discord_url = f"https://discord.com/api/v9/interactions"
+    data = {
+        "application_id": "936929561302675456",
+        "channel_id": account.channel_id,
+        "guild_id": None,
+        "message_flags": 0,
+        "type": 3,
+        "session_id": account.session_id,
+        "message_id": message.discord_message_id,
+        "data": {
+            "component_type": button.get("type"),
+            "custom_id": button.get("custom_id")
+        }
+    }
+    headers = {
+        "Authorization": connection.token,
+        "Content-Type": "application/json",
+        "Accept-Encoding": "gzip, deflate, br"
+    }
+    # response = requests.post(discord_url, json=data, headers=headers)
+    # time.sleep(5)
+    command_uuid = button.get("custom_id").split("::")[-1]
+    picture_number = button_key.replace("V", "")
+    new_data = {
+        "application_id": "936929561302675456",
+        "channel_id": account.channel_id,
+        "data": {
+            "components": [{
+                "components": [{
+                    "custom_id": "MJ::RemixModal::new_prompt",
+                    "type": 4,
+                    "value": new_text
+                }],
+                "type": 1
+            }],
+            "custom_id": "MJ::RemixModal::c4727c81-d685-417d-b4d2-addd36ba97f7::3::1",
+            "id": "1163144889949753545"
+        },
+        "guild_id": None,
+        "session_id": account.session_id,
+        "type": 5
+    }
+    # new_data = {
+    #     "application_id": "936929561302675456",
+    #     "channel_id": account.channel_id,
+    #     "guild_id": None,
+    #     "type": 5,
+    #     "session_id": account.session_id,
+    #     "data": {
+    #         "components": [{
+    #             "components": [{
+    #                 "custom_id": "MJ::RemixModal::new_prompt",
+    #                 "type": 4,
+    #                 "value": new_text
+    #             }],
+    #             "type": 1
+    #         }],
+    #         "custom_id": f"MJ::RemixModal::{command_uuid}::{picture_number}::1"
+    #     }
+    # }
+    response = requests.post(discord_url, json=new_data, headers=headers)
     return response.status_code
