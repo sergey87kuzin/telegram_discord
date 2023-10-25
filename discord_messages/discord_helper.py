@@ -1,9 +1,8 @@
 import json
-import time
 from http import HTTPStatus
 
 import requests
-from django.conf import settings
+from django.db.models import F
 
 from discord_messages.models import DiscordAccount, DiscordConnection, Message
 
@@ -44,7 +43,7 @@ class DiscordHelper:
         return
 
 
-def send_message_to_discord(text, account: DiscordAccount, connection: DiscordConnection):
+def send_message_to_discord(text, account: DiscordAccount, connection: DiscordConnection) -> int:
     """
     Отправить текст в команду /imagine для получения первых картинок по запросу
     :param text: Текст сообщения в /imagine
@@ -137,81 +136,49 @@ def send_u_line_button_command_to_discord(
     return response.status_code
 
 
-def send_v_line_button_command_to_discord(
+def send_vary_strong_message(
         account: DiscordAccount,
         message: Message,
-        button_key: str,
         connection: DiscordConnection,
-        new_text: str,
 ):
     """
-    Имитация нажатия кнопок верхнего ряда полсле первой генерации (коды кнопок U1-U4)
+    Запрос на сильное изменение картинки
     :param account:
     :param message:
     :param button_key:
     :param connection:
     :return: status_code
     """
-    button = message.buttons.get(button_key)
-    discord_url = f"https://discord.com/api/v9/interactions"
-    data = {
-        "application_id": "936929561302675456",
-        "channel_id": account.channel_id,
-        "guild_id": None,
-        "message_flags": 0,
-        "type": 3,
-        "session_id": account.session_id,
-        "message_id": message.discord_message_id,
-        "data": {
-            "component_type": button.get("type"),
-            "custom_id": button.get("custom_id")
-        }
-    }
+    picture = message.images.split(",")[0]
+    return send_message_to_discord(text=picture, account=account, connection=connection)
+
+
+def send_vary_soft_message(
+        account: DiscordAccount,
+        message: Message,
+        connection: DiscordConnection,
+):
+    """
+    Запрос на сильное изменение картинки
+    :param account:
+    :param message:
+    :param button_key:
+    :param connection:
+    :return: status_code
+    """
+    picture = message.images.split(",")[0]
+    text = f"{picture} --seed{message.seed}"
+    return send_message_to_discord(text=text, account=account, connection=connection)
+
+
+def get_message_seed(account, connection, message):
+    seed_url = f"https://discord.com/api/v9/channels/{account.channel_id}/messages/"\
+               f"{message.discord_message_id}/reactions/%E2%9C%89%EF%B8%8F/%40me?location=Message&type=0"
     headers = {
         "Authorization": connection.token,
         "Content-Type": "application/json",
         "Accept-Encoding": "gzip, deflate, br"
     }
-    # response = requests.post(discord_url, json=data, headers=headers)
-    # time.sleep(5)
-    command_uuid = button.get("custom_id").split("::")[-1]
-    picture_number = button_key.replace("V", "")
-    new_data = {
-        "application_id": "936929561302675456",
-        "channel_id": account.channel_id,
-        "data": {
-            "components": [{
-                "components": [{
-                    "custom_id": "MJ::RemixModal::new_prompt",
-                    "type": 4,
-                    "value": new_text
-                }],
-                "type": 1
-            }],
-            "custom_id": "MJ::RemixModal::c4727c81-d685-417d-b4d2-addd36ba97f7::3::1",
-            "id": "1163144889949753545"
-        },
-        "guild_id": None,
-        "session_id": account.session_id,
-        "type": 5
-    }
-    # new_data = {
-    #     "application_id": "936929561302675456",
-    #     "channel_id": account.channel_id,
-    #     "guild_id": None,
-    #     "type": 5,
-    #     "session_id": account.session_id,
-    #     "data": {
-    #         "components": [{
-    #             "components": [{
-    #                 "custom_id": "MJ::RemixModal::new_prompt",
-    #                 "type": 4,
-    #                 "value": new_text
-    #             }],
-    #             "type": 1
-    #         }],
-    #         "custom_id": f"MJ::RemixModal::{command_uuid}::{picture_number}::1"
-    #     }
-    # }
-    response = requests.post(discord_url, json=new_data, headers=headers)
+    response = requests.put(seed_url, headers=headers)
     return response.status_code
+

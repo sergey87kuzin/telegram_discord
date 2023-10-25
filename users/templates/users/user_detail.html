@@ -19,7 +19,7 @@ data-user-id="{{ user.id }}">
                             <a href="{% url 'auth:logout' %}" class="profile__logout">{% trans 'Выход' %}</a>
                         </div>
                         <div class="col-12">
-                            <div class="profile__name">{% trans "Здравствуйте" %}, {{ request.user.username }}!</div>
+                            <div class="profile__name">Здравствуйте, {{ request.user.username }}!</div>
                         </div>
                     </div>
                 </div>
@@ -45,27 +45,27 @@ data-user-id="{{ user.id }}">
                             <div class="row  no-gutters">
                                 <div class="col-12  col-md-10  col-lg-9  col-xl-7">
                                     <div class="custom_form-group">
-                                        <input class="custom_input black_input" type="text" name="name" id="name" value="{{ user.date_of_payment }}" data-val="{{ user.date_of_payment }}" autocomplete="name" readonly>
+                                        <input class="black_input" type="text" name="name" id="name" value="{{ user.date_of_payment }}" data-val="{{ user.date_of_payment }}" autocomplete="name" readonly>
                                         <label class="custom_label" for="name">Дата последней оплаты</label>
                                         <span class="error"></span>
                                     </div>
                                     <div class="custom_form-group">
-                                        <input class="custom_input black_input" type="text" name="surname" id="surname" value="{{ user.date_payment_expired }}" data-val="{{ user.date_payment_expired }}" autocomplete="surname" readonly>
+                                        <input class="black_input" type="text" name="surname" id="surname" value="{{ user.date_payment_expired }}" data-val="{{ user.date_payment_expired }}" autocomplete="surname" readonly>
                                         <label class="custom_label" for="surname">Дата окончания оплаченного периода</label>
                                         <span class="error"></span>
                                     </div>
                                     <div class="custom_form-group">
-                                        <input class="custom_input black_input" type="text" name="name" id="name" value="{{ user.first_name }}" data-val="{{ user.first_name }}" autocomplete="name">
+                                        <input class="black_input" type="text" name="name" id="name" value="{{ user.first_name }}" data-val="{{ user.first_name }}" autocomplete="name">
                                         <label class="custom_label" for="name">Имя</label>
                                         <span class="error"></span>
                                     </div>
                                     <div class="custom_form-group">
-                                        <input class="custom_input black_input" type="text" name="surname" id="surname" value="{{ user.last_name }}" data-val="{{ user.last_name }}" autocomplete="surname">
+                                        <input class="black_input" type="text" name="surname" id="surname" value="{{ user.last_name }}" data-val="{{ user.last_name }}" autocomplete="surname">
                                         <label class="custom_label" for="surname">Фамилия</label>
                                         <span class="error"></span>
                                     </div>
                                     <div class="custom_form-group">
-                                        <input class="custom_input black_input" type="email" name="email" id="email" data-val="{{ user.email }}" value="{{ user.email }}" autocomplete="email">
+                                        <input class="black_input" type="email" name="email" id="email" data-val="{{ user.email }}" value="{{ user.email }}" autocomplete="email">
                                         <label class="custom_label" for="sbscrModal">Ваш e-mail</label>
                                         <span class="error"></span>
                                     </div>

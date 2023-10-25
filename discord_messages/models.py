@@ -1,10 +1,19 @@
 from django.db import models
 
+from discord_messages.choices import DiscordTypes
+
 
 class Message(models.Model):
     text = models.CharField("Текст сообщения", max_length=1024)
+    eng_text = models.CharField("Текст сообщения английский", max_length=1024, blank=True, null=True)
     user_telegram = models.CharField("Телега пользователя", max_length=128)
     telegram_id = models.CharField("id telegram пользователя", max_length=64)
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="messages",
+        verbose_name="Пользователь",
+    )
     discord_message_id = models.CharField(
         "Номер сообщения в discord", max_length=64, blank=True, null=True
     )
@@ -12,7 +21,11 @@ class Message(models.Model):
         "Список url вложенных файлов", max_length=2048, blank=True, null=True
     )
     buttons = models.JSONField("Коды кнопок ответа", default=dict)
+    answer_type = models.CharField(
+        "Тип ответа в discord", choices=DiscordTypes.CHOICES, default="start_gen", max_length=64
+    )
     answer_sent = models.BooleanField("Ответ отправлен", default=False)
+    seed = models.CharField("Сид картинки", max_length=128, blank=True, null=True)
 
     class Meta:
         verbose_name = "Сообщение"
