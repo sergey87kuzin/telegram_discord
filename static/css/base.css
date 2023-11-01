@@ -58,6 +58,22 @@ body
         border-radius: 60px;
         font-size: 20px;
     }
+    input::placeholder {
+      opacity: 1;
+    }
+
+    input:focus::placeholder {
+      opacity: 0;
+    }
+
+    label:focus + input::placeholder {
+      opacity: 0;
+    }
+
+    .header_span {
+        color: #ffffff;
+    }
+
     .rendered{left: 0; position: relative;}
     .green_button_pos { top: 50px;left: calc(50% - 600px + 314px);}
     @media screen and (max-width: 1199px)

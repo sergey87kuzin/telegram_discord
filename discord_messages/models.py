@@ -26,6 +26,8 @@ class Message(models.Model):
     )
     answer_sent = models.BooleanField("Ответ отправлен", default=False)
     seed = models.CharField("Сид картинки", max_length=128, blank=True, null=True)
+    job = models.CharField("JOB сообщения", max_length=128, blank=True, null=True)
+    seed_send = models.BooleanField("Сид получен и отправлен", default=False)
 
     class Meta:
         verbose_name = "Сообщение"

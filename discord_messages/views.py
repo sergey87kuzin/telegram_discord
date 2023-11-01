@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.conf import settings
+from django.utils.timezone import now
 from django.views import generic
 from deep_translator import GoogleTranslator
 from rest_framework.generics import GenericAPIView
@@ -50,6 +51,12 @@ class GetTelegramMessage(APIView):
                 user = User.objects.filter(username__iexact=chat_username).first()
             else:
                 return HTTPStatus.OK
+        if not user.date_of_payment or user.date_payment_expired < now():
+            bot.send_message(
+                chat_id=chat_id,
+                text="Пожалуйста, оплатите доступ к боту",
+            )
+            return Response(HTTPStatus.OK)
         Message.objects.create(
             text=message_text,
             eng_text=eng_text,
@@ -57,7 +64,6 @@ class GetTelegramMessage(APIView):
             telegram_id=chat_id,
             user=user
         )
-        user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
         account = DiscordAccount.objects.filter(users=user).first()
         connection = DiscordConnection.objects.filter(account=account).first()
         if not connection:
@@ -71,6 +77,7 @@ class GetTelegramMessage(APIView):
                     chat_id=chat_id,
                     text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
                 )
+                return Response(HTTPStatus.OK)
         bot.send_message(chat_id=chat_id, text="Творим волшебство")
         return Response(HTTPStatus.OK)
 

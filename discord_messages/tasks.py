@@ -1,7 +1,8 @@
-import urllib
 
 import requests
 from celery import shared_task
+from django.conf import settings
+from django.db.models import Q
 from telebot import types
 
 from discord_messages.choices import DiscordTypes
@@ -37,19 +38,19 @@ def get_discord_messages():
                 content = discord_message.get("content")
                 if "**" in content:
                     request_text = content.split("**")[1]
-                    if telegram_message := Message.objects.filter(text=request_text).first():
+                    if telegram_message := Message.objects.filter(eng_text__iexact=request_text).last():
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
                             request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
-                            telegram_message = Message.objects.filter(text=request_text).first()
+                            telegram_message = Message.objects.filter(eng_text__iexact=request_text).last()
                             if not telegram_message:
                                 continue
                             telegram_message.answer_type = DiscordTypes.UPSCALED
                         elif "**seed**" in content:
                             message_data = content.split("**")
-                            message_text = message_data[1]
+                            job = message_data[4][2:-1]
                             seed = message_data[-1]
-                            telegram_message = Message.objects.filter(text=message_text).first()
+                            telegram_message = Message.objects.filter(job=job).last()
                             if not telegram_message:
                                 continue
                             telegram_message.seed = seed
@@ -64,6 +65,13 @@ def get_discord_messages():
                                         "label": label,
                                         "emoji": component.get("emoji")
                                     }
+                        no_job = True
+                        for value in telegram_message.buttons.values():
+                            if no_job:
+                                if custom_id := value.get("custom_id"):
+                                    for part in custom_id.split("::"):
+                                        if "-" in part:
+                                            telegram_message.job = part
                         for attachment in discord_message.get("attachments"):
                             attachments_urls.append(attachment.get("proxy_url").split("?")[0])
                         telegram_message.images = ", ".join(attachments_urls)
@@ -74,11 +82,15 @@ def get_discord_messages():
 
 @shared_task
 def send_messages_to_telegram():
-    not_answered_messages = Message.objects.filter(answer_sent=False, images__isnull=False)
+    not_answered_messages = Message.objects.filter(images__isnull=False).filter(
+        Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
+    )
     for message in not_answered_messages:
         for url in message.images.split(", "):
-            photo = requests.get(url)
-            bot.send_photo(chat_id=message.telegram_id, photo=photo.content)
+            if url:
+                url = settings.TESTING_URL if settings.DEBUG else url
+                photo = requests.get(url)
+                bot.send_photo(chat_id=message.telegram_id, photo=photo.content)
         buttons_markup = types.InlineKeyboardMarkup()
         buttons_markup.row_width = 4
         buttons = []

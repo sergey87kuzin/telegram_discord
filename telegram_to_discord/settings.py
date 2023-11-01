@@ -26,7 +26,7 @@ environ.Env.read_env(str(os.path.join(BASE_DIR, ".env")))
 SECRET_KEY = 'django-insecure-yyi937$llxxl3!otuyaq1d!_n05#rtoghd1kg5n28%s24ga#&o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.str("DEBUG")
 
 SITE_DOMAIN = env.str("SITE_DOMAIN")
 
@@ -184,3 +184,5 @@ LOGINAS_REDIRECT_URL = '/users'
 PAYMENT_URL = env.str("PAYMENT_URL")
 PRODAMUS_SYSTEM_CODE = env.str("PRODAMUS_SYSTEM_CODE")
 PRODAMUS_SECRET_KEY = env.str("PRODAMUS_SECRET_KEY")
+
+TESTING_URL = env.str("TESTING_URL")

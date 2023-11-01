@@ -13,7 +13,7 @@
                             <span data-tab="login" class="modal-login__title  active">Вход</span>
                         </div>
                         <div class="modal-login__link-box">
-                            <a href="login" class="modal-login__link  modal-login__tab-link">{% trans "Вход" %}</a>
+                            <a href="login" class="modal-login__link  modal-login__tab-link">Вход</a>
                         </div>
                     </div>
                     <div class="modal-login__col-box">
@@ -25,14 +25,14 @@
                             </div>
                         </div>
                         <div class="modal-login__col  modal-login__col_recover" id="passwordRestore" data-restore-pasw="{% url 'api-users:profile:account-restore' %}">
-                            <p class="modal-login__info">{% trans "Укажите ник telegram, и мы отправим вам ссылку на восстановление пароля" %}</p>
+                            <p class="modal-login__info">Укажите ник telegram, и мы отправим вам ссылку на восстановление пароля</p>
                                 <div class="custom_form-group last-group">
-                                    <input name="telegram" id="id-recover-password-telegram" data-val="">
-                                    <label class="custom_label" for="id-recover-password-telegram">"Ваш telegram"</label>
+                                    <input name="telegram" id="id-recover-password-telegram" data-val="" placeholder="Ваш telegram">
+{#                                    <label class="custom_label" for="id-recover-password-telegram">Ваш telegram</label>#}
                                     <span class="error" id="id-error-recover-password"></span>
                                 </div>
                                 <button type="submit" name="login_fp" class="modal-login__btn  btn" id="id-recover-password-button"
-                                >{% trans "Восстановить" %}
+                                >Восстановить
                                 </button>
                         </div>
                     </div>

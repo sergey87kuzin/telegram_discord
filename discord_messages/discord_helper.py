@@ -2,8 +2,6 @@ import json
 from http import HTTPStatus
 
 import requests
-from django.db.models import F
-
 from discord_messages.models import DiscordAccount, DiscordConnection, Message
 
 
@@ -58,7 +56,7 @@ def send_message_to_discord(text, account: DiscordAccount, connection: DiscordCo
         "channel_id": account.channel_id,
         "session_id": account.session_id,
         "data": {
-            "version": "1118961510123847772",
+            "version": "1166847114203123795",
             "id": "938956540159881230",
             "name": "imagine",
             "type": 1,
@@ -70,7 +68,7 @@ def send_message_to_discord(text, account: DiscordAccount, connection: DiscordCo
             "application_command": {
                 "id": "938956540159881230",
                 "application_id": "936929561302675456",
-                "version": "1118961510123847772",
+                "version": "1166847114203123795",
                 "default_member_permissions": None,
                 "type": 1,
                 "nsfw": False,
@@ -159,7 +157,7 @@ def send_vary_soft_message(
         connection: DiscordConnection,
 ):
     """
-    Запрос на сильное изменение картинки
+    Запрос на слабое изменение картинки
     :param account:
     :param message:
     :param button_key:
