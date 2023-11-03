@@ -38,6 +38,10 @@ def get_discord_messages():
                 content = discord_message.get("content")
                 if "**" in content:
                     request_text = content.split("**")[1]
+                    if "<https://s.mj.run/" in request_text:
+                        request_text = request_text.split("> ", 1)[-1]
+                    if "--seed" in request_text:
+                        request_text = request_text.split("--seed")[0]
                     if telegram_message := Message.objects.filter(eng_text__iexact=request_text).last():
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
@@ -114,4 +118,6 @@ def send_messages_to_telegram():
 
         bot.send_message(message.telegram_id, text="Давай сделаем что-то с этим", reply_markup=buttons_markup)
         message.answer_sent = True
+        if message.seed:
+            message.seed_send = True
         message.save()

@@ -148,7 +148,15 @@ def send_vary_strong_message(
     :return: status_code
     """
     picture = message.images.split(",")[0]
-    return send_message_to_discord(text=picture, account=account, connection=connection)
+    text = f"{picture} {message.text}"
+    Message.objects.create(
+        text=message.text,
+        eng_text=message.text,
+        user_id=message.user_id,
+        user_telegram=message.user_telegram,
+        telegram_id=message.telegram_id,
+    )
+    return send_message_to_discord(text=text, account=account, connection=connection)
 
 
 def send_vary_soft_message(
@@ -165,7 +173,14 @@ def send_vary_soft_message(
     :return: status_code
     """
     picture = message.images.split(",")[0]
-    text = f"{picture} --seed{message.seed}"
+    text = f"{picture} {message.text} --seed {message.seed}"
+    Message.objects.create(
+        text=message.text,
+        eng_text=message.text,
+        user_id=message.user_id,
+        user_telegram=message.user_telegram,
+        telegram_id=message.telegram_id,
+    )
     return send_message_to_discord(text=text, account=account, connection=connection)
 
 

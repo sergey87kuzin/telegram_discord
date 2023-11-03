@@ -49,6 +49,8 @@ class GetTelegramMessage(APIView):
                 chat_id = button_data.get("from", {}).get("id")
                 eng_text = message_text
                 user = User.objects.filter(username__iexact=chat_username).first()
+                first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
+                message_text = first_message.eng_text
             else:
                 return HTTPStatus.OK
         if not user.date_of_payment or user.date_payment_expired < now():
