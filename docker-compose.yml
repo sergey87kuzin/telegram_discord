@@ -37,5 +37,6 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static_value:/var/html/static/
       - media_value:/var/html/media/
+      - certificate_value:/.well-known/acme-challenge/
     depends_on:
       - web
