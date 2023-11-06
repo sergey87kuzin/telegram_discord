@@ -20,7 +20,7 @@ from .celerybeat import *  # noqa
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(str(os.path.join(BASE_DIR, "../../api_yamdb/.env")))
+environ.Env.read_env(str(os.path.join(BASE_DIR, "./.env")))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-yyi937$llxxl3!otuyaq1d!_n05#rtoghd1kg5n28%s24ga#&o'

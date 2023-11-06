@@ -44,7 +44,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ../api_yamdb/.env
+      - ./.env
 
   nginx:
     image: nginx:1.19.3
