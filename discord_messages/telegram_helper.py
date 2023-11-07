@@ -1,12 +1,14 @@
 import random
+import logging
 import telebot
 from django.conf import settings
 from telebot import types
 
-from discord_messages.models import ConfirmMessage, Message
+from discord_messages.models import ConfirmMessage
 from users.models import User
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
+logger = logging.getLogger(__name__)
 
 
 def send_confirm_code(user: User):
@@ -34,23 +36,27 @@ def handle_start_message(message):
     username = message.get("from", {}).get("username")
     chat_id = message.get("chat").get("id")
     if username:
-        user, created = User.objects.get_or_create(
-            username__iexact=username,
-            chat_id=chat_id,
-            defaults={
-                "username": username,
-                "chat_id": chat_id,
-            }
-        )
-        if created:
-            user.set_password(str(random.randint(0, 99999999)).zfill(8))
-            user.save()
+        try:
+            user, created = User.objects.get_or_create(
+                username__iexact=username,
+                chat_id=chat_id,
+                defaults={
+                    "username": username,
+                    "chat_id": chat_id,
+                }
+            )
+            if created:
+                user.set_password(str(random.randint(0, 99999999)).zfill(8))
+                user.save()
+        except Exception as e:
+            logger.warning(f"Ошибка регистрации пользователя, {username}, {str(e)}")
+            bot.send_message(chat_id, "Пожалуйста, попробуйте еще раз или напишите админу")
+            return
         bot.send_message(
             chat_id,
             (f"Привет ✌️ Для продолжения регистрации перейдите по ссылке: {settings.SITE_DOMAIN}"
              f"/auth/registration/{user.id}/")
         )
-    bot.send_message(chat_id, "Пожалуйста, попробуйте еще раз")
 
 
 def add_four_pics_buttons(buttons: list, eng_text: str):

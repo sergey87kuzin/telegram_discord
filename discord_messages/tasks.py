@@ -1,4 +1,4 @@
-
+import logging
 import requests
 from celery import shared_task
 from django.conf import settings
@@ -11,11 +11,14 @@ from discord_messages.models import DiscordAccount, Message, DiscordConnection
 from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons
 
 
+logger = logging.getLogger(__name__)
+
+
 @shared_task
 def get_discord_messages():
     """
     Получаем непрочитанные сообщения, определяем их тип(первоначальная генерация 4 картинок
-    или увеличение одной(от этого зависят кнопки под картинкой)
+    или увеличение одной(от этого зависят кнопки под картинкой))
     :return:
     """
     for account in DiscordAccount.objects.all().prefetch_related("connections"):
@@ -48,6 +51,7 @@ def get_discord_messages():
                             request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
                             telegram_message = Message.objects.filter(eng_text__iexact=request_text).last()
                             if not telegram_message:
+                                logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
                                 continue
                             telegram_message.answer_type = DiscordTypes.UPSCALED
                         elif "**seed**" in content:
@@ -56,6 +60,7 @@ def get_discord_messages():
                             seed = message_data[-1]
                             telegram_message = Message.objects.filter(job=job).last()
                             if not telegram_message:
+                                logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
                                 continue
                             telegram_message.seed = seed
                             telegram_message.answer_type = DiscordTypes.GOT_SEED
@@ -80,12 +85,22 @@ def get_discord_messages():
                             attachments_urls.append(attachment.get("proxy_url").split("?")[0])
                         telegram_message.images = ", ".join(attachments_urls)
                         telegram_message.save()
+                    else:
+                        logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
             account.last_message_id = data[0].get("id")
             account.save()
+        else:
+            logger.warning(
+                f"Не удалось получить сообщения от аккаунта {account.login}, {account.last_message_id}"
+            )
 
 
 @shared_task
 def send_messages_to_telegram():
+    """
+    Отправка всех ранее не отправленных сообщений в телеграм
+    :return:
+    """
     not_answered_messages = Message.objects.filter(images__isnull=False).filter(
         Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
     )

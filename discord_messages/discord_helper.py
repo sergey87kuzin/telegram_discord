@@ -1,8 +1,12 @@
 import json
+import logging
 from http import HTTPStatus
 
 import requests
 from discord_messages.models import DiscordAccount, DiscordConnection, Message
+
+
+logger = logging.getLogger(__name__)
 
 
 class DiscordHelper:
@@ -38,6 +42,7 @@ class DiscordHelper:
                 }
             )
             return connection
+        logger.warning(f"Не могу подключиться: {account.login}, {response.status_code}")
         return
 
 
@@ -131,6 +136,11 @@ def send_u_line_button_command_to_discord(
         "Accept-Encoding": "gzip, deflate, br"
     }
     response = requests.post(discord_url, json=data, headers=headers)
+    if response.status_code != HTTPStatus.NO_CONTENT:
+        logger.warning(
+            f"Неправильно отправлено сообщение в discord,"
+            f" {response.status_code}, {response.text}, {account.login}, {message.id}"
+        )
     return response.status_code
 
 
@@ -193,5 +203,7 @@ def get_message_seed(account, connection, message):
         "Accept-Encoding": "gzip, deflate, br"
     }
     response = requests.put(seed_url, headers=headers)
+    if response.status_code != HTTPStatus.OK:
+        logger.warning(f"Не удалось получить сид картинки, {account.login}, {message.id}")
     return response.status_code
 
