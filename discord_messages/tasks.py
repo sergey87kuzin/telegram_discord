@@ -21,7 +21,13 @@ def get_discord_messages():
     или увеличение одной(от этого зависят кнопки под картинкой))
     :return:
     """
-    for account in DiscordAccount.objects.all().prefetch_related("connections"):
+    not_answered_messages = list(Message.objects.filter(
+        Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
+    ).values_list("id", flat=True))
+    not_answered_accounts = DiscordAccount.objects\
+        .filter(users__messages__id__in=not_answered_messages)\
+        .prefetch_related("connections")
+    for account in not_answered_accounts:
         get_messages_url = f"https://discord.com/api/v9/channels/{account.channel_id}/messages"
         if account.last_message_id:
             get_messages_url += f"?after={account.last_message_id}&limit=100"
@@ -64,6 +70,7 @@ def get_discord_messages():
                                 continue
                             telegram_message.seed = seed
                             telegram_message.answer_type = DiscordTypes.GOT_SEED
+                            telegram_message.answer_sent = True
                         telegram_message.discord_message_id = discord_message.get("id")
                         for line in discord_message.get("components"):
                             for component in line.get("components"):
@@ -101,6 +108,7 @@ def send_messages_to_telegram():
     Отправка всех ранее не отправленных сообщений в телеграм
     :return:
     """
+    return
     not_answered_messages = Message.objects.filter(images__isnull=False).filter(
         Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
     )
