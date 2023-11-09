@@ -9,5 +9,5 @@ class Command(BaseCommand):
         print("Killing celery worker and beat...")
         socket.getaddrinfo(socket.gethostname(), None)
 
-        os.popen("/Users/sergeykuzin/dev/telegram_to_discord/kill_celery.sh")
+        os.popen("~/telegram_discord/kill_celery.sh")
         print("Done")

@@ -108,7 +108,6 @@ def send_messages_to_telegram():
     Отправка всех ранее не отправленных сообщений в телеграм
     :return:
     """
-    return
     not_answered_messages = Message.objects.filter(images__isnull=False).filter(
         Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
     )
