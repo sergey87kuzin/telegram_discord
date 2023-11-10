@@ -130,6 +130,14 @@ def send_messages_to_telegram():
                         callback_data=callback_data
                     )
                     buttons.append(item)
+                elif button_key.startswith("Zoom Out"):
+                    button_prefix = "button_zoom"
+                    callback_data = f"{button_prefix}&&{button_key}&&{message.id}"
+                    item = types.InlineKeyboardButton(
+                        button_key,
+                        callback_data=callback_data
+                    )
+                    buttons.append(item)
         if message.answer_type == DiscordTypes.START_GEN:
             buttons = add_four_pics_buttons(buttons, message.eng_text or message.text)
         elif message.answer_type == DiscordTypes.UPSCALED:

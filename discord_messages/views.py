@@ -29,6 +29,7 @@ class IndexView(generic.TemplateView):
 class GetTelegramMessage(APIView):
 
     def post(self, request):
+        logger.warning("get message")
         message = request.data.get("message")
         translator = GoogleTranslator(source='auto', target='en')
 
@@ -101,7 +102,7 @@ class GetTelegramMessage(APIView):
         return Response(HTTPStatus.OK)
 
     def choose_action(self, account, connection, message_text):
-        if message_text.startswith("button_u&&"):
+        if message_text.startswith("button_u&&") or message_text.startswith("button_zoom&&"):
             button_data = list(message_text.split("&&"))
             message = Message.objects.filter(id=button_data[2]).first()
             if not message:
