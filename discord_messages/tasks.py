@@ -1,4 +1,6 @@
 import logging
+import time
+
 import requests
 from celery import shared_task
 from django.conf import settings
@@ -21,6 +23,7 @@ def get_discord_messages():
     или увеличение одной(от этого зависят кнопки под картинкой))
     :return:
     """
+    time.sleep(1)
     not_answered_messages = list(Message.objects.filter(
         Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
     ).values_list("id", flat=True))
@@ -114,7 +117,7 @@ def send_messages_to_telegram():
     for message in not_answered_messages:
         for url in message.images.split(", "):
             if url:
-                url = settings.TESTING_URL if settings.DEBUG else url
+                # url = settings.TESTING_URL if settings.DEBUG else url
                 photo = requests.get(url)
                 bot.send_photo(chat_id=message.telegram_id, photo=photo.content)
         buttons_markup = types.InlineKeyboardMarkup()
