@@ -54,7 +54,9 @@ def get_discord_messages():
                         request_text = request_text.split("> ", 1)[-1]
                     if "--seed" in request_text:
                         request_text = request_text.split("--seed")[0]
-                    if telegram_message := Message.objects.filter(eng_text__iexact=request_text).last():
+                    if telegram_message := Message.objects.filter(
+                            Q(eng_text__iexact=request_text) | Q(text__iexact=request_text)
+                    ).last():
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
                             request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
