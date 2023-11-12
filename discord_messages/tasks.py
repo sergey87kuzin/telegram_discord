@@ -60,10 +60,10 @@ def get_discord_messages():
                         request_text = request_text.split("--seed")[0]
                     if telegram_message := Message.objects.filter(
                             Q(eng_text__iexact=request_text) | Q(text__iexact=request_text)
-                    ).last():
+                    ).filter(answer_type=DiscordTypes.START_GEN).last():
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
-                            request_text = f"button_u&&U{button_number}&&"
+                            request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
                             telegram_message = Message.objects.filter(eng_text__istartswith=request_text).last()
                             if not telegram_message:
                                 logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")

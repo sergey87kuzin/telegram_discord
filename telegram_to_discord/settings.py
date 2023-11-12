@@ -194,7 +194,7 @@ task_acks_late = True
 worker_prefetch_multiplier = 1
 CELERY_TASK_DEFAULT_QUEUE = CELERY_DEFAULT_QUEUE
 CELERY_TASK_ROUTES = {
-    "discord_messages.tasks.*": {"queue": "default"}
+    "discord_messages.tasks.*": {"queue": "telegram"}
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
