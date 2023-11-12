@@ -69,14 +69,15 @@ class GetTelegramMessage(APIView):
                     bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
                     return Response(HTTPStatus.BAD_REQUEST)
                 first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
-                message_text = first_message.text \
-                    if message_text.startswith("button_zoom&&")\
-                    or message_text.startswith("button_change&&") else first_message.eng_text
+                message_type = DiscordTypes.UPSCALED
+                message_text = first_message.eng_text
                 if message_text.startswith("button_zoom&&"):
+                    message_text = first_message.text
                     eng_text = first_message.text
-                message_type = DiscordTypes.START_GEN\
-                    if message_text.startswith("button_zoom&&")\
-                    or message_text.startswith("button_change&&") else DiscordTypes.UPSCALED
+                    message_type = DiscordTypes.START_GEN
+                elif message_text.startswith("button_change&&"):
+                    message_text = first_message.text
+                    message_type = DiscordTypes.START_GEN
             else:
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():
