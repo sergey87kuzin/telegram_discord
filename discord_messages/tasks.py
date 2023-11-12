@@ -44,8 +44,12 @@ def get_discord_messages():
             headers = {"Authorization": connection.token}
             response = requests.get(get_messages_url, headers=headers)
         if response.ok and response.json():
+            all_messages = True
             data = response.json()
             for discord_message in data:
+                if not discord_message.get("components"):
+                    all_messages = False
+                    continue
                 attachments_urls = []
                 content = discord_message.get("content")
                 if "**" in content:
@@ -99,12 +103,14 @@ def get_discord_messages():
                         telegram_message.save()
                     else:
                         logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
-            account.last_message_id = data[0].get("id")
-            account.save()
+            if all_messages:
+                account.last_message_id = data[0].get("id")
+                account.save()
         else:
             logger.warning(
                 f"Не удалось получить сообщения от аккаунта {account.login}, {account.last_message_id}"
             )
+    send_messages_to_telegram()
 
 
 @shared_task

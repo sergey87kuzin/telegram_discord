@@ -14,6 +14,7 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("api/users/", include("users.api_urls")),
     path("orders/", include("orders.urls")),
+    path("courses/", include("courses.urls")),
 ]
 
 

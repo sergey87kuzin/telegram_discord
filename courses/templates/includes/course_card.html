@@ -1,0 +1,7 @@
+<div class="card" style="width: 18rem;">
+  <img src="{{ course.cover }}" class="card-img-top" alt="{{ course.name }}">
+  <div class="card-body">
+    <h5 class="card-title">{{ course.name }}</h5>
+    <a href="{% url 'courses:single_course' course.id %}" class="btn btn-primary">Перейти к курсу</a>
+  </div>
+</div>

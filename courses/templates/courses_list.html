@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for course in courses %}
+        {% include "includes/course_card.html" %}
+    {% endfor %}
+{% endblock %}

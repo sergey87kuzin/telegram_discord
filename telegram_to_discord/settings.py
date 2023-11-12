@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "loginas",
     "orders",
     "bot_config",
-    "solo"
+    "courses",
+    "solo",
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [

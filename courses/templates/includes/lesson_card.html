@@ -1,0 +1,10 @@
+<div class="card">
+  <div class="card-header">
+    {{ lesson.name }}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ lesson.video_url }}</h5>
+    <p class="card-text">{{ lesson.description }}</p>
+    <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Пройти урок</a>
+  </div>
+</div>
