@@ -80,8 +80,6 @@ def get_discord_messages():
                             telegram_message.seed = seed
                             telegram_message.answer_type = DiscordTypes.GOT_SEED
                             telegram_message.answer_sent = True
-                        elif "-Zoom out by" in content:
-                            pass
                         telegram_message.discord_message_id = discord_message.get("id")
                         for line in discord_message.get("components"):
                             for component in line.get("components"):
