@@ -101,6 +101,7 @@ def get_discord_messages():
                             attachments_urls.append(attachment.get("proxy_url").split("?")[0])
                         telegram_message.images = ", ".join(attachments_urls)
                         telegram_message.save()
+                        telegram_message.refresh_from_db()
                     else:
                         logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
             if all_messages:
