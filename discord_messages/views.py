@@ -33,6 +33,8 @@ class GetTelegramMessage(APIView):
         message = request.data.get("message")
         translator = GoogleTranslator(source='auto', target='en')
 
+        buttons = {}
+
         if message:
             message_text = message.get("text")
             if message_text == "/start":
@@ -70,6 +72,10 @@ class GetTelegramMessage(APIView):
                 message_text = first_message.text \
                     if message_text.startswith("button_zoom&&")\
                     or message_text.startswith("button_change&&") else first_message.eng_text
+                if message_text.startswith("button_change&&"):
+                    buttons = first_message.buttons
+                if message_text.startswith("button_zoom&&"):
+                    eng_text = first_message.text
             else:
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():
@@ -78,13 +84,16 @@ class GetTelegramMessage(APIView):
                 text="Пожалуйста, оплатите доступ к боту",
             )
             return Response(HTTPStatus.BAD_REQUEST)
-        Message.objects.create(
+        message = Message.objects.create(
             text=message_text,
             eng_text=eng_text,
             user_telegram=chat_username,
             telegram_id=chat_id,
             user=user
         )
+        if buttons:
+            message.buttons = buttons
+            message.save()
         account = DiscordAccount.objects.filter(users=user).first()
         connection = DiscordConnection.objects.filter(account=account).first()
         if not connection:
