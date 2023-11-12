@@ -190,8 +190,8 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "Europe/Moscow"
 CELERY_DEFAULT_QUEUE = "default"
-CELERY_ACKS_LATE = True
-CELERYD_PREFETCH_MULTIPLIER = 1
+task_acks_late = True
+worker_prefetch_multiplier = 1
 CELERY_TASK_DEFAULT_QUEUE = CELERY_DEFAULT_QUEUE
 CELERY_TASK_ROUTES = {
     "discord_messages.tasks.*": {"queue": "default"}
