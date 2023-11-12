@@ -108,6 +108,9 @@ class GetTelegramMessage(APIView):
             message = Message.objects.filter(id=button_data[2]).first()
             if not message:
                 logger.warning(f"Не нашлось сообщение, {message_text}")
+            if message_text.startswith("button_zoom&&"):
+                message.eng_text = message.text
+                message.save()
             status = send_u_line_button_command_to_discord(
                 account=account,
                 connection=connection,
