@@ -63,8 +63,8 @@ def get_discord_messages():
                     ).last():
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
-                            request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
-                            telegram_message = Message.objects.filter(eng_text__iexact=request_text).last()
+                            request_text = f"button_u&&U{button_number}&&"
+                            telegram_message = Message.objects.filter(eng_text__istartswith=request_text).last()
                             if not telegram_message:
                                 logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
                                 continue
