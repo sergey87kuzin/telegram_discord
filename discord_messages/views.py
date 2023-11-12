@@ -8,6 +8,7 @@ from deep_translator import GoogleTranslator
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import send_message_to_discord, DiscordHelper, \
     send_u_line_button_command_to_discord, get_message_seed, send_vary_strong_message, send_vary_soft_message
 from discord_messages.models import Message, DiscordConnection, DiscordAccount
@@ -33,8 +34,6 @@ class GetTelegramMessage(APIView):
         message = request.data.get("message")
         translator = GoogleTranslator(source='auto', target='en')
 
-        buttons = {}
-
         if message:
             message_text = message.get("text")
             if message_text == "/start":
@@ -47,6 +46,7 @@ class GetTelegramMessage(APIView):
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
                 return Response(HTTPStatus.BAD_REQUEST)
             eng_text = translator.translate(message_text)
+            message_type = DiscordTypes.START_GEN
             user = User.objects.filter(username__iexact=chat_username).first()
             if not user:
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
@@ -72,10 +72,9 @@ class GetTelegramMessage(APIView):
                 message_text = first_message.text \
                     if message_text.startswith("button_zoom&&")\
                     or message_text.startswith("button_change&&") else first_message.eng_text
-                if message_text.startswith("button_change&&"):
-                    buttons = first_message.buttons
                 if message_text.startswith("button_zoom&&"):
                     eng_text = first_message.text
+                message_type = DiscordTypes.UPSCALED
             else:
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():
@@ -84,16 +83,14 @@ class GetTelegramMessage(APIView):
                 text="Пожалуйста, оплатите доступ к боту",
             )
             return Response(HTTPStatus.BAD_REQUEST)
-        message = Message.objects.create(
+        Message.objects.create(
             text=message_text,
             eng_text=eng_text,
             user_telegram=chat_username,
             telegram_id=chat_id,
-            user=user
+            user=user,
+            answer_type=message_type
         )
-        if buttons:
-            message.buttons = buttons
-            message.save()
         account = DiscordAccount.objects.filter(users=user).first()
         connection = DiscordConnection.objects.filter(account=account).first()
         if not connection:
