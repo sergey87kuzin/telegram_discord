@@ -70,7 +70,6 @@ class GetTelegramMessage(APIView):
                     return Response(HTTPStatus.BAD_REQUEST)
                 first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
                 message_type = DiscordTypes.UPSCALED
-                message_text = first_message.eng_text
                 if message_text.startswith("button_zoom&&"):
                     message_text = first_message.text
                     eng_text = first_message.text
@@ -78,6 +77,8 @@ class GetTelegramMessage(APIView):
                 elif message_text.startswith("button_change&&"):
                     message_text = first_message.text
                     message_type = DiscordTypes.START_GEN
+                else:
+                    message_text = first_message.eng_text
             else:
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():

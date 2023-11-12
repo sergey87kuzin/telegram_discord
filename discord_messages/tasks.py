@@ -29,7 +29,7 @@ def get_discord_messages():
     ).values_list("id", flat=True))
     not_answered_accounts = DiscordAccount.objects\
         .filter(users__messages__id__in=not_answered_messages)\
-        .prefetch_related("connections")
+        .prefetch_related("connections").order_by("id").distinct()
     for account in not_answered_accounts:
         get_messages_url = f"https://discord.com/api/v9/channels/{account.channel_id}/messages"
         if account.last_message_id:
@@ -93,10 +93,13 @@ def get_discord_messages():
                         no_job = True
                         for value in telegram_message.buttons.values():
                             if no_job:
-                                if custom_id := value.get("custom_id"):
-                                    for part in custom_id.split("::"):
-                                        if "-" in part:
-                                            telegram_message.job = part
+                                try:
+                                    if custom_id := value.get("custom_id"):
+                                        for part in custom_id.split("::"):
+                                            if "-" in part:
+                                                telegram_message.job = part
+                                except Exception:
+                                    continue
                         for attachment in discord_message.get("attachments"):
                             attachments_urls.append(attachment.get("proxy_url").split("?")[0])
                         telegram_message.images = ", ".join(attachments_urls)
