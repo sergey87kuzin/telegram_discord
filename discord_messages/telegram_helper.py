@@ -59,7 +59,7 @@ def handle_start_message(message):
         )
 
 
-def add_four_pics_buttons(buttons: list, eng_text: str):
+def add_four_pics_buttons(buttons: list, message_id: int):
     """
     Добавляем кнопки сообщению с 4 картинками
     :param buttons:
@@ -68,7 +68,7 @@ def add_four_pics_buttons(buttons: list, eng_text: str):
     """
     refresh_item = types.InlineKeyboardButton(
         "Сгенерировать снова",
-        callback_data=eng_text
+        callback_data=f"button_send_again&&{message_id}"
     )
     buttons.append(refresh_item)
     return buttons

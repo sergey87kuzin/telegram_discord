@@ -77,6 +77,10 @@ class GetTelegramMessage(APIView):
                 elif message_text.startswith("button_change&&"):
                     message_text = first_message.text
                     message_type = DiscordTypes.START_GEN
+                elif message_text.startswith("button_send_again&&"):
+                    message_text = first_message.eng_text
+                    eng_text = first_message.eng_text
+                    message_type = DiscordTypes.START_GEN
                 else:
                     message_text = first_message.eng_text
             else:

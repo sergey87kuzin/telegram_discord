@@ -154,14 +154,14 @@ def send_messages_to_telegram():
                     )
                     buttons.append(item)
         if message.answer_type == DiscordTypes.START_GEN:
-            buttons = add_four_pics_buttons(buttons, message.eng_text or message.text)
+            buttons = add_four_pics_buttons(buttons, message.id)
         elif message.answer_type == DiscordTypes.UPSCALED:
             buttons = add_upscaled_pic_buttons(message.id, buttons)
         elif message.answer_type == DiscordTypes.GOT_SEED:
             buttons = add_seed_pic_buttons(buttons, message.id)
         buttons_markup.add(*buttons)
 
-        bot.send_message(message.telegram_id, text="Давай сделаем что-то с этим", reply_markup=buttons_markup)
+        bot.send_message(message.telegram_id, text=message.text, reply_markup=buttons_markup)
         message.answer_sent = True
         if message.seed:
             message.seed_send = True
