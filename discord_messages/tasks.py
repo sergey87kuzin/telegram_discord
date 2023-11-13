@@ -47,9 +47,6 @@ def get_discord_messages():
             all_messages = True
             data = response.json()
             for discord_message in data:
-                if not discord_message.get("components"):
-                    all_messages = False
-                    continue
                 attachments_urls = []
                 content = discord_message.get("content")
                 if "**" in content:
@@ -61,6 +58,9 @@ def get_discord_messages():
                     if telegram_message := Message.objects.filter(
                             Q(eng_text__iexact=request_text) | Q(text__iexact=request_text)
                     ).filter(answer_type=DiscordTypes.START_GEN).last():
+                        if not discord_message.get("components"):
+                            all_messages = False
+                            continue
                         if "** - Image #" in content:
                             button_number = content.split("** - Image #")[-1][0]
                             request_text = f"button_u&&U{button_number}&&{telegram_message.id}"
