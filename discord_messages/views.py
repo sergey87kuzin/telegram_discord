@@ -35,7 +35,7 @@ class GetTelegramMessage(APIView):
         translator = GoogleTranslator(source='auto', target='en')
 
         if message:
-            message_text = message.get("text")
+            message_text = message.get("text").replace("—", "--")
             if message_text == "/start":
                 handle_start_message(message)
                 return Response(HTTPStatus.OK)
