@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "courses",
     "solo",
     'sorl.thumbnail',
+    "ckeditor"
 ]
 
 MIDDLEWARE = [

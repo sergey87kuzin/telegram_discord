@@ -10,7 +10,23 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "course",
+        "name",
+        "description",
+        "cover",
+    )
+    fields = (
+        "course",
+        "name",
+        "description",
+        "cover",
+        "is_free",
+        "video_url",
+        "previous_lesson",
+        "order",
+        "is_active"
+    )
 
 
 @admin.register(UserCourses)
