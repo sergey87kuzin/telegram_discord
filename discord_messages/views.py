@@ -35,6 +35,7 @@ class GetTelegramMessage(APIView):
         translator = GoogleTranslator(source='auto', target='en')
 
         if message:
+            answer_text = "Творим волшебство"
             message_text = message.get("text").replace("—", "--")
             if message_text == "/start":
                 handle_start_message(message)
@@ -71,9 +72,11 @@ class GetTelegramMessage(APIView):
                     return Response(HTTPStatus.BAD_REQUEST)
                 first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
                 message_type = DiscordTypes.UPSCALED
+                if message_text.startswith("button_u&&"):
+                    answer_text = "Увеличиваем"
                 if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
                     message_text = first_message.text
-                    # eng_text = first_message.text
+                    answer_text = "Делаем вариации"
                     message_type = DiscordTypes.START_GEN
                 elif message_text.startswith("button_change&&"):
                     message_text = first_message.text
@@ -121,7 +124,7 @@ class GetTelegramMessage(APIView):
                 )
                 logger.warning(f"Не удалось отправить сообщение, {account.login}, {status}")
                 return Response(HTTPStatus.OK)
-        bot.send_message(chat_id=chat_id, text="Творим волшебство")
+        bot.send_message(chat_id=chat_id, text=answer_text)
         return Response(HTTPStatus.OK)
 
     def choose_action(self, account, connection, message_text):

@@ -82,7 +82,7 @@ def add_upscaled_pic_buttons(message_id: int, buttons: list):
     :return:
     """
     change_item = types.InlineKeyboardButton(
-        "Хотите изменить?",
+        "Вариации",
         callback_data=f"button_change&&{message_id}"
     )
     buttons.append(change_item)

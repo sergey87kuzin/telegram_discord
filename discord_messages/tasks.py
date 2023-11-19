@@ -149,7 +149,7 @@ def send_messages_to_telegram():
                         callback_data=callback_data
                     )
                     buttons.append(item)
-                elif button_key.startswith("Zoom Out"):
+                elif button_key.startswith("Zoom Out") or button_key.startswith("Upscale (2x)"):
                     button_prefix = "button_zoom"
                     callback_data = f"{button_prefix}&&{button_key}&&{message.id}"
                     item = types.InlineKeyboardButton(
