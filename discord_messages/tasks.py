@@ -56,7 +56,7 @@ def get_discord_messages():
                     if "<https://s.mj.run/" in request_text:
                         request_text = request_text.split("> ", 1)[-1]
                     if "--seed" in request_text:
-                        request_text = request_text.split("--seed")[0]
+                        request_text = request_text.split(" --seed")[0]
                     if telegram_message := Message.objects.filter(
                             Q(eng_text__iexact=request_text)
                             | Q(text__iexact=request_text)
