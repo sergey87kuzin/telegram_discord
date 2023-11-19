@@ -73,7 +73,7 @@ class GetTelegramMessage(APIView):
                 message_type = DiscordTypes.UPSCALED
                 if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
                     message_text = first_message.text
-                    eng_text = first_message.text
+                    # eng_text = first_message.text
                     message_type = DiscordTypes.START_GEN
                 elif message_text.startswith("button_change&&"):
                     message_text = first_message.text
