@@ -159,5 +159,6 @@ class GetTelegramMessage(APIView):
                 message=message, account=account, connection=connection
             )
         else:
+            logger.warning(f"message info: {message_text}")
             status = send_message_to_discord(message_text, account, connection)
         return status
