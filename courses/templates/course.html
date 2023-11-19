@@ -3,6 +3,7 @@
     {% load thumbnail %}
   {% thumbnail course_cover '960x960' crop='center' upscale=True as im %}
     <img class='card-img' src='{{ course_cover }}' alt=course_name>
+    {% endthumbnail %}
     <span>course_name</span>
     <span>course_description</span>
     {% for lesson in lessons %}

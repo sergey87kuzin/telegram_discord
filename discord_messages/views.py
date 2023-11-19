@@ -46,6 +46,7 @@ class GetTelegramMessage(APIView):
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
                 return Response(HTTPStatus.BAD_REQUEST)
             eng_text = translator.translate(message_text)
+            no_ar_text = eng_text.split(" --")[0]
             message_type = DiscordTypes.START_GEN
             user = User.objects.filter(username__iexact=chat_username).first()
             if not user:
@@ -83,6 +84,7 @@ class GetTelegramMessage(APIView):
                     message_type = DiscordTypes.START_GEN
                 else:
                     message_text = first_message.eng_text
+                no_ar_text = first_message.no_ar_text
             else:
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():
@@ -94,6 +96,7 @@ class GetTelegramMessage(APIView):
         Message.objects.create(
             text=message_text,
             eng_text=eng_text,
+            no_ar_text=no_ar_text,
             user_telegram=chat_username,
             telegram_id=chat_id,
             user=user,

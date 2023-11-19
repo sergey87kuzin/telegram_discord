@@ -47,6 +47,8 @@ def get_discord_messages():
             all_messages = True
             data = response.json()
             for discord_message in data:
+                if Message.objects.filter(discord_message_id=discord_message.get("id")).exists():
+                    continue
                 attachments_urls = []
                 content = discord_message.get("content")
                 if "**" in content:
@@ -56,7 +58,9 @@ def get_discord_messages():
                     if "--seed" in request_text:
                         request_text = request_text.split("--seed")[0]
                     if telegram_message := Message.objects.filter(
-                            Q(eng_text__iexact=request_text) | Q(text__iexact=request_text)
+                            Q(eng_text__iexact=request_text)
+                            | Q(text__iexact=request_text)
+                            | Q(no_ar_text__iexact=request_text)
                     ).filter(answer_type=DiscordTypes.START_GEN).last():
                         if not discord_message.get("components"):
                             all_messages = False

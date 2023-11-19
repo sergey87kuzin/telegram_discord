@@ -6,6 +6,8 @@ from discord_messages.choices import DiscordTypes
 class Message(models.Model):
     text = models.CharField("Текст сообщения", max_length=1024)
     eng_text = models.CharField("Текст сообщения английский", max_length=1024, blank=True, null=True)
+    # при отправке сида текст сообщения дискордом режется по двойному дефису
+    no_ar_text = models.CharField("Текст сообщения без дефисов", max_length=1024, blank=True, null=True)
     user_telegram = models.CharField("Телега пользователя", max_length=128)
     telegram_id = models.CharField("id telegram пользователя", max_length=64)
     user = models.ForeignKey(
