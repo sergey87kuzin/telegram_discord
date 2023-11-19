@@ -93,7 +93,7 @@ class GetTelegramMessage(APIView):
                 text="Пожалуйста, оплатите доступ к боту",
             )
             return Response(HTTPStatus.BAD_REQUEST)
-        Message.objects.create(
+        created_message = Message.objects.create(
             text=message_text,
             eng_text=eng_text,
             no_ar_text=no_ar_text,
@@ -110,6 +110,10 @@ class GetTelegramMessage(APIView):
         if status != HTTPStatus.NO_CONTENT:
             connection = DiscordHelper().get_new_connection(account)
             status = self.choose_action(account, connection, eng_text)
+            if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
+                created_message.eng_text = created_message.text
+                created_message.no_ar_text = created_message.text.split(" --")[0]
+                created_message.save()
             if status != HTTPStatus.NO_CONTENT:
                 bot.send_message(
                     chat_id=chat_id,
