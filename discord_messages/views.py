@@ -122,6 +122,7 @@ class GetTelegramMessage(APIView):
 
     def choose_action(self, account, connection, message_text):
         if message_text.startswith("button_u&&") or message_text.startswith("button_zoom&&"):
+            logger.warning(f"button zoom info: {message_text}")
             button_data = list(message_text.split("&&"))
             message = Message.objects.filter(id=button_data[2]).first()
             if not message:
@@ -133,12 +134,14 @@ class GetTelegramMessage(APIView):
                 message=message
             )
         elif message_text.startswith("button_change&&"):
+            logger.warning(f"button change info: {message_text}")
             button_data = list(message_text.split("&&"))
             message = Message.objects.filter(id=button_data[-1]).first()
             if not message:
                 logger.warning(f"Не нашлось сообщение, {message_text}")
             status = get_message_seed(account, connection, message)
         elif message_text.startswith("button_vary_strong&&"):
+            logger.warning(f"button vary info: {message_text}")
             button_data = list(message_text.split("&&"))
             message = Message.objects.filter(id=button_data[-1]).first()
             if not message:
@@ -147,6 +150,7 @@ class GetTelegramMessage(APIView):
                 message=message, account=account, connection=connection
             )
         elif message_text.startswith("button_vary_soft&&"):
+            logger.warning(f"button vary soft info: {message_text}")
             button_data = list(message_text.split("&&"))
             message = Message.objects.filter(id=button_data[-1]).first()
             if not message:
