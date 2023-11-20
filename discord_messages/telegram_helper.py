@@ -95,6 +95,7 @@ def add_seed_pic_buttons(buttons: list, message_id: int):
     добавляем кнопки картинке с полученным сидом
     :return:
     """
+    buttons = []
     strong_vary_item = types.InlineKeyboardButton(
         "Сильное изменение",
         callback_data=f"button_vary_strong&&{message_id}"
