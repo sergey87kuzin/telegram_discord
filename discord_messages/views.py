@@ -37,6 +37,7 @@ class GetTelegramMessage(APIView):
 
         if message:
             message_text = message.get("text").replace("—", "--")
+            after_create_message_text = message_text
             if message_text == "/start":
                 handle_start_message(message)
                 return Response(HTTPStatus.OK)
@@ -72,6 +73,8 @@ class GetTelegramMessage(APIView):
                     return Response(HTTPStatus.BAD_REQUEST)
                 first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
                 message_type = DiscordTypes.UPSCALED
+                # переменная для определения типа сообщения после создания
+                after_create_message_text = message_text
                 if message_text.startswith("button_u&&"):
                     answer_text = "Увеличиваем"
                 if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
@@ -113,7 +116,7 @@ class GetTelegramMessage(APIView):
         if status != HTTPStatus.NO_CONTENT:
             connection = DiscordHelper().get_new_connection(account)
             status = self.choose_action(account, connection, eng_text)
-            if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
+            if after_create_message_text.startswith(("button_zoom&&", "button_vary")):
                 created_message.eng_text = created_message.text
                 created_message.no_ar_text = created_message.text.split(" --")[0]
                 created_message.save()
