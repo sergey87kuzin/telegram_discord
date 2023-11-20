@@ -160,8 +160,10 @@ def send_messages_to_telegram():
         if message.answer_type == DiscordTypes.START_GEN:
             buttons = add_four_pics_buttons(buttons, message.id)
         elif message.answer_type == DiscordTypes.UPSCALED:
+            buttons_markup.row_width = 1
             buttons = add_upscaled_pic_buttons(message.id, buttons)
         elif message.answer_type == DiscordTypes.GOT_SEED:
+            buttons_markup.row_width = 1
             buttons = add_seed_pic_buttons(buttons, message.id)
         buttons_markup.add(*buttons)
 
