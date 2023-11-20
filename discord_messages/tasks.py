@@ -57,11 +57,19 @@ def get_discord_messages():
                         request_text = request_text.split("> ", 1)[-1]
                     if "--seed" in request_text:
                         request_text = request_text.split(" --seed")[0]
-                    if telegram_message := Message.objects.filter(
+                    telegram_message = Message.objects.filter(
                             Q(eng_text__iexact=request_text)
                             | Q(text__iexact=request_text)
                             | Q(no_ar_text__iexact=request_text)
-                    ).filter(answer_type=DiscordTypes.START_GEN).last():
+                    ).filter(answer_type=DiscordTypes.START_GEN).last()
+                    if not telegram_message:
+                        no_ar_request_text = request_text.split(" --")
+                        telegram_message = Message.objects.filter(
+                            Q(eng_text__iexact=no_ar_request_text)
+                            | Q(text__iexact=no_ar_request_text)
+                            | Q(no_ar_text__iexact=no_ar_request_text)
+                        ).filter(answer_type=DiscordTypes.START_GEN).last()
+                    if telegram_message:
                         if not discord_message.get("components"):
                             all_messages = False
                             continue
