@@ -50,7 +50,7 @@ class GetTelegramMessage(APIView):
             eng_text = translator.translate(message_text)
             no_ar_text = eng_text.split(" --")[0]
             message_type = DiscordTypes.START_GEN
-            user = User.objects.filter(username__iexact=chat_username).first()
+            user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
             if not user:
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")

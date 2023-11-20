@@ -54,8 +54,9 @@ def handle_start_message(message):
             return
         bot.send_message(
             chat_id,
-            (f"Привет ✌️ Для продолжения регистрации перейдите по ссылке: {settings.SITE_DOMAIN}"
-             f"/auth/registration/{user.id}/")
+            "Привет) Наташа напишет, когда можно будет начинать веселье)"
+            # (f"Привет ✌️ Для продолжения регистрации перейдите по ссылке: {settings.SITE_DOMAIN}"
+            #  f"/auth/registration/{user.id}/")
         )
 
 
