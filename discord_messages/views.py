@@ -116,10 +116,6 @@ class GetTelegramMessage(APIView):
         if status != HTTPStatus.NO_CONTENT:
             connection = DiscordHelper().get_new_connection(account)
             status = self.choose_action(account, connection, eng_text)
-            if after_create_message_text.startswith(("button_zoom&&", "button_vary")):
-                created_message.eng_text = created_message.text
-                created_message.no_ar_text = created_message.text.split(" --")[0]
-                created_message.save()
             if status != HTTPStatus.NO_CONTENT:
                 bot.send_message(
                     chat_id=chat_id,
@@ -127,6 +123,10 @@ class GetTelegramMessage(APIView):
                 )
                 logger.warning(f"Не удалось отправить сообщение, {account.login}, {status}")
                 return Response(HTTPStatus.OK)
+        if after_create_message_text.startswith(("button_zoom&&", "button_vary")):
+            created_message.eng_text = created_message.text
+            created_message.no_ar_text = created_message.text.split(" --")[0]
+            created_message.save()
         bot.send_message(chat_id=chat_id, text=answer_text)
         return Response(HTTPStatus.OK)
 
