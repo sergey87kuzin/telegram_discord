@@ -3,7 +3,7 @@
     {{ lesson.name }}
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{ lesson.video_url }}</h5>
+    <div>{{ lesson.video_url|safe }}</div>
     <p class="card-text">{{ lesson.description }}</p>
     <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Пройти урок</a>
   </div>
