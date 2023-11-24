@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     "ckeditor",
     "ckeditor_uploader",
+    "embed_video",
 ]
 
 MIDDLEWARE = [

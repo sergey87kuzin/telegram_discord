@@ -44,6 +44,7 @@ class LessonAdmin(admin.ModelAdmin):
         "cover",
         "is_free",
         "video_url",
+        "video",
         "previous_lesson",
         "order",
         "is_active"
