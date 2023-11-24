@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "courses",
     "solo",
     'sorl.thumbnail',
-    "ckeditor"
+    "ckeditor",
+    "ckeditor_uploader",
 ]
 
 MIDDLEWARE = [
@@ -208,3 +209,33 @@ PRODAMUS_SYSTEM_CODE = env.str("PRODAMUS_SYSTEM_CODE")
 PRODAMUS_SECRET_KEY = env.str("PRODAMUS_SECRET_KEY")
 
 TESTING_URL = env.str("TESTING_URL")
+
+
+# CKEDITOR
+CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": [
+            ["Format", "Bold", "Italic", "Underline", "Strike", "SpellChecker"],
+            [
+                "NumberedList",
+                "BulletedList",
+                "Indent",
+                "Outdent",
+                "JustifyLeft",
+                "JustifyCenter",
+                "JustifyRight",
+                "JustifyBlock",
+                "Table",
+            ],
+            ["Image", "Link", "Unlink", "Anchor", "SectionLink", "Subscript", "Superscript"],
+            ["Undo", "Redo"],
+            ["Source"],
+            ["Maximize"],
+        ],
+        "height": 300,
+        "width": 650,
+    },
+}
+

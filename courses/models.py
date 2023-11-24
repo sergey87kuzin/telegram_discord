@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 from django.utils.timezone import now
 
@@ -66,6 +67,23 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"Урок {self.name} курса {self.course.name}"
+
+
+class LessonTextBlock(models.Model):
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        verbose_name="Урок",
+    )
+    image = models.ImageField("Картинка")
+    text = RichTextUploadingField("Текст к картинке", blank=True, null=True)
+    order = models.PositiveIntegerField("Порядок", default=1)
+    is_active = models.BooleanField("Активен", default=True)
+
+    class Meta:
+        verbose_name = "Блок урока"
+        verbose_name_plural = "Блоки уроков"
+        ordering = ("order",)
 
 
 class UserCourses(models.Model):
