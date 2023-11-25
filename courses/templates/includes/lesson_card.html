@@ -6,6 +6,6 @@
   <div class="card-body">
     <div>{{ lesson.video_url|safe }}</div>
     <p class="card-text">{{ lesson.description }}</p>
-    <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Пройти урок</a>
+    <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Задание выполнено</a>
   </div>
 </div>
