@@ -7,5 +7,5 @@ class RefererHeaderMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        response["HTTP_HEADER"] = settings.SITE_DOMAIN
+        response["HTTP_REFERER"] = settings.SITE_DOMAIN
         return response
