@@ -19,17 +19,37 @@
         <div class="burger__wrapper">
 
             <ul class="burger__menu  burger__menu_last">
+                {% if request.user.is_authenticated %}
                 <li class="burger__menu-item">
-                    {% if request.user.is_authenticated %}
                     <a href="{% url 'users:detail-profile' %}" class="burger__menu-link">
                         "Мой аккаунт"
                     </a>
-                    {% else %}
+                </li>
+                <li class="burger__menu-item">
+                    <a href="{% url 'courses:full_list' %}" class="burger__menu-link">
+                        "Все курсы"
+                    </a>
+                </li>
+                <li class="burger__menu-item">
+                    <a href="{% url 'courses:user_list' %}" class="burger__menu-link">
+                        "Мои курсы"
+                    </a>
+                </li>
+                <li>
+                      {% include 'includes/course_buttons.html' %}
+                </li>
+                {% if single_course %}
+                    <li>
+                      {% include 'includes/lesson_buttons.html' %}
+                    </li>
+                {% endif %}
+                {% else %}
+                <li class="burger__menu-item">
                     <button class="burger__menu-link  auth_open">
                         "Войти"
                     </button>
-                    {% endif %}
                 </li>
+                {% endif %}
             </ul>
         </div>
 

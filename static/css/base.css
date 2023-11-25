@@ -1,5 +1,5 @@
 body
-    {height: 4550px;background-color: #000000;background-position: center center;background-attachment: scroll;background-size: cover;background-repeat: no-repeat;}
+    {height: 4550px;background-position: center center;background-attachment: scroll;background-size: cover;background-repeat: no-repeat;}
     @media screen and (max-width: 1199px)
     {
         body {height: 4583.5px;background-attachment: scroll;}

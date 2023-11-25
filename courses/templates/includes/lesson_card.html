@@ -5,13 +5,6 @@
   </div>
   <div class="card-body">
     <div>{{ lesson.video_url|safe }}</div>
-      {% video lesson.video '1200x800' %}
-{#          <iframe#}
-{#            src="{{ my_video.url }}?byline=0&amp;portrait=0&amp;color=ff0179&amp;autoplay=1"#}
-{#            width="500" height="281" frameborder="0"#}
-{#            webkitAllowFullScreen mozallowfullscreen allowFullScreen referrerpolicy="strict-origin">#}
-{#          </iframe>#}
-{#      {% endvideo %}#}
     <p class="card-text">{{ lesson.description }}</p>
     <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Пройти урок</a>
   </div>

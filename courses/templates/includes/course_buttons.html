@@ -1,0 +1,18 @@
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item dropdown">
+        <a class="burger__menu-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Список курсов
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <ul>
+            {% for course in HEADER_COURSES %}
+                <li>
+                    <a href="{% url 'courses:single_course' course.id %}" class="burger__menu-link" style="margin-left:30px;">{{ course.name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </li>
+</ul>

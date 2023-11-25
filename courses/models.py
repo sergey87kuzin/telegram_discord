@@ -3,7 +3,6 @@ from datetime import timedelta
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 from django.utils.timezone import now
-from embed_video.fields import EmbedVideoField
 
 from users.models import User
 
@@ -50,7 +49,6 @@ class Lesson(models.Model):
         "Источник видео",
         max_length=1024
     )
-    video = EmbedVideoField(verbose_name="Видео", null=True)
     previous_lesson = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,

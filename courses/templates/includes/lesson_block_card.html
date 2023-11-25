@@ -1,0 +1,10 @@
+
+<div class="card flex-row" style="max-width: 960px;">
+    {% load thumbnail %}
+      {% thumbnail block.image '320x320' crop='center' upscale=True as im %}
+        <img class="card-img-left example-card-img-responsive" src='{{ im.url }}' alt=course_name>
+        {% endthumbnail %}
+  <div class="card-body">
+    <p>{{ block.text|safe|linebreaks }}</p>
+  </div>
+</div>

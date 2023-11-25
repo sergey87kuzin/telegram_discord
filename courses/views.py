@@ -5,9 +5,9 @@ from django.db.models import F, Value, Q
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.timezone import now
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
-from courses.models import Course, UserCourses, Lesson
+from courses.models import Course, UserCourses, Lesson, LessonTextBlock
 
 
 class CoursesListView(ListView):
@@ -17,6 +17,7 @@ class CoursesListView(ListView):
 
 
 class UserCoursesListView(ListView):
+
     queryset = Course.objects.filter(is_active=True)
     context_object_name = "courses"
     template_name = "courses_list.html"
@@ -54,6 +55,7 @@ class CourseView(ListView):
             user_course = UserCourses.objects.filter(
                 user=self.request.user,
                 course_id=self.kwargs.get("course_id"),
+                course__is_active=True,
                 expires_at__gte=now()
             ).first()
             finished_lessons = user_course.finished_lessons if user_course else []
@@ -77,8 +79,39 @@ class CourseView(ListView):
         context["course_name"] = course.name
         context["course_cover"] = course.cover
         context["course_id"] = course.id
+        context["single_course"] = True
         if user and UserCourses.objects.filter(
                 course=course, user=user, buying_date__gte=now() - timedelta(days=course.duration)
         ).exists():
             context["has_course"] = True
+        return context
+
+
+class LessonView(ListView):
+    template_name = "lesson.html"
+    context_object_name = "blocks"
+
+    def get_queryset(self):
+        user = self.request.user
+        lesson_id = self.kwargs.get("lesson_id")
+        lesson = Lesson.objects.filter(id=lesson_id).first()
+        user_course = UserCourses.objects.filter(
+            course_id=lesson.course_id,
+            user=user,
+            course__is_active=True,
+            expires_at__gte=now()
+        ).first()
+        if lesson.is_free or (
+                lesson.is_active
+                and user_course
+                and lesson.previous_lesson_id in user_course.finished_lessons
+        ):
+            return LessonTextBlock.objects.filter(lesson_id=lesson_id).order_by("order", "id").distinct()
+        return []
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        lesson = Lesson.objects.filter(id=self.kwargs.get("lesson_id")).first()
+        context["lesson"] = lesson
+        context["single_course"] = False
         return context

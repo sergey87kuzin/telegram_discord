@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="col d-flex justify-content-center">
+    <div class="card" style="min-width: 960px;">
     {% load thumbnail %}
   {% thumbnail course_cover '960x960' crop='center' upscale=True as im %}
-    <img class='card-img' src='{{ course_cover }}' alt=course_name>
+    <img class='card-img' src='{{ im.url }}' alt=course_name>
     {% endthumbnail %}
     <span>course_name</span>
     <span>course_description</span>
     {% for lesson in lessons %}
         {% include "includes/lesson_card.html" %}
     {% endfor %}
+    </div>
+    </div>
 {% endblock %}

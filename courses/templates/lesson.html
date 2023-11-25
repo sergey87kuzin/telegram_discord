@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="col d-flex justify-content-center">
+        <div class="card" style="min-width: 960px;">
+            <span>{{ lesson.name }}</span>
+            <span>{{ lesson.description }}</span>
+            <div>{{ lesson.video_url|safe }}</div>
+            {% for block in blocks %}
+                {% include "includes/lesson_block_card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
