@@ -48,7 +48,9 @@ class Lesson(models.Model):
     )
     video_url = models.CharField(
         "Источник видео",
-        max_length=1024
+        max_length=1024,
+        blank=True,
+        null=True
     )
     previous_lesson = models.ForeignKey(
         "self",
