@@ -36,7 +36,7 @@ class GetTelegramMessage(APIView):
         answer_text = "Творим волшебство"
 
         if message:
-            message_text = message.get("text").replace("—", "--")
+            message_text = message.get("text").replace("—", "--").replace(" ::", "::")
             after_create_message_text = message_text
             if message_text == "/start":
                 handle_start_message(message)
