@@ -2,6 +2,7 @@
 <div class="modal-overlay"></div>
 
 <div class="burger dark-green-background before-video">
+<div class="max-height-300">
     <div class="burger__row  d-lg-flex align-items-center justify-content-between">
         <div class="burger__btn-box d-none d-lg-inline-block">
             <button class="burger__btn  menu-btn-close">
@@ -13,7 +14,7 @@
         </div>
     </div>
 
-    <div class="burger__scroll"
+    <div class="burger__scroll max-height-300"
          id="currency-choice">
 
         <div class="burger__wrapper">
@@ -45,7 +46,7 @@
                 {% endif %}
                 {% else %}
                 <li class="burger__menu-item">
-                    <button class="burger__menu-link  auth_open">
+                    <button class="burger__menu-link">
                         "Войти"
                     </button>
                 </li>
@@ -54,6 +55,7 @@
         </div>
 
     </div>
+</div>
 </div>
 <header class="header {% if request.path == '/' %} header_light {% endif %} dark-green-background">
 

@@ -60,11 +60,30 @@ def handle_start_message(message):
         )
 
 
+def handle_command(message):
+    """
+    Обработка команд бота
+    :param message:
+    :return:
+    """
+    message_text = message.get("text")
+    chat_id = message.get("chat").get("id")
+    if message_text == "/help":
+        bot.send_message(
+            chat_id,
+            f"""Для того, чтобы начать генерацию, просто вводите текст промпта\n
+                Для того, чтобы поменять пароль, введите /newpassword новый пароль\n
+                Личный кабинет: {settings.SITE_DOMAIN},\n
+                Техподдержка: {settings.TECH_BOT_URL}
+            """
+        )
+
+
 def add_four_pics_buttons(buttons: list, message_id: int):
     """
     Добавляем кнопки сообщению с 4 картинками
     :param buttons:
-    :param eng_text:
+    :param message_id:
     :return:
     """
     refresh_item = types.InlineKeyboardButton(
