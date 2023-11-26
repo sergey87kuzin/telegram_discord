@@ -43,6 +43,7 @@ class GetTelegramMessage(APIView):
                 return Response(HTTPStatus.OK)
             if message_text.startswith("/"):
                 handle_command(message)
+                return Response(HTTPStatus.OK)
             chat_username = message.get("chat", {}).get("username")
             chat_id = message.get("chat", {}).get("id")
             if not message_text or not chat_username or not chat_id:
