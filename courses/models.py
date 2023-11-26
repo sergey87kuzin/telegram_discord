@@ -41,6 +41,7 @@ class Lesson(models.Model):
     )
     description = RichTextField("Описание урока", blank=True)
     cover = models.FileField("Обложка урока")
+    cover_blocked = models.ImageField("Обложка заблокированная", blank=True, null=True)
     is_free = models.BooleanField(
         "Бесплатный",
         default=False

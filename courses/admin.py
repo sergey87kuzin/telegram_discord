@@ -42,6 +42,7 @@ class LessonAdmin(admin.ModelAdmin):
         "name",
         "description",
         "cover",
+        "cover_blocked",
         "is_free",
         "video_url",
         "previous_lesson",
