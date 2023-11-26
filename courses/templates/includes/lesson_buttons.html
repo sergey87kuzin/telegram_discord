@@ -9,7 +9,7 @@
             <ul>
             {% for lesson in lessons %}
                 <li>
-                    <a href="{% url 'courses:single_lesson' lesson.id %}" class="burger__menu-link" style="margin-left:30px;">{{ lesson.name }}</a>
+                    <a href="{% url 'courses:single_lesson' lesson.id %}" class="d-block my-menu-link" style="margin-left:30px;">{{ lesson.name }}</a>
                 </li>
             {% endfor %}
             </ul>

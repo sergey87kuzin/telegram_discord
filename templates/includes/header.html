@@ -2,7 +2,6 @@
 <div class="modal-overlay"></div>
 
 <div class="burger dark-green-background before-video">
-<div class="max-height-300">
     <div class="burger__row  d-lg-flex align-items-center justify-content-between">
         <div class="burger__btn-box d-none d-lg-inline-block">
             <button class="burger__btn  menu-btn-close">
@@ -14,26 +13,23 @@
         </div>
     </div>
 
-    <div class="burger__scroll max-height-300"
-         id="currency-choice">
-
+    <div class="burger__scroll" id="currency-choice">
         <div class="burger__wrapper">
-
-            <ul class="burger__menu  burger__menu_last">
+            <ul class="burger__menu">
                 {% if request.user.is_authenticated %}
                 <li class="burger__menu-item">
-                    <a href="{% url 'users:detail-profile' %}" class="burger__menu-link">
-                        "Мой аккаунт"
+                    <a href="{% url 'users:detail-profile' %}" class="d-block my-menu-link">
+                        Мой аккаунт
                     </a>
                 </li>
                 <li class="burger__menu-item">
-                    <a href="{% url 'courses:full_list' %}" class="burger__menu-link">
-                        "Все курсы"
+                    <a href="{% url 'courses:full_list' %}" class="d-block my-menu-link">
+                        Все курсы
                     </a>
                 </li>
                 <li class="burger__menu-item">
-                    <a href="{% url 'courses:user_list' %}" class="burger__menu-link">
-                        "Мои курсы"
+                    <a href="{% url 'courses:user_list' %}" class="d-block my-menu-link">
+                        Мои курсы
                     </a>
                 </li>
                 <li>
@@ -46,7 +42,7 @@
                 {% endif %}
                 {% else %}
                 <li class="burger__menu-item">
-                    <button class="burger__menu-link">
+                    <button class="d-block my-menu-link">
                         "Войти"
                     </button>
                 </li>
@@ -55,7 +51,6 @@
         </div>
 
     </div>
-</div>
 </div>
 <header class="header {% if request.path == '/' %} header_light {% endif %} dark-green-background">
 

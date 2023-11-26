@@ -1,7 +1,7 @@
 
 <ul class="navbar-nav mr-auto">
     <li class="nav-item dropdown">
-        <a class="burger__menu-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+        <a class="d-block my-menu-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Список курсов
         </a>
@@ -9,7 +9,7 @@
         <div style="align-content: flex-start; ">
             {% for course in HEADER_COURSES %}
                 <span>
-                    <a href="{% url 'courses:single_course' course.id %}" class="burger__menu-link" style="margin-left:30px;">{{ course.name }}</a>
+                    <a href="{% url 'courses:single_course' course.id %}" class="d-block my-menu-link" style="margin-left:30px;">{{ course.name }}</a>
                 </span>
             {% endfor %}
         </div>
