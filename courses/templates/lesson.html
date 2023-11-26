@@ -1,6 +1,7 @@
 {% extends "natasha_base.html" %}
 {% block content %}
     <div class="col d-flex justify-content-center">
+    <div class="col d-flex justify-content-left width-to-media">
         <div class="card text-center width-to-media">
         <div class="card-header">
             <span>{{ lesson.name }}</span>
@@ -13,5 +14,6 @@
                 {% include "includes/lesson_block_card.html" %}
             {% endfor %}
         </div>
+    </div>
     </div>
 {% endblock %}

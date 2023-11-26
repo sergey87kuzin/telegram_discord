@@ -27,10 +27,13 @@ body
     }
     .width-to-media {
         width: 960px;
+        min-width: 960px;
+        max-width: 960px;
     }
     @media screen and (max-width: 959px) {
         .width-to-media {
             width: 100%;
+            min-width: 540px;
         }
         .max-height-300 {
             max-height: 100px;
