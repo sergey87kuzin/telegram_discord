@@ -1,5 +1,5 @@
 body
-    {height: 4550px;background-position: center center;background-attachment: scroll;background-size: cover;background-repeat: no-repeat;}
+    {height: 4550px;background-color: #d8dfc6;background-position: center center;background-attachment: scroll;background-size: cover;background-repeat: no-repeat;}
     @media screen and (max-width: 1199px)
     {
         body {height: 4583.5px;background-attachment: scroll;}
@@ -15,6 +15,12 @@ body
     @media screen and (max-width: 479px)
     {
         body {height: 2208px;background-attachment: scroll;}
+    }
+    .dark-green-background {
+        background-color: #acbb86;
+    }
+    .before-video {
+        max-width: 250px;
     }
     .black_input {
         color: #aaaaaa
@@ -58,6 +64,46 @@ body
         border-radius: 60px;
         font-size: 20px;
     }
+
+    .course-card {
+      flex-direction: row;
+      align-items: center;
+      max-width: 960px;
+      margin-top: 10px;
+    }
+    .course-card-title {
+      font-weight: bold;
+    }
+    .course-card img {
+      width: 30%;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: calc(0.25rem - 1px);
+    }
+    .course-card-body {
+        padding: 0.5em 1.2em;
+        margin-left: 10px;
+      }
+      .course-card-body .course-card-text {
+        margin: 10px;
+      }
+    @media only screen and (max-width: 768px) {
+      a {
+        display: none;
+      }
+      .course-card img {
+        width: 50%;
+      }
+    }
+    @media only screen and (max-width: 1200px) {
+      .course-card img {
+        width: 40%;
+      }
+    }
+
+    .width-for-cards {
+        max-width: 960px;
+    }
+
     input::placeholder {
       opacity: 1;
     }

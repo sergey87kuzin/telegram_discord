@@ -1,11 +1,25 @@
-{% load embed_video_tags %}
-<div class="card">
-  <div class="card-header">
-    {{ lesson.name }}
-  </div>
-  <div class="card-body">
-    <div>{{ lesson.video_url|safe }}</div>
-    <p class="card-text">{{ lesson.description }}</p>
-    <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Задание выполнено</a>
-  </div>
+{#<div class="card">#}
+{#  <div class="card-header">#}
+{#    {{ lesson.name }}#}
+{#  </div>#}
+{#  <div class="card-body">#}
+{#    <div>{{ lesson.video_url|safe }}</div>#}
+{#    <p class="card-text">{{ lesson.description }}</p>#}
+{#    <a href="{% url 'courses:open_lesson' course_id lesson.id %}" class="btn btn-primary">Задание выполнено</a>#}
+{#  </div>#}
+{#</div>#}
+
+<div class="col">
+    <div class="card">
+        {% load thumbnail %}
+        {% thumbnail lesson.cover '320x320' crop='center' upscale=True as im %}
+            <img class='card-img' src='{{ im.url }}' alt=course_name>
+        {% endthumbnail %}
+{#      <img src="{{ lesson.cover.url }}" class="card-img-top" alt="{{ lesson.name }}">#}
+      <div class="card-body">
+        <h5 class="card-title">{{ lesson.name }}</h5>
+        <p class="card-text">{{ lesson.description }}</p>
+        <a href="{% url 'courses:single_lesson' lesson.id %}" class="btn btn-primary">Перейти к уроку</a>
+      </div>
+    </div>
 </div>

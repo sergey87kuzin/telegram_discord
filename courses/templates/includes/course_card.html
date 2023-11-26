@@ -1,10 +1,12 @@
 {% load thumbnail %}
-<div class="card" style="min-width: 960px;">
-  <div class="card-body">
-      {% thumbnail course.cover '320x320' crop='center' upscale=True as im %}
-      <img src="{{ im.url }}" class="card-img-top" alt="{{ course.name }}">
-      {% endthumbnail %}
-    <h5 class="card-title">{{ course.name }}</h5>
+
+<div class="row course-card">
+  <img src="{{ course.cover.url }}" class="card-img-top" />
+  <div class="course-card-body">
+    <h5 class="course-card-title">{{ course.name }}</h5>
+    <p class="course-card-text">
+      {{ course.description }}
+    </p>
     <a href="{% url 'courses:single_course' course.id %}" class="btn btn-primary">Перейти к курсу</a>
   </div>
 </div>
