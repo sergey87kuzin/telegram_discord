@@ -26,6 +26,60 @@ function detectEnUserLanguage() {
 
 $(document).ready(function () {
 
+    $.ajaxSetup({
+         beforeSend: function (xhr, settings) {
+             function getCookie(name) {
+                 let cookieValue = null;
+                 if (document.cookie && document.cookie !== "") {
+                     let cookies = document.cookie.split(";");
+                     for (let i = 0; i < cookies.length; i++) {
+                         let cookie = $.trim(cookies[i]);
+                         // Does this cookie string begin with the name we want?
+                         if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                             break;
+                         }
+                     }
+                 }
+                 return cookieValue;
+             }
+
+
+             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                 // Only send the token to relative URLs i.e. locally.
+                 xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+             }
+         }
+     });
+
+     $(document).on('submit', '.ajax-login-form', function (e) {
+         e.preventDefault()
+         const data = $(this).serialize();
+         const url = $(this).data("url");
+         $.ajax({
+             url: url,
+             data: data,
+             method: "post",
+             success: function (data) {
+                 if (!!data.error) {
+                     const tpl = data.tpl;
+                     $(".modal-login__extended").html(tpl);
+                 } else {
+                     window.location.href = data.url
+                 }
+             },
+             error: function (data) {
+                 alert("Error on authorization");
+             }
+         });
+     })
+
+     function clear_error_fields(element_array) {
+         element_array.forEach(function (error_fild) {
+             $(error_fild).text("");
+         })
+     }
+
     $(document).on("submit", ".ajax-registration-form", function (e) {
         e.preventDefault();
         const is_loyalty = $("#is_sign_loyalty").prop('checked')
@@ -160,110 +214,6 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on("click", "#ajaxCart2", function (e) {
-        $(".wrapper-ajax-cart, .modal-overlay").addClass("active");
-        $("html").css("overflow-y", "hidden");
-        $("body").css("overflow-y", "hidden");
-        window.modal_cart_vue.get_cart_items();
-    });
-
-    $(document).on("click", ".n-product__order-checkout", function (e) {
-        $(".wrapper-ajax-cart, .modal-overlay").addClass("active");
-        $("html").css("overflow-y", "hidden");
-        $("body").css("overflow-y", "hidden");
-        window.modal_cart_vue.get_cart_items();
-    });
-
-    $(document).on("click", ".n-product__add-basket", function (e) {
-        const product_id = $(this).data("busket-id");
-        const price = $(this).data("product-price");
-        if (product_id) {
-            window.search_vue.add_to_cart(product_id);
-        }
-        var _tmr = _tmr || [];
-        _tmr.push({
-            type: 'reachGoal',
-            id: '3140222',
-            value: price,
-            goal: 'addToCart',
-            params: { product_id }
-        });
-        $(".n-product__order-checkout").addClass("show");
-        $(".n-product__fixed-size").removeClass("show");
-        $(".n-product__fixed").removeClass("shadow");
-        $("body").addClass("no-scroll");
-    });
-
-    $(document).on("click", "#addToBasket", function (e) {
-        const product_id = $(this).data("busket-id");
-        const price = $(this).data("product-price");
-        window.add_to_cart_vue.add_to_cart(product_id);
-        var _tmr = _tmr || [];
-        _tmr.push({
-            type: 'reachGoal',
-            id: '3140222',
-            value: price,
-            goal: 'addToCart',
-            params: { product_id }
-        });
-    });
-
-    $(document).on("click", ".n-product__add-favorites", function (e) {
-        const product_id = $(this).data("item-id");
-        const price = $(this).data("price");
-        window.add_to_cart_vue.togglefavorite(product_id);
-        _tmr.push({
-            type: 'reachGoal',
-            id: 3140222,
-            value: price,
-            goal: 'addToWishlist',
-            params: { product_id }
-        });
-    });
-
-    $(document).on("click", ".like-good-favorite", function (e) {
-        const product_id = $(this).data("item-id");
-        const price = $(this).data("price");
-        window.search_vue.togglefavorite(product_id);
-        _tmr.push({
-            type: 'reachGoal',
-            id: 3140222,
-            value: price,
-            goal: 'addToWishlist',
-            params: { product_id }
-        });
-    });
-
-    $(document).on("click", "#promoCode", function (e) {
-        $(this).css("display", "none");
-        $("#promoCodeBtn").css("display", "block");
-    });
-
-    $(document).on("click", "#certificate", function (e) {
-        $(this).css("display", "none");
-        $("#certificateBtn").css("display", "block");
-    });
-
-    $(document).on("click", "#subscribeToSize", function (e) {
-        const product_id = $(this).data("product-id");
-        const size = $('#sizeAvailable').text();
-        if ($(".n-product__fixed").length && $(".n-product__fixed").hasClass("shadow")) {
-            $(".n-product__fixed").removeClass("shadow")
-            $(".n-product__fixed-size").removeClass("show")
-            $("body").removeClass("no-scroll")
-        }
-        if (!!window.search_vue) {
-            window.search_vue.subscribe_to_size(product_id, size);
-        } else if (!!window.cart) {
-            window.new_cart.subscribe_to_size(product_id, size);
-        }
-    });
-
-    $(document).on("click", "#deleteSizeSubscribe", function (e) {
-        const subscribe_id = $(this).data("subscribe-id");
-        window.search_vue.delete_subscribe_to_size(subscribe_id);
-    });
-
     $(document).on("click", "#id-recover-password-button", function (e) {
         const url = $("#passwordRestore").data("restore-pasw");
         const email = $("#id-recover-password-email").val();
@@ -286,94 +236,6 @@ $(document).ready(function () {
                     break;
                 }
                 $("#id-error-recover-password").text(data.responseJSON[key]);
-            }
-        });
-    });
-
-
-    $(document).on("click", "#notificationClose", function (e) {
-        $("#notificationBackground").fadeOut();
-    });
-    $(document).on("click", "#notificationMainClose", function (e) {
-        $("#notificationMainBackground").fadeOut();
-    });
-    $(".order__close").on("click", function () {
-        $(".mslistorder-output").hide();
-        $("#mslistorders").fadeIn(100);
-    });
-
-
-    $(document).on("click", "#feedbackSubmit", function (e) {
-        const url = $("#mainContacts").data("feedbeck-create");
-        $(".error_nam3_zv0n0k").text("");
-        $(".error_ph0n3_zv0n0k").text("");
-        $(".error_ma1l_zv0n0k").text("");
-        $("#feedbackError").text("");
-        $(".error_msg_zv0n0k").text("");
-        let error_message = "";
-        let success_message = "";
-        if (url.includes("/en/")) {
-            error_message = "Fill this field";
-            //success_message = "Message sent";
-        }
-        else {
-            error_message = "Заполните поле";
-            //success_message = "Сообщение отправлено";
-        }
-        var erros = false;
-        if (!$("#nam3_zv0n0k").val().length) {
-            $(".error_nam3_zv0n0k").text(error_message);
-            var errors = true;
-        }
-        if (!$("#ph0n3_zv0n0k").val().length) {
-            $(".error_ph0n3_zv0n0k").text(error_message);
-            var errors = true;
-        }
-        if (!$("#ma1l_zv0n0k").val().length) {
-            $(".error_ma1l_zv0n0k").text(error_message);
-            var errors = true;
-        }
-        if (!$("#msg_zv0n0k").val().length) {
-            $(".error_msg_zv0n0k").text(error_message);
-            var errors = true;
-        }
-        if (errors) {
-            return;
-        }
-        const data = {
-            "name": $("#nam3_zv0n0k").val(),
-            "phone": $("#ph0n3_zv0n0k").val(),
-            "email": $("#ma1l_zv0n0k").val(),
-            "message": $("#msg_zv0n0k").val()
-        };
-        $.ajax({
-            url: url,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(data),
-            method: "post",
-            success: function (data) {
-                dataLayer.push({'event': 'feedback'});
-                $("#nam3_zv0n0k").val(null);
-                $("#ph0n3_zv0n0k").val(null);
-                $("#ma1l_zv0n0k").val(null);
-                $("#msg_zv0n0k").val(null);
-                /*
-                $("#notificationMainBackground").css({"background-color": "green"}).fadeIn();
-                $("#notificationMainMessage").text(success_message);
-                $("#notificationMainClose").css({"color": "white"});
-                $("#notificationMainMessage").css({"color": "white"});
-                setTimeout(function () {
-                    $("#notificationMainBackground").fadeOut();
-                }, 6000);
-                 */
-            },
-            error: function (data) {
-                var key;
-                for (var k in data.responseJSON) {
-                    key = k;
-                    break;
-                }
-                $("#feedbackError").text(data.responseJSON[key]);
             }
         });
     });
@@ -413,66 +275,6 @@ $(document).ready(function () {
             }
         });
     });
-
-    // $(document).ready(function () {
-    //     $.datepicker.regional['ru'] = {
-    //         closeText: 'Закрыть',
-    //         prevText: 'Предыдущий',
-    //         nextText: 'Следующий',
-    //         currentText: 'Сегодня',
-    //         monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-    //         monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-    //         dayNames: ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
-    //         dayNamesShort: ['вск', 'пнд', 'втр', 'срд', 'чтв', 'птн', 'сбт'],
-    //         dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-    //         dateFormat: 'dd.mm.yy',
-    //         showMonthAfterYear: false,
-    //     };
-    //     $.datepicker.regional["en-GB"] = {
-    //         closeText: "Done",
-    //         prevText: "Prev",
-    //         nextText: "Next",
-    //         currentText: "Today",
-    //         monthNames: ["January", "February", "March", "April", "May", "June",
-    //             "July", "August", "September", "October", "November", "December"],
-    //         monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    //             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    //         dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    //         dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    //         dayNamesMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-    //         weekHeader: "Wk",
-    //         dateFormat: "dd/mm/yy",
-    //         firstDay: 1,
-    //         isRTL: false,
-    //         showMonthAfterYear: false,
-    //         yearSuffix: ""
-    //     };
-    //
-    //     $("#datepicker").on("change", function () {
-    //         let hVal = $(this).val();
-    //         let tDate = (new Date(hVal)).getTime() / 1000;
-    //         $("#dob").val(tDate);
-    //     });
-    //
-    //     if (window.location.href.includes("/en/")) {
-    //         $.datepicker.setDefaults($.datepicker.regional["en-GB"]);
-    //     } else {
-    //         $.datepicker.setDefaults($.datepicker.regional["ru"]);
-    //     }
-    //     $("#birthday_sign").datepicker({
-    //         showAnim: "show",
-    //         altFormat: "yy-mm-dd",
-    //         dateFormat: "dd.mm.yy",
-    //         changeMonth: true,
-    //         changeYear: true,
-    //         yearRange: "1950:2008",
-    //         defaultDate: "-25y",
-    //         onSelect: function (value) {
-    //             const date = new Date(value).toLocaleDateString('en-ca')
-    //             $(this).attr("data-val", date)
-    //         },
-    //     });
-    // });
 
     $(document).ready(function () {
         $('#date_mask').mask("99.99.9999",{placeholder:"__.__.____"});

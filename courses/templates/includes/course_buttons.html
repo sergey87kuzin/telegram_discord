@@ -6,13 +6,13 @@
             Список курсов
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <ul>
+        <div style="align-content: flex-start; ">
             {% for course in HEADER_COURSES %}
-                <li>
+                <span>
                     <a href="{% url 'courses:single_course' course.id %}" class="burger__menu-link" style="margin-left:30px;">{{ course.name }}</a>
-                </li>
+                </span>
             {% endfor %}
-            </ul>
+        </div>
         </div>
     </li>
 </ul>
