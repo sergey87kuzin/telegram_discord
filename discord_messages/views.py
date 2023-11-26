@@ -1,3 +1,4 @@
+import re
 from http import HTTPStatus
 import logging
 
@@ -37,6 +38,8 @@ class GetTelegramMessage(APIView):
 
         if message:
             message_text = message.get("text").replace("—", "--").replace(" ::", "::")
+            if re.findall("::\S+", message_text):
+                message_text.replace("::", ":: ")
             after_create_message_text = message_text
             if message_text == "/start":
                 handle_start_message(message)
