@@ -28,11 +28,11 @@ $(document).on("click", "#telegram-nick-confirm", function (e) {
 
 $(document).on('click', '#login-modal-button', function (e) {
   e.preventDefault();
-  var data = {
+  let data = {
       telegram: $("#id_username").val(),
       password: $("#id_password").val()
   };
-  var url = '/auth/ajax-login/';
+  let url = '/auth/ajax-login/';
   $.ajax({
     url: url,
     data: data,

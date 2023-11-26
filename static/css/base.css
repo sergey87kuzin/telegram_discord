@@ -25,6 +25,17 @@ body
     .max-height-300 {
         max-height: 300px;
     }
+    .width-to-media {
+        width: 960px;
+    }
+    @media screen and (max-width: 959px) {
+        .width-to-media {
+            width: 100%;
+        }
+        .max-height-300 {
+            max-height: 100px;
+        }
+    }
     .black_input {
         color: #aaaaaa
     }
