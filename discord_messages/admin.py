@@ -5,7 +5,22 @@ from discord_messages.models import Message, ConfirmMessage, DiscordAccount, Dis
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("text", "eng_text", "user_telegram")
+    list_filter = ("user_telegram", "answer_type")
+    list_display = (
+        "text",
+        "eng_text",
+        "user_telegram",
+        "telegram_id",
+        "discord_message_id",
+        "images",
+        "buttons",
+        "answer_type",
+        "answer_sent",
+        "seed",
+        "job",
+        "seed_send"
+    )
 
 
 @admin.register(ConfirmMessage)
