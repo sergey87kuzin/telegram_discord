@@ -143,9 +143,16 @@ def send_messages_to_telegram():
     for message in not_answered_messages:
         for url in message.images.split(", "):
             if url:
-                # url = settings.TESTING_URL if settings.DEBUG else url
                 photo = requests.get(url)
-                bot.send_photo(chat_id=message.telegram_id, photo=photo.content)
+                try:
+                    bot.send_photo(chat_id=message.telegram_id, photo=photo.content)
+                except Exception:
+                    bot.send_message(
+                        message.telegram_id,
+                        text=f"<a href='{url}'>Скачайте увеличенное фото тут</a>",
+                        parse_mode="HTML"
+                    )
+                    continue
         buttons_markup = types.InlineKeyboardMarkup()
         buttons_markup.row_width = 4
         buttons = []
