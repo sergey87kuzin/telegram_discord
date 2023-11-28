@@ -37,6 +37,11 @@ class GetTelegramMessage(APIView):
         answer_text = "Творим волшебство"
 
         if message:
+            chat_id = message.get("chat", {}).get("id")
+            message_text = message.get("text")
+            if not message_text:
+                bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+                return Response(HTTPStatus.BAD_REQUEST)
             message_text = message.get("text").replace("—", "--").replace(" ::", "::")
             if re.findall("::\S+", message_text):
                 message_text.replace("::", ":: ")
@@ -48,7 +53,6 @@ class GetTelegramMessage(APIView):
                 handle_command(message)
                 return Response(HTTPStatus.OK)
             chat_username = message.get("chat", {}).get("username")
-            chat_id = message.get("chat", {}).get("id")
             if not message_text or not chat_username or not chat_id:
                 logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
