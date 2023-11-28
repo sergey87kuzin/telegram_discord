@@ -8,6 +8,7 @@ from django.views import generic
 from deep_translator import GoogleTranslator
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from telebot import types
 
 from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import send_message_to_discord, DiscordHelper, \
@@ -68,9 +69,32 @@ class GetTelegramMessage(APIView):
         else:
             button_data = request.data.get("callback_query")
             if button_data:
+                chat_id = button_data.get("from", {}).get("id")
+                reply_markup = button_data.get("message").get("reply_markup")
+                buttons_markup = types.InlineKeyboardMarkup()
+                buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
+                buttons = []
+                for line in reply_markup.get("inline_keyboard"):
+                    for button in line:
+                        if button.get("callback_data") == button_data.get("data"):
+                            item = types.InlineKeyboardButton(
+                                "✅",
+                                callback_data=button.get("callback_data")
+                            )
+                        else:
+                            item = types.InlineKeyboardButton(
+                                button.get("text"),
+                                callback_data=button.get("callback_data")
+                            )
+                        buttons.append(item)
+                buttons_markup.add(*buttons)
+                bot.edit_message_reply_markup(
+                    message_id=button_data.get("message").get("message_id"),
+                    reply_markup=buttons_markup,
+                    chat_id=chat_id
+                )
                 message_text = button_data.get("data")
                 chat_username = button_data.get("from", {}).get("username")
-                chat_id = button_data.get("from", {}).get("id")
                 if not message_text or not chat_username or not chat_id:
                     logger.warning(f"Ошибка кнопки чата. {chat_id}, {chat_username}, {message_text}")
                     bot.send_message(chat_id=chat_id, text="С этой кнопкой что-то не так")
