@@ -57,20 +57,25 @@ def get_discord_messages():
                         request_text = request_text.split("> ", 1)[-1]
                     if "--seed" in request_text:
                         request_text = request_text.split(" --seed")[0]
-                    telegram_message = Message.objects.filter(
-                            Q(eng_text__iexact=request_text)
-                            | Q(text__iexact=request_text)
-                            | Q(no_ar_text__iexact=request_text)
-                    ).filter(answer_type=DiscordTypes.START_GEN).filter(
-                        Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
-                    ).last()
-                    if not telegram_message:
-                        no_ar_request_text = request_text.split(" --")[0]
+                    if message_reference := discord_message.get("message_reference"):
                         telegram_message = Message.objects.filter(
-                            Q(eng_text__iexact=no_ar_request_text)
-                            | Q(text__iexact=no_ar_request_text)
-                            | Q(no_ar_text__iexact=no_ar_request_text)
-                        ).filter(answer_type=DiscordTypes.START_GEN).last()
+                            discord_message_id=message_reference.get("message_id")
+                        ).first()
+                    else:
+                        telegram_message = Message.objects.filter(
+                                Q(eng_text__iexact=request_text)
+                                | Q(text__iexact=request_text)
+                                | Q(no_ar_text__iexact=request_text)
+                        ).filter(answer_type=DiscordTypes.START_GEN).filter(
+                            Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
+                        ).last()
+                        if not telegram_message:
+                            no_ar_request_text = request_text.split(" --")[0]
+                            telegram_message = Message.objects.filter(
+                                Q(eng_text__iexact=no_ar_request_text)
+                                | Q(text__iexact=no_ar_request_text)
+                                | Q(no_ar_text__iexact=no_ar_request_text)
+                            ).filter(answer_type=DiscordTypes.START_GEN).last()
                     if telegram_message:
                         if not discord_message.get("components"):
                             all_messages = False
