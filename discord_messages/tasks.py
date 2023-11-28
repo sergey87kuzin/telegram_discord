@@ -99,6 +99,21 @@ def get_discord_messages():
                             telegram_message.seed = seed
                             telegram_message.answer_type = DiscordTypes.GOT_SEED
                             telegram_message.answer_sent = True
+                        elif "Zoom out" in content:
+                            telegram_message = Message.objects.filter(
+                                Q(eng_text__iexact=request_text)
+                                | Q(text__iexact=request_text)
+                                | Q(no_ar_text__iexact=request_text)
+                            ).filter(answer_type=DiscordTypes.START_GEN).filter(
+                                Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
+                            ).last()
+                            if not telegram_message:
+                                no_ar_request_text = request_text.split(" --")[0]
+                                telegram_message = Message.objects.filter(
+                                    Q(eng_text__iexact=no_ar_request_text)
+                                    | Q(text__iexact=no_ar_request_text)
+                                    | Q(no_ar_text__iexact=no_ar_request_text)
+                                ).filter(answer_type=DiscordTypes.START_GEN).last()
                         telegram_message.discord_message_id = discord_message.get("id")
                         for line in discord_message.get("components"):
                             for component in line.get("components"):
