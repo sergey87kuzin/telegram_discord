@@ -98,6 +98,11 @@ class GetTelegramMessage(APIView):
                     message_text = first_message.eng_text
                 no_ar_text = first_message.no_ar_text
             else:
+                user = User.objects.first()
+                bot.send_message(
+                    chat_id=user.chat_id,
+                    text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
+                )
                 return Response(HTTPStatus.BAD_REQUEST)
         if not user.date_of_payment or user.date_payment_expired < now():
             bot.send_message(
