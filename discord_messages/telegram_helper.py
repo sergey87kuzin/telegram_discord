@@ -83,9 +83,9 @@ def handle_command(message):
     if message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
-            preset.replace("  ", " ").replace("—", "--").replace(" ::", "::").replace("-- ", "--")
+            preset = preset.replace("  ", " ").replace("—", "--").replace(" ::", "::").replace("-- ", "--")
             if re.findall("::\S+", preset):
-                preset.replace("::", ":: ")
+                preset = preset.replace("::", ":: ")
             user = User.objects.filter(username=username).first()
             if not preset.startswith(" "):
                 preset = f" {preset}"
