@@ -15,7 +15,7 @@ def send_imagine():
     data = {
         "prompt": "red mushroom and a mouse",
         "webhook_url": "https://fbe66fee4b02eab1768fbad23f828928.serveo.net/api/discord_messages/discord-webhook/",
-        "webhook_type": "result",
+        "webhook_type": "progress",
         "account_hash": account_hash,
         "is_disable_prefilter": False
     }

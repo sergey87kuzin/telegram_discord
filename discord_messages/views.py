@@ -43,7 +43,8 @@ class GetTelegramMessage(APIView):
             if not message_text:
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
                 return Response(HTTPStatus.BAD_REQUEST)
-            message_text = message.get("text").replace("—", "--").replace(" ::", "::").replace("  ", " ")
+            message_text = message.get("text")\
+                .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
             if re.findall("::\S+", message_text):
                 message_text.replace("::", ":: ")
             after_create_message_text = message_text
@@ -70,6 +71,9 @@ class GetTelegramMessage(APIView):
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
                 return Response(HTTPStatus.BAD_REQUEST)
+            if user.preset:
+                message_text = message_text + user.preset
+                eng_text = eng_text + user.preset
         else:
             button_data = request.data.get("callback_query")
             if button_data:
