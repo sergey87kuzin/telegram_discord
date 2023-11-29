@@ -141,7 +141,7 @@ def get_discord_messages():
                         telegram_message.refresh_from_db()
                     else:
                         logger.warning(f"Не нашлось сообщение от дискорда, {request_text}")
-            if all_messages:
+            if all_messages or len(data) == 100:
                 account.last_message_id = data[0].get("id")
                 account.save()
         else:
