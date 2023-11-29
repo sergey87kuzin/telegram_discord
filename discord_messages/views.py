@@ -43,7 +43,7 @@ class GetTelegramMessage(APIView):
             if not message_text:
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
                 return Response(HTTPStatus.BAD_REQUEST)
-            message_text = message.get("text").replace("—", "--").replace(" ::", "::")
+            message_text = message.get("text").replace("—", "--").replace(" ::", "::").replace("  ", " ")
             if re.findall("::\S+", message_text):
                 message_text.replace("::", ":: ")
             after_create_message_text = message_text
@@ -227,3 +227,18 @@ class GetTelegramMessage(APIView):
             logger.warning(f"message info: {message_text}")
             status = send_message_to_discord(message_text, account, connection)
         return status
+
+
+class GetDiscordMessage(APIView):
+
+    def post(self, request):
+        data = request.data
+        print("post", data)
+
+        return Response(HTTPStatus.OK)
+
+    def get(self, request):
+        data = request.data
+        print("get", data)
+
+        return Response(HTTPStatus.OK)

@@ -20,6 +20,12 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    preset = models.CharField(
+        "Суффикс для всех сообщений пользователя",
+        max_length=128,
+        blank=True,
+        null=True
+    )
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()

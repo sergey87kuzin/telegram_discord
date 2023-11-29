@@ -68,6 +68,7 @@ def handle_command(message):
     """
     message_text = message.get("text")
     chat_id = message.get("chat").get("id")
+    username = message.get("from", {}).get("username")
     if message_text == "/help":
         bot.send_message(
             chat_id,
@@ -77,6 +78,19 @@ def handle_command(message):
                 Техподдержка: {settings.TECH_BOT_URL}
             """
         )
+    if message_text.startswith("/preset"):
+        preset = message_text.replace("/preset", "")
+        if preset and preset != " ":
+            user = User.objects.filter(username=username).first()
+            if not preset.startswith(" "):
+                preset = f" {preset}"
+            try:
+                user.preset = preset
+                user.save()
+            except Exception:
+                bot.send_message(chat_id, "Некорректное значение")
+                return
+            bot.send_message(chat_id, f"Установлен новый суффикс: '{preset }'")
 
 
 def add_four_pics_buttons(buttons: list, message_id: int):
