@@ -59,6 +59,10 @@ class GetTelegramMessage(APIView):
                 bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
                 return Response(HTTPStatus.BAD_REQUEST)
             eng_text = translator.translate(message_text)
+            if not eng_text:
+                logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
+                bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+                return Response(HTTPStatus.BAD_REQUEST)
             no_ar_text = eng_text.split(" --")[0]
             message_type = DiscordTypes.START_GEN
             user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
@@ -112,6 +116,15 @@ class GetTelegramMessage(APIView):
                 message_type = DiscordTypes.UPSCALED
                 # переменная для определения типа сообщения после создания
                 after_create_message_text = message_text
+                if message_text.startswith("button_upscale"):
+                    url = "https://ya.ru/search/?text=topaz+gigapixel+ai&lr=2&" \
+                          "search_source=yaru_desktop_common&search_domain=yaru&src=suggest_B"
+                    bot.send_message(
+                        chat_id=chat_id,
+                        text=f"<a href='{url}'>Скачайте увеличенное фото тут</a>",
+                        parse_mode="HTML"
+                    )
+                    return Response(HTTPStatus.OK)
                 if message_text.startswith("button_u&&"):
                     answer_text = "Увеличиваем"
                 if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
