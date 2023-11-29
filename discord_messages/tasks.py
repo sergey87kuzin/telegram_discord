@@ -99,7 +99,7 @@ def get_discord_messages():
                             telegram_message.seed = seed
                             telegram_message.answer_type = DiscordTypes.GOT_SEED
                             telegram_message.answer_sent = True
-                        elif "Zoom out" in content:
+                        elif "Zoom Out" in content or "Upscaled" in content:
                             telegram_message = Message.objects.filter(
                                 Q(eng_text__iexact=request_text)
                                 | Q(text__iexact=request_text)
