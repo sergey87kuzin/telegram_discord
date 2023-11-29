@@ -121,7 +121,7 @@ class GetTelegramMessage(APIView):
                           "search_source=yaru_desktop_common&search_domain=yaru&src=suggest_B"
                     bot.send_message(
                         chat_id=chat_id,
-                        text=f"<a href='{url}'>Скачайте увеличенное фото тут</a>",
+                        text=f"<a href='{url}'>Upscale временно недоступен, используйте топаз</a>",
                         parse_mode="HTML"
                     )
                     return Response(HTTPStatus.OK)
