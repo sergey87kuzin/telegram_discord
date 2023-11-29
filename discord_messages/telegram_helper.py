@@ -83,10 +83,15 @@ def handle_command(message):
     if message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
+            user = User.objects.filter(username=username).first()
+            if preset.endswith("delete"):
+                user.preset = ""
+                user.save()
+                bot.send_message(chat_id, "Суффикс удален")
+                return
             preset = preset.replace("  ", " ").replace("—", "--").replace(" ::", "::").replace("-- ", "--")
             if re.findall("::\S+", preset):
                 preset = preset.replace("::", ":: ")
-            user = User.objects.filter(username=username).first()
             if not preset.startswith(" "):
                 preset = f" {preset}"
             try:
