@@ -71,7 +71,7 @@ class GetTelegramMessage(APIView):
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
                 return Response(HTTPStatus.BAD_REQUEST)
-            if user.preset:
+            if user.preset and user.preset not in message_text and user.preset not in eng_text:
                 message_text = message_text + user.preset
                 eng_text = eng_text + user.preset
         else:
