@@ -26,7 +26,8 @@ class UserAdmin(BaseUserAdmin):
             "date_of_payment",
             "date_payment_expired",
             "is_active",
-            "account"
+            "account",
+            "preset"
         )}),
     )
     ordering = ["-id"]
