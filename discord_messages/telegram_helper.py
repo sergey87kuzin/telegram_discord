@@ -96,6 +96,8 @@ def handle_command(message):
                 bot.send_message(chat_id, "Некорректное значение")
                 return
             bot.send_message(chat_id, f"Установлен новый суффикс: '{preset }'")
+            return
+        bot.send_message(chat_id, "Некорректное значение")
 
 
 def add_four_pics_buttons(buttons: list, message_id: int):
