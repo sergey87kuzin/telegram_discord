@@ -88,11 +88,14 @@ class GetTelegramMessage(APIView):
                             )
                         buttons.append(item)
                 buttons_markup.add(*buttons)
-                bot.edit_message_reply_markup(
-                    message_id=button_data.get("message").get("message_id"),
-                    reply_markup=buttons_markup,
-                    chat_id=chat_id
-                )
+                try:
+                    bot.edit_message_reply_markup(
+                        message_id=button_data.get("message").get("message_id"),
+                        reply_markup=buttons_markup,
+                        chat_id=chat_id
+                    )
+                except Exception:
+                    pass
                 message_text = button_data.get("data")
                 chat_username = button_data.get("from", {}).get("username")
                 if not message_text or not chat_username or not chat_id:
