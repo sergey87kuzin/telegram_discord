@@ -3,15 +3,17 @@ import time
 
 import requests
 from celery import shared_task
+from deep_translator import GoogleTranslator
 from django.conf import settings
 from django.db.models import Q
+from django.utils.timezone import now
 from telebot import types
 
 from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import DiscordHelper
 from discord_messages.models import DiscordAccount, Message, DiscordConnection
-from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons
-
+from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons, \
+    handle_message
 
 logger = logging.getLogger(__name__)
 
@@ -217,3 +219,25 @@ def send_messages_to_telegram():
         if message.seed:
             message.seed_send = True
         message.save()
+
+
+@shared_task()
+def handle_image_telegram_message(message: dict, callback_query: dict = {}):
+    photos = message.get("photo")
+    image_url = ""
+    try:
+        chat_username = message.get("chat", {}).get("username")
+        photo_id = photos[1].get("file_id")
+        file_info = bot.get_file(photo_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        file_name = f"{chat_username}, {now()}.jpg"
+        with open(f"media/messages/{file_name}", 'wb') as new_file:
+            new_file.write(downloaded_file)
+        image_url = settings.SITE_DOMAIN + "/media/messages/" + file_name
+    except Exception as e:
+        pass
+
+    translator = GoogleTranslator(source='auto', target='en')
+    answer_text = "Творим волшебство"
+
+    return handle_message(message, translator, callback_query, answer_text, image_url)
