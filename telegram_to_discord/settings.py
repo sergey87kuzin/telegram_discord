@@ -232,6 +232,8 @@ CKEDITOR_CONFIGS = {
                 "Table",
             ],
             ["Image", "Link", "Unlink", "Anchor", "SectionLink", "Subscript", "Superscript"],
+            ['Styles', 'Format', 'Font', 'FontSize'],
+            ['TextColor', 'BGColor'],
             ["Undo", "Redo"],
             ["Source"],
             ["Maximize"],
