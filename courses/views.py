@@ -71,7 +71,6 @@ class CourseView(ListView):
         return Lesson.objects.filter(
             course_id=self.kwargs.get("course_id"),
             is_active=True,
-            is_free=True
         ).annotate(
             can_see=Case(
                 When(

@@ -64,10 +64,14 @@ body
         color: white;
     }
 
+    .image_style {
+        height: 320px;
+    }
+
     @media screen and (max-width: 959px) {
         .width-to-media {
             width: 100%;
-            min-width: 540px;
+            min-width: 400px;
         }
         .max-height-300 {
             max-height: 100px;
@@ -90,6 +94,9 @@ body
             font-size: 26px;
             line-height: 3;
             color: black;
+        }
+        .image_style {
+            height: 320px;
         }
     }
     .black_input {

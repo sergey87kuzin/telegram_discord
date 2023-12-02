@@ -3,9 +3,10 @@
     <div class="card">
         {% if lesson.can_see %}
             {% load thumbnail %}
-            {% thumbnail lesson.cover '320x320' crop='center' upscale=True as im %}
-                <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">
-            {% endthumbnail %}
+{#            {% thumbnail lesson.cover '320x320' crop='center' upscale=True as im %}#}
+{#                <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">#}
+{#            {% endthumbnail %}#}
+            <img src="{{ lesson.cover.url }}" class="card-img-top image_style" />
           <div class="card-body">
             <h5 class="card-title">{{ lesson.name }}</h5>
             <a href="{% url 'courses:single_lesson' lesson.id %}" class="btn btn-primary">Перейти к уроку</a>
@@ -14,6 +15,7 @@
             {% thumbnail lesson.cover_blocked '320x320' crop='center' upscale=True as im %}
                 <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">
             {% endthumbnail %}
+{#            <img src="{{ lesson.cover_blocked.url }}" class="card-img-top" />#}
         {% endif %}
     </div>
 </div>
