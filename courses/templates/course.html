@@ -12,10 +12,13 @@
             <div class="course-card-body">
                 <span>{{ course_description }}</span>
             </div>
-            <div class="row row-cols-3 g-3">
-            {% for lesson in lessons %}
-                {% include "includes/lesson_card.html" %}
-            {% endfor %}
+{#            <div class="row row-cols-3 g-3">#}
+            <div class='row card-group'>
+                {% for lesson in lessons %}
+                    <div class="col-4">
+                    {% include "includes/lesson_card.html" %}
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

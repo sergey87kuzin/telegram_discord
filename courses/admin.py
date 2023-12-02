@@ -34,6 +34,7 @@ class LessonAdmin(admin.ModelAdmin):
     list_display = (
         "course",
         "name",
+        "order",
         "description",
         "cover",
     )

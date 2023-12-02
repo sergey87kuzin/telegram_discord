@@ -1,14 +1,19 @@
 
 <div class="col">
     <div class="card">
-        {% load thumbnail %}
-        {% thumbnail lesson.cover '320x320' crop='center' upscale=True as im %}
-            <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">
-        {% endthumbnail %}
-      <div class="card-body">
-        <h5 class="card-title">{{ lesson.name }}</h5>
-        <p class="card-text">{{ lesson.description }}</p>
-        <a href="{% url 'courses:single_lesson' lesson.id %}" class="btn btn-primary">Перейти к уроку</a>
-      </div>
+        {% if lesson.can_see %}
+            {% load thumbnail %}
+            {% thumbnail lesson.cover '320x320' crop='center' upscale=True as im %}
+                <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">
+            {% endthumbnail %}
+          <div class="card-body">
+            <h5 class="card-title">{{ lesson.name }}</h5>
+            <a href="{% url 'courses:single_lesson' lesson.id %}" class="btn btn-primary">Перейти к уроку</a>
+          </div>
+        {% else %}
+            {% thumbnail lesson.cover_blocked '320x320' crop='center' upscale=True as im %}
+                <img class='card-img' src='{{ im.url }}' alt="{{ course_name }}">
+            {% endthumbnail %}
+        {% endif %}
     </div>
 </div>
