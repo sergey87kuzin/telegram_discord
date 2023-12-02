@@ -18,7 +18,7 @@ class LessonTextBlockAdminForm(forms.ModelForm):
 
 @admin.register(LessonTextBlock)
 class LessonTextBlockAdmin(admin.ModelAdmin):
-    list_display = ["lesson", "text", "order", "is_active"]
+    list_display = ["lesson", "order", "is_active", "text"]
     search_fields = ["lesson__name", "text"]
     list_filter = ["lesson__name", "is_active"]
     form = LessonTextBlockAdminForm

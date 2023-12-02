@@ -78,7 +78,7 @@ class LessonTextBlock(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Урок",
     )
-    image = models.ImageField("Картинка")
+    image = models.ImageField("Картинка", blank=True, null=True)
     text = RichTextUploadingField("Текст к картинке", blank=True, null=True)
     order = models.PositiveIntegerField("Порядок", default=1)
     is_active = models.BooleanField("Активен", default=True)
@@ -86,7 +86,7 @@ class LessonTextBlock(models.Model):
     class Meta:
         verbose_name = "Блок урока"
         verbose_name_plural = "Блоки уроков"
-        ordering = ("order",)
+        ordering = ("lesson_id", "order",)
 
 
 class UserCourses(models.Model):
