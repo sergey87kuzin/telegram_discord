@@ -8,7 +8,9 @@
         </div>
         <div class="card-body">
             <span>{{ lesson.description }}</span>
-            <div>{{ lesson.video_url|safe }}</div>
+            {% if lesson.video_url %}
+                <div>{{ lesson.video_url|safe }}</div>
+            {% endif %}
             {% for block in blocks %}
                 {% include "includes/lesson_block_card.html" %}
             {% endfor %}
