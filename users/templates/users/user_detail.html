@@ -7,131 +7,55 @@
 
 
 {% block content %}
-<div class="n-container-desktop" id="profile" class="profile" data-profile="{% url 'api-users:profile:profile' %}"
-data-user-change-password="{% url 'api-users:profile:change-password' %}"
-data-user-id="{{ user.id }}">
-    <div class="profile__bg">
+<div class="col d-flex justify-content-center">
+    <div class="width-to-media">
         <div class="n-container">
             <div class="container-fluid">
                 <div class="profile__username">
                     <div class="row">
                         <div class="col-12  right">
-                            <a href="{% url 'auth:logout' %}" class="profile__logout">Выход</a>
+                            <a href="{% url 'auth:logout' %}" class="profile__logout" style="color: black;">Выход</a>
                         </div>
                         <div class="col-12">
-                            <div class="profile__name">Здравствуйте, {{ request.user.username }}!</div>
+                            <div class="profile__name" style="color: black;">Здравствуйте, {{ request.user.username }}!</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12  col-md-7  col-xl-6">
-        <a class="btn" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+        <div style="text-align: center">
+            БОТ
         </div>
-        <div>
-        <a class="btn" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
-        </div>
-    </div>
-    <div class="n-container">
-        <div class="profile__content  mh">
-            <div class="container-fluid">
-                <form class="form ajax-login-form" data-url="{% url 'api-users:profile:profile-update' %}" method="post">
-                {% csrf_token %}
-                    <div class="row">
-                        <div class="col-12  col-md-7  col-xl-6">
-                            <h1 class="profile__title">Личные данные</h1>
-                            <div class="row  no-gutters">
-                                <div class="col-12  col-md-10  col-lg-9  col-xl-7">
-                                    {% if user.date_of_payment %}
-                                    <div class="custom_form-group">
-                                        <span class="header_span">
-                                            Дата последней оплаты
-                                        </span>
-                                        <input class="black_input" type="text"
-                                               value="{{ user.date_of_payment }}"
-                                               data-val="{{ user.date_of_payment }}"
-                                               autocomplete="name" readonly
-                                               placeholder="Дата последней оплаты"
-                                        >
-                                        <span class="error"></span>
-                                    </div>
-                                    <div class="custom_form-group">
-                                        <span class="header_span">
-                                            Дата окончания оплаченного периода
-                                        </span>
-                                        <input class="black_input" type="text"
-                                               value="{{ user.date_payment_expired }}"
-                                               data-val="{{ user.date_payment_expired }}"
-                                               autocomplete="surname" readonly
-                                               placeholder="Дата окончания оплаченного периода"
-                                        >
-                                        <span class="error"></span>
-                                    </div>
-                                    {% else %}
-                                        <div class="custom_form-group">
-                                        <span>
-                                            У вас еще не было оплат
-                                        </span>
-                                        </div>
-                                    {% endif %}
-                                    <div class="custom_form-group">
-                                        <span class="header_span">
-                                            Имя
-                                        </span>
-                                        <input class="black_input" type="text" name="name" id="name"
-                                               value="{{ user.first_name }}" data-val="{{ user.first_name }}"
-                                               autocomplete="name"
-                                               placeholder="Имя"
-                                        >
-                                        <span class="error"></span>
-                                    </div>
-                                    <div class="custom_form-group">
-                                        <span class="header_span">
-                                            Фамилия
-                                        </span>
-                                        <input class="black_input" type="text" name="surname" id="surname"
-                                               value="{{ user.last_name }}" data-val="{{ user.last_name }}"
-                                               autocomplete="surname"
-                                               placeholder="Фамилия"
-                                        >
-                                        <span class="error"></span>
-                                    </div>
-                                    <div class="custom_form-group">
-                                        <span class="header_span">
-                                            Ваш e-mail
-                                        </span>
-                                        <input class="black_input" type="email" name="email" id="email"
-                                               data-val="{{ user.email }}" value="{{ user.email }}"
-                                               autocomplete="email"
-                                               placeholder="Ваш e-mail"
-                                        >
-                                        <span class="error"></span>
-                                    </div>
-                                    <div class="updprof-error" style="margin-bottom: 10px;"></div>
-                                    <input type="submit" class="profile__submit btn" name="login-updprof-btn" value="Сохранить">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12  col-md-5  col-xl-6">
-                            <div class="row  no-gutters">
-                                <div class="col-12  col-lg-8  col-xl-7">
-                                    <h2 class="profile__title">Пароль</h2>
-                                    <div class="profile__col">
-                                        <button class="profile__change-password" type="button">
-                                            <span>Изменить пароль</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+        <br><br>
+        <div class="row">
+            <div class="col-3 text_in_center dark-green-background">
+                {% if user.date_of_payment %}
+                    <span class="black_text">
+                        До:   {{ user.date_payment_expired }}
+                    </span>
+                {% else %}
+                    <span class="black_text">
+                        У вас еще не было оплат
+                    </span>
+                {% endif %}
+            </div>
+            <div class="col-3 text_in_center dark-green-background">
+                    <span class="col-12 black_text">
+                        Оставшиеся генерации:  {{ user.remain_messages }}
+                    </span>
+            </div>
+            <div class="col-3">
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+            </div>
+            <div class="col-3">
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
             </div>
         </div>
+        <br><br>
+        <div style="text-align: center">
+            КУРСЫ
+        </div>
+        <br><br>
     </div>
 </div>
-
-{% include 'users/modal-change-password.html' %}
 {% endblock %}

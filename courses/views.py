@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Value, Q
+from django.db.models import F, Value, Q, Case, When
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.timezone import now
@@ -48,27 +48,38 @@ class CourseView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and UserCourses.objects.filter(
-            id=self.kwargs.get("course_id"),
-            user=user
-        ):
-            user_course = UserCourses.objects.filter(
-                user=self.request.user,
+        if user.is_authenticated:
+            if user_course := UserCourses.objects.filter(
                 course_id=self.kwargs.get("course_id"),
+                user=user,
                 course__is_active=True,
                 expires_at__gte=now()
-            ).first()
-            finished_lessons = user_course.finished_lessons if user_course else []
-            return Lesson.objects.filter(
-                course_id=self.kwargs.get("course_id"),
-                is_active=True,
-            ).filter(
-                Q(is_free=True) | Q(previous_lesson_id__in=finished_lessons)
-            ).order_by("order", "id").distinct()
+            ).first():
+                finished_lessons = user_course.finished_lessons if user_course else []
+                return Lesson.objects.filter(
+                    course_id=self.kwargs.get("course_id"),
+                    is_active=True,
+                ).annotate(
+                    can_see=Case(
+                        When(
+                            Q(is_free=True) | Q(previous_lesson_id__in=finished_lessons),
+                            then=True
+                        ),
+                        default=False
+                    )
+                ).order_by("order", "id").distinct()
         return Lesson.objects.filter(
             course_id=self.kwargs.get("course_id"),
             is_active=True,
             is_free=True
+        ).annotate(
+            can_see=Case(
+                When(
+                    is_free=True,
+                    then=True
+                ),
+                default=False
+            )
         ).order_by("order", "id").distinct()
 
     def get_context_data(self, *, object_list=None, **kwargs):

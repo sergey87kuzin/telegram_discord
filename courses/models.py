@@ -66,7 +66,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
-        ordering = ("course_id",)
+        ordering = ("course_id", "order")
 
     def __str__(self):
         return f"Урок {self.name} курса {self.course.name}"

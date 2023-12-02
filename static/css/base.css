@@ -16,6 +16,15 @@ body
     {
         body {height: 2208px;background-attachment: scroll;}
     }
+
+    .text_in_center {
+        display: flex;
+        align-items: center;
+    }
+    .black_text {
+        color: black;
+    }
+
     .dark-green-background {
         background-color: #acbb86;
     }
