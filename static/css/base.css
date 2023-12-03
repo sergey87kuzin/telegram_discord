@@ -44,16 +44,17 @@ body
         -webkit-writing-mode: horizontal-tb !important;
         -webkit-appearance: button;
         border-width: 1px;
-        min-height: 30px;
+        min-height: 50px;
         width: 100%;
         border-radius: 10px;
         background-color: #acbb86;
         color: #ffffff;
-        padding: 7px 7px 2px;
+        padding: 17px 17px 2px;
         text-rendering: auto;
         text-align: center;
         vertical-align: center;
-        font: 400 16px Arial thin;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
         display: inline-block;
     }
 
@@ -66,16 +67,17 @@ body
         -webkit-writing-mode: horizontal-tb !important;
         -webkit-appearance: button;
         border-width: 1px;
-        min-height: 30px;
+        min-height: 50px;
         width: 100%;
         border-radius: 10px;
         background-color: #B0B0B0;
         color: #ffffff;
-        padding: 7px 7px 2px;
+        padding: 17px 17px 2px;
         text-rendering: auto;
         text-align: center;
         vertical-align: center;
-        font: 400 16px Arial thin;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
         display: inline-block;
     }
 
