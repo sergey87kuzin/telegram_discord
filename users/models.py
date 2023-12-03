@@ -38,5 +38,6 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return self.username
 
+    @property
     def get_bot_end(self):
-        return str(self.date_payment_expired) or "Оплат пока не было(("
+        return self.date_payment_expired.strftime("%d-%m-%Y %H:%M") or "Оплат пока не было(("
