@@ -8,7 +8,6 @@
 {#            {% endthumbnail %}#}
             <img src="{{ lesson.cover.url }}" class="card-img-top image_style" />
           <div class="card-body">
-            <h5 class="card-title">{{ lesson.name }}</h5>
             <a href="{% url 'courses:single_lesson' lesson.id %}" class="green-grey-button">Перейти к уроку</a>
           </div>
         {% else %}
@@ -17,7 +16,6 @@
 {#            {% endthumbnail %}#}
             <img src="{{ lesson.cover_blocked.url }}" class="card-img-top image_style" />
             <div class="card-body">
-            <h5 class="card-title">{{ lesson.name }}</h5>
             <a href="{% url 'orders:create' %}?course_id={{ course_id }}" class="green-grey-button-disable">Купить курс</a>
           </div>
         {% endif %}
