@@ -105,7 +105,7 @@ def handle_command(message):
             return
         bot.send_message(chat_id, "Некорректное значение")
     if message_text == "/format":
-        presets = (("3:2",  "--ar 3:2"), ("2:3", " --ar 2:3"), ("16:9", " --ar 16:9"), ("9:16", " --ar 9:16"))
+        presets = (("3:2",  " --ar 3:2"), ("2:3", " --ar 2:3"), ("16:9", " --ar 16:9"), ("9:16", " --ar 9:16"))
         buttons_menu_markup = types.InlineKeyboardMarkup()
         buttons_menu_markup.row_width = 3
         buttons = []
