@@ -80,6 +80,7 @@ def handle_command(message):
                 Техподдержка: {settings.TECH_BOT_URL}
             """
         )
+        return
     if message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
@@ -103,7 +104,137 @@ def handle_command(message):
             bot.send_message(chat_id, f"Установлен новый суффикс: '{preset }'")
             return
         bot.send_message(chat_id, "Некорректное значение")
+    if message_text == "/format":
+        presets = (("3:2",  "--ar 3:2"), ("2:3", " --ar 2:3"), ("16:9", " --ar 16:9"), ("9:16", " --ar 9:16"))
+        buttons_menu_markup = types.InlineKeyboardMarkup()
+        buttons_menu_markup.row_width = 3
+        buttons = []
+        for preset in presets:
+            format_button = types.InlineKeyboardButton(
+                preset[0],
+                callback_data=f"preset&&{preset[1]}"
+            )
+            buttons.append(format_button)
+        del_format_button = types.InlineKeyboardButton(
+            "Удалить",
+            callback_data="preset&&del"
+        )
+        buttons.append(del_format_button)
+        info_format_button = types.InlineKeyboardButton(
+            "Инфо",
+            callback_data="preset&&info"
+        )
+        buttons.append(info_format_button)
+        buttons_menu_markup.add(*buttons)
+        bot.send_message(chat_id, "Какой формат будет?", reply_markup=buttons_menu_markup)
+        return
+    if message_text == "/mybot":
+        user = User.objects.filter(username__iexact=username, is_active=True).first()
+        if not user:
+            bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
+        info_text = f"""
+        Доступ до: {user.date_payment_expired}\n
+        Доступные генерации: {user.remain_messages}\n
+        """
+        my_bot_reply_markup = types.InlineKeyboardMarkup()
+        buttons = []
+        del_format_button = types.InlineKeyboardButton(
+            "Продлить",
+            # Установить нужную ссылку для продления
+            url="https://ya.ru"
+        )
+        buttons.append(del_format_button)
+        my_bot_reply_markup.add(*buttons)
+        bot.send_message(chat_id, text=info_text, reply_markup=my_bot_reply_markup)
+        return
+    if message_text == "/instruction":
+        instruction_text = """
+        ▪️Бот рисует в нейросети Midjourney v.5.2
+
+        ✅ 10 подарочных генераций каждый месяц 1 числа. Подарки не суммируются и сгорают в конце месяца.
+
+        ▪️Полученные изображения можно загружать на фотобанки для продажи. AdobeStock, FreePik, 123rf, Dreamstime
+
+        Как генерировать изображения?
+
+        ▪️1. Боту можно писать на русском и английском языке
+
+        ▪️2. Напишите, что вы хотите увидеть на изображении
+
+        ▪️ 3. Самое главное по смыслу слово всегда ставьте ближе к началу запроса
+
+        ▪️ 4. Чем более полным будет описание, тем легче нейросети рисовать
+
+        ▪️ 5. Можно добавлять стили изображений и параметры съемки в запрос
+
+        ▪️ 6. Выберите в меню формат изображения
+
+        ▪️ 7. Увеличить понравившийся кадр можно кнопками U1,U2,U3,U4
+
+        ▪️ 8. После увеличения изображение можно отдалить(ZoomOut), увеличить в 2 раза(Upscale2x) и изменить его, сделав вариации.
+
+        ✅ 9. Увеличивайте то, что вам нравится, СРАЗУ, чтобы не потерять.
+
+        ❌ 10. Кнопки под изображениями активны в течение суток от создания изображения.
+
+        ▪️ 11. Созданные и увеличенные изображения из бота не пропадают, сохранить на устройство вы сможете через любое время.
+
+        ▪️ 12. Каждая операция Upscale(2x) занимает 4 минуты и дольше, если вы генерите много изображений, лучше сохранять их на устройство после U1,U2,U3,U4, а увеличивать пакетно в программе Topaz Gigapixel 
+
+        ‼️ Когда готово будет‼️▪️ 13. Вы можете добавить свое изображение и написать запрос для нейросети, бот нарисует новое изображение на основе вашего.
+
+        ⏰ Терпение! Время генерации от 1 до 15 минут.
+
+        На сайте: 
+        ✅подробные видеоинструкции про работу с ботом, шпаргалки описаний, стилей, запрещенных слов 
+
+        ✅как продавать картинки через интернет на фотобанках
+        """
+        info_reply_markup = types.InlineKeyboardMarkup()
+        buttons = []
+        info_button = types.InlineKeyboardButton(
+            "Перейти на сайт",
+            # Установить нужную ссылку для продления
+            url="https://ya.ru"
+        )
+        buttons.append(info_button)
+        info_reply_markup.add(*buttons)
+        bot.send_message(chat_id, text=instruction_text, reply_markup=info_reply_markup)
+        return
+    if message_text == "/support":
+        bot.send_message(chat_id, text="Мы работаем над этим")
+        return
+    if message_text == "/payment":
+        bot.send_message(chat_id, text="Чуть позже")
+        return
+    if message_text == "/lessons":
+        bot.send_message(chat_id, text="Чуть позже")
+        return
     bot.send_message(chat_id, "Некорректное значение")
+
+
+def preset_handler(chat_id, chat_username, message_text):
+    preset = message_text.split("&&")[-1]
+    user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
+    if not user:
+        bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
+        return
+    if preset == "info":
+        info_text = """
+        ▪️По умолчанию изображения создаются квадратными 1:1
+
+        ▪️Ваши изображения будут создаваться в выбранном формате до тех пор, пока вы не выберете другой, либо не удалите выбранный.
+
+        ▪️Чтобы создавать изображения в любом другом формате, нужно удалить предыдущий и дописать в конце запроса « --ar 4:5» (или по-русски « --ар 4:5») , где  4:5 - соотношение сторон. Собственный формат не сохраняется, добавлять к запросу каждый раз."""
+        bot.send_message(chat_id, text=info_text)
+    elif preset == "del":
+        user.preset = ""
+        user.save()
+        bot.send_message(chat_id, text="Формат удален")
+    else:
+        user.preset = preset
+        user.save()
+        bot.send_message(chat_id, text=f"Установлен формат {preset}")
 
 
 def add_four_pics_buttons(buttons: list, message_id: int):

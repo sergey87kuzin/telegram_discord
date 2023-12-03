@@ -14,7 +14,7 @@ from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import send_message_to_discord, DiscordHelper, \
     send_u_line_button_command_to_discord, get_message_seed, send_vary_strong_message, send_vary_soft_message
 from discord_messages.models import Message, DiscordConnection, DiscordAccount
-from discord_messages.telegram_helper import bot, handle_start_message, handle_command
+from discord_messages.telegram_helper import bot, handle_start_message, handle_command, preset_handler
 from users.models import User
 
 
@@ -78,6 +78,11 @@ class GetTelegramMessage(APIView):
             button_data = request.data.get("callback_query")
             if button_data:
                 chat_id = button_data.get("from", {}).get("id")
+                message_text = button_data.get("data")
+                chat_username = button_data.get("from", {}).get("username")
+                if message_text.startswith("preset&&"):
+                    preset_handler(chat_id, chat_username, message_text)
+                    return Response(HTTPStatus.OK)
                 reply_markup = button_data.get("message").get("reply_markup")
                 buttons_markup = types.InlineKeyboardMarkup()
                 buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
@@ -104,8 +109,6 @@ class GetTelegramMessage(APIView):
                     )
                 except Exception:
                     pass
-                message_text = button_data.get("data")
-                chat_username = button_data.get("from", {}).get("username")
                 if not message_text or not chat_username or not chat_id:
                     logger.warning(f"Ошибка кнопки чата. {chat_id}, {chat_username}, {message_text}")
                     bot.send_message(chat_id=chat_id, text="С этой кнопкой что-то не так")

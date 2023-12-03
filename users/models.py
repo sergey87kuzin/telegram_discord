@@ -37,3 +37,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+
+    def get_bot_end(self):
+        return str(self.date_payment_expired) or "Оплат пока не было(("
