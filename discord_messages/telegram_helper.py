@@ -105,9 +105,17 @@ def handle_command(message):
             return
         bot.send_message(chat_id, "Некорректное значение")
     if message_text == "/format":
-        presets = (("3:2",  " --ar 3:2"), ("2:3", " --ar 2:3"), ("16:9", " --ar 16:9"), ("9:16", " --ar 9:16"))
+        presets = (
+            ("3:2",  " --ar 3:2"),
+            ("2:3", " --ar 2:3"),
+            ("16:9", " --ar 16:9"),
+            ("9:16", " --ar 9:16"),
+            ("3:1", " --ar 3:1"),
+            ("Удалить", "preset&&del"),
+            ("Инфо", "preset&&info")
+        )
         buttons_menu_markup = types.InlineKeyboardMarkup()
-        buttons_menu_markup.row_width = 3
+        buttons_menu_markup.row_width = 4
         buttons = []
         for preset in presets:
             format_button = types.InlineKeyboardButton(
@@ -115,16 +123,6 @@ def handle_command(message):
                 callback_data=f"preset&&{preset[1]}"
             )
             buttons.append(format_button)
-        del_format_button = types.InlineKeyboardButton(
-            "Удалить",
-            callback_data="preset&&del"
-        )
-        buttons.append(del_format_button)
-        info_format_button = types.InlineKeyboardButton(
-            "Инфо",
-            callback_data="preset&&info"
-        )
-        buttons.append(info_format_button)
         buttons_menu_markup.add(*buttons)
         bot.send_message(chat_id, "Какой формат изображения будет?", reply_markup=buttons_menu_markup)
         return

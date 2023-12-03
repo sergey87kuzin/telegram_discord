@@ -35,9 +35,53 @@ body
         max-height: 300px;
     }
     .width-to-media {
-        width: 960px;
-        min-width: 960px;
+        width: 100%;
+        /*min-width: 960px;*/
         max-width: 960px;
+    }
+
+    .green-grey-button {
+        -webkit-writing-mode: horizontal-tb !important;
+        -webkit-appearance: button;
+        border-width: 1px;
+        min-height: 30px;
+        width: 100%;
+        border-radius: 10px;
+        background-color: #acbb86;
+        color: #ffffff;
+        padding: 7px 7px 2px;
+        text-rendering: auto;
+        text-align: center;
+        vertical-align: center;
+        font: 400 16px Arial thin;
+        display: inline-block;
+    }
+
+    .green-grey-button:hover {
+        background-color: #C1CCA6;
+        color: #ffffff;
+    }
+
+    .green-grey-button-disable {
+        -webkit-writing-mode: horizontal-tb !important;
+        -webkit-appearance: button;
+        border-width: 1px;
+        min-height: 30px;
+        width: 100%;
+        border-radius: 10px;
+        background-color: #B0B0B0;
+        color: #ffffff;
+        padding: 7px 7px 2px;
+        text-rendering: auto;
+        text-align: center;
+        vertical-align: center;
+        font: 400 16px Arial thin;
+        display: inline-block;
+    }
+
+    .green-grey-button-disable:hover {
+        background-color: #C1CCA6;
+        color: #ffffff;
     }
 
     .my-menu-link {
@@ -65,13 +109,13 @@ body
     }
 
     .image_style {
-        height: 320px;
+        height: 300px;
     }
 
     @media screen and (max-width: 959px) {
         .width-to-media {
             width: 100%;
-            min-width: 400px;
+            min-width: 250px;
         }
         .max-height-300 {
             max-height: 100px;
