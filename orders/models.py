@@ -1,5 +1,6 @@
 from django.db import models
 
+from courses.models import Course
 from users.models import User
 
 
@@ -19,8 +20,19 @@ class Order(models.Model):
         blank=True,
         null=True
     )
+    # срок оплаты бота
     days = models.PositiveIntegerField(
         "Дней для оплаты",
+        blank=True,
+        null=True
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.SET_NULL,
+        related_name="orders",
+        verbose_name="Курс",
+        blank=True,
+        null=True
     )
     payment_status = models.CharField(
         "Статус оплаты",

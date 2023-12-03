@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Value, Q, Case, When
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -29,6 +30,11 @@ class UserCoursesListView(ListView):
             expires_at__gte=now()
         ).values_list("id", flat=True))
         return Course.objects.filter(id__in=user_courses)
+
+    def get(self, *args, **kwargs):
+        if not self.request.user. is_authenticated:
+            return redirect("index")
+        return super().get(*args, **kwargs)
 
 
 @login_required
@@ -65,7 +71,7 @@ class CourseView(ListView):
                             Q(is_free=True) | Q(previous_lesson_id__in=finished_lessons),
                             then=True
                         ),
-                        default=False
+                        default=True
                     )
                 ).order_by("order", "id").distinct()
         return Lesson.objects.filter(
@@ -90,7 +96,7 @@ class CourseView(ListView):
         context["course_cover"] = course.cover
         context["course_id"] = course.id
         context["single_course"] = True
-        if user and UserCourses.objects.filter(
+        if user.is_authenticated and UserCourses.objects.filter(
                 course=course, user=user, buying_date__gte=now() - timedelta(days=course.duration)
         ).exists():
             context["has_course"] = True
@@ -105,12 +111,14 @@ class LessonView(ListView):
         user = self.request.user
         lesson_id = self.kwargs.get("lesson_id")
         lesson = Lesson.objects.filter(id=lesson_id).first()
-        user_course = UserCourses.objects.filter(
-            course_id=lesson.course_id,
-            user=user,
-            course__is_active=True,
-            expires_at__gte=now()
-        ).first()
+        user_course = None
+        if user.is_authenticated:
+            user_course = UserCourses.objects.filter(
+                course_id=lesson.course_id,
+                user=user,
+                course__is_active=True,
+                expires_at__gte=now()
+            ).first()
         if lesson.is_free or (
                 lesson.is_active
                 and user_course
@@ -125,3 +133,20 @@ class LessonView(ListView):
         context["lesson"] = lesson
         context["single_course"] = False
         return context
+
+    def get(self, *args, **kwargs):
+        lesson_id = kwargs.get("lesson_id")
+        lesson = Lesson.objects.filter(id=lesson_id).first()
+        user = self.request.user
+        if not lesson:
+            return redirect('index')
+        if not user.is_authenticated and not lesson.is_free:
+            return redirect('index')
+        if user.is_authenticated and not UserCourses.objects.filter(
+                course_id=lesson.course_id,
+                user=user,
+                course__is_active=True,
+                expires_at__gte=now()
+        ).exists() and not lesson.is_free:
+            return redirect('index')
+        return super().get(*args, **kwargs)
