@@ -126,14 +126,14 @@ def handle_command(message):
         )
         buttons.append(info_format_button)
         buttons_menu_markup.add(*buttons)
-        bot.send_message(chat_id, "Какой формат будет?", reply_markup=buttons_menu_markup)
+        bot.send_message(chat_id, "Какой формат изображения будет?", reply_markup=buttons_menu_markup)
         return
     if message_text == "/mybot":
         user = User.objects.filter(username__iexact=username, is_active=True).first()
         if not user:
             bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
         info_text = f"""
-        Доступ до: {user.date_payment_expired}\n
+        Доступ до: {user.get_bot_end}\n
         Доступные генерации: {user.remain_messages}\n
         """
         my_bot_reply_markup = types.InlineKeyboardMarkup()
