@@ -14,7 +14,9 @@
             {% for block in blocks %}
                 {% include "includes/lesson_block_card.html" %}
             {% endfor %}
-            <a href="{% url 'courses:open_lesson' lesson.course_id lesson.id %}" class="green-grey-button">Пометить урок пройденным</a>
+            {% if has_course %}
+                <a href="{% url 'courses:open_lesson' lesson.course_id lesson.id %}" class="green-grey-button">Пометить урок пройденным</a>
+            {% endif %}
         </div>
     </div>
     </div>
