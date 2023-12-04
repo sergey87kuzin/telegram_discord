@@ -239,7 +239,17 @@ CKEDITOR_CONFIGS = {
             ["Undo", "Redo"],
             ["Source"],
             ["Maximize"],
+            ["LineHeight", "lineheight", "line_height"]
         ],
+        "LineHeight": "1em;1.1em;1.2em;1.3em;1.4em;1.5em;2px;3px;",
+        'extraPlugins': ','.join([
+            "lineheight"
+        ]),
+        "external_plugin_resources": [(
+            'lineheight',
+            '/static/js/lineheight/',
+            'plugin.js',
+        )],
         "height": 300,
         "width": 650,
     },
