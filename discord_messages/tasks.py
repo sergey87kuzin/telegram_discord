@@ -10,10 +10,15 @@ from telebot import types
 from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import DiscordHelper
 from discord_messages.models import DiscordAccount, Message, DiscordConnection
-from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons
-
+from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons, \
+    handle_message
 
 logger = logging.getLogger(__name__)
+
+
+@shared_task
+def handle_telegram_message(request_data):
+    handle_message(request_data)
 
 
 @shared_task
