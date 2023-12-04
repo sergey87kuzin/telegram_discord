@@ -130,6 +130,9 @@ class LessonView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
         lesson = Lesson.objects.filter(id=self.kwargs.get("lesson_id")).first()
+        user = self.request.user
+        if user.is_authenticated and UserCourses.objects.filter(user=user, course_id=lesson.course_id):
+            context["has_course"] = True
         context["lesson"] = lesson
         context["single_course"] = False
         return context
