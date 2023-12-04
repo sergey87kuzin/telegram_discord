@@ -481,8 +481,8 @@ def handle_message(request_data):
         user=user,
         answer_type=message_type
     )
-    time.sleep(1)
     account = DiscordAccount.objects.filter(users=user).first()
+    time.sleep(int(account.queue_delay))
     connection = DiscordConnection.objects.filter(account=account).first()
     if not connection:
         connection = DiscordHelper().get_new_connection(account)

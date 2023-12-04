@@ -122,7 +122,7 @@ class LessonView(ListView):
         if lesson.is_free or (
                 lesson.is_active
                 and user_course
-                and lesson.previous_lesson_id in user_course.finished_lessons
+                # and lesson.previous_lesson_id in user_course.finished_lessons
         ):
             return LessonTextBlock.objects.filter(lesson_id=lesson_id).order_by("order", "id").distinct()
         return []
