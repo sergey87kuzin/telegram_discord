@@ -59,6 +59,7 @@ class DiscordAccount(models.Model):
     password = models.CharField("password", max_length=256)
     session_id = models.CharField("session_id", max_length=128, blank=True, null=True)
     channel_id = models.CharField("channel_id", max_length=128, blank=True, null=True)
+    queue_delay = models.PositiveIntegerField("Задержка в отправке сообщений", default=1)
     last_message_id = models.CharField(
         "ID последнего запрошенного сообщения в акке", max_length=128, blank=True, null=True
     )
