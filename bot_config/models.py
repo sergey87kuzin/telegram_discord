@@ -11,6 +11,7 @@ class SiteSettings(SingletonModel):
         "Стоимость месячной подписки",
         default=1000
     )
+    say_hi_video = models.FileField("Приветственное видео", blank=True, null=True)
 
     class Meta:
         verbose_name = "Настройки сайта"

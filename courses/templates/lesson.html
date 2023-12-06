@@ -3,11 +3,10 @@
     <div class="col d-flex justify-content-center">
     <div class="col d-flex justify-content-left width-to-media">
         <div class="card text-center width-to-media">
-        <div class="card-header">
-            <span>{{ lesson.name }}</span>
+        <div class="card-header light_green_background">
+            <span class="big_text">{{ lesson.name }}</span>
         </div>
-        <div class="card-body">
-            <span>{{ lesson.description }}</span>
+        <div class="card-body light_green_background">
             {% if lesson.video_url %}
                 <div>{{ lesson.video_url|safe }}</div>
             {% endif %}
@@ -15,6 +14,7 @@
                 {% include "includes/lesson_block_card.html" %}
             {% endfor %}
             {% if has_course %}
+                <br><br>
                 <a href="{% url 'courses:open_lesson' lesson.course_id lesson.id %}" class="green-grey-button">Пометить урок пройденным</a>
             {% endif %}
         </div>
