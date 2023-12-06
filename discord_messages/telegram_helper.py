@@ -14,7 +14,8 @@ from telebot import types
 from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
-from discord_messages.models import ConfirmMessage, Message, DiscordAccount, DiscordConnection
+from discord_messages.models import ConfirmMessage, Message  # , DiscordAccount, DiscordConnection
+# from discord_messages.tasks import send_message_to_discord_task
 from users.models import User
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -351,13 +352,13 @@ def handle_message(request_data):
         message_text = message.get("text")
         if not message_text:
             bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
-            return Response(HTTPStatus.BAD_REQUEST)
+            return "", "", ""
         if message_text == "/start":
             handle_start_message(message)
-            return Response(HTTPStatus.OK)
+            return "", "", ""
         if message_text.startswith("/"):
             handle_command(message)
-            return Response(HTTPStatus.OK)
+            return "", "", ""
         message_text = message.get("text")\
             .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
         if re.findall("::\S+", message_text):
@@ -367,19 +368,19 @@ def handle_message(request_data):
         if not message_text or not chat_username or not chat_id:
             logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
             bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
-            return Response(HTTPStatus.BAD_REQUEST)
+            return "", "", ""
         eng_text = translator.translate(message_text)
         if not eng_text:
             logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
             bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
-            return Response(HTTPStatus.BAD_REQUEST)
+            return "", "", ""
         no_ar_text = eng_text.split(" --")[0]
         message_type = DiscordTypes.START_GEN
         user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
         if not user:
             logger.warning(f"Не найден пользователь(, user = {chat_username}")
             bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
-            return Response(HTTPStatus.BAD_REQUEST)
+            return "", "", ""
         if user.preset and user.preset not in message_text and user.preset not in eng_text:
             message_text = message_text + user.preset
             eng_text = eng_text + user.preset
@@ -393,7 +394,7 @@ def handle_message(request_data):
             chat_username = button_data.get("from", {}).get("username")
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
-                return Response(HTTPStatus.OK)
+                return "", "", ""
             reply_markup = button_data.get("message").get("reply_markup")
             buttons_markup = types.InlineKeyboardMarkup()
             buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
@@ -423,13 +424,13 @@ def handle_message(request_data):
             if not message_text or not chat_username or not chat_id:
                 logger.warning(f"Ошибка кнопки чата. {chat_id}, {chat_username}, {message_text}")
                 bot.send_message(chat_id=chat_id, text="С этой кнопкой что-то не так")
-                return Response(HTTPStatus.BAD_REQUEST)
+                return "", "", ""
             eng_text = message_text
             user = User.objects.filter(username__iexact=chat_username).first()
             if not user:
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
-                return Response(HTTPStatus.BAD_REQUEST)
+                return "", "", ""
             first_message = Message.objects.filter(id=message_text.split("&&")[-1]).first()
             message_type = DiscordTypes.UPSCALED
             # переменная для определения типа сообщения после создания
@@ -442,7 +443,7 @@ def handle_message(request_data):
                     text=f"<a href='{url}'>Upscale временно недоступен, используйте топаз</a>",
                     parse_mode="HTML"
                 )
-                return Response(HTTPStatus.OK)
+                return "", "", ""
             if message_text.startswith("button_u&&"):
                 answer_text = "Увеличиваем"
             if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
@@ -465,13 +466,13 @@ def handle_message(request_data):
                 chat_id=user.chat_id,
                 text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
             )
-            return Response(HTTPStatus.BAD_REQUEST)
+            return "", "", ""
     if not user.date_of_payment or user.date_payment_expired < now():
         bot.send_message(
             chat_id=chat_id,
             text="Пожалуйста, оплатите доступ к боту",
         )
-        return Response(HTTPStatus.BAD_REQUEST)
+        return "", "", ""
     created_message = Message.objects.create(
         text=message_text,
         eng_text=eng_text,
@@ -481,24 +482,9 @@ def handle_message(request_data):
         user=user,
         answer_type=message_type
     )
-    account = DiscordAccount.objects.filter(users=user).first()
-    time.sleep(int(account.queue_delay))
-    connection = DiscordConnection.objects.filter(account=account).first()
-    if not connection:
-        connection = DiscordHelper().get_new_connection(account)
-    status = choose_action(account, connection, eng_text)
-    if status != HTTPStatus.NO_CONTENT:
-        connection = DiscordHelper().get_new_connection(account)
-        status = choose_action(account, connection, eng_text)
-        if status != HTTPStatus.NO_CONTENT:
-            bot.send_message(
-                chat_id=chat_id,
-                text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
-            )
-            logger.warning(f"Не удалось отправить сообщение, {account.login}, {status}")
-            return Response(HTTPStatus.OK)
     if after_create_message_text.startswith(("button_zoom&&", "button_vary")):
         created_message.eng_text = created_message.text
         created_message.no_ar_text = created_message.text.split(" --")[0]
         created_message.save()
     bot.send_message(chat_id=chat_id, text=answer_text)
+    return user, eng_text, chat_id

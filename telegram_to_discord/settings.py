@@ -202,6 +202,7 @@ CELERY_TASK_ROUTES = {
     "discord_messages.tasks.get_discord_messages": {"queue": "telegram"},
     "discord_messages.tasks.send_messages_to_telegram": {"queue": "telegram"},
     "discord_messages.tasks.handle_telegram_message": {"queue": "messages"},
+    "discord_messages.tasks.send_message_to_discord_task": {"queue": "messages"}
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
@@ -239,9 +240,9 @@ CKEDITOR_CONFIGS = {
             ["Undo", "Redo"],
             ["Source"],
             ["Maximize"],
-            ["LineHeight", "lineheight", "line_height"]
+            ["lineheight"]
         ],
-        "LineHeight": "1em;1.1em;1.2em;1.3em;1.4em;1.5em;2px;3px;",
+        "lineheight": "1em;1.1em;1.2em;1.3em;1.4em;1.5em;2px;3px;1.5px",
         'extraPlugins': ','.join([
             "lineheight"
         ]),

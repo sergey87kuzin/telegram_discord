@@ -1,17 +1,19 @@
 import logging
 import time
+from http import HTTPStatus
 
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.db.models import Q
+from rest_framework.response import Response
 from telebot import types
 
 from discord_messages.choices import DiscordTypes
 from discord_messages.discord_helper import DiscordHelper
 from discord_messages.models import DiscordAccount, Message, DiscordConnection
 from discord_messages.telegram_helper import bot, add_four_pics_buttons, add_upscaled_pic_buttons, add_seed_pic_buttons, \
-    handle_message
+    handle_message, choose_action
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,25 @@ logger = logging.getLogger(__name__)
 @shared_task
 def handle_telegram_message(request_data):
     handle_message(request_data)
+
+
+@shared_task
+def send_message_to_discord_task(user_id, eng_text, chat_id):
+    account = DiscordAccount.objects.filter(users__id=user_id).first()
+    time.sleep(int(account.queue_delay))
+    connection = DiscordConnection.objects.filter(account=account).first()
+    if not connection:
+        connection = DiscordHelper().get_new_connection(account)
+    status = choose_action(account, connection, eng_text)
+    if status != HTTPStatus.NO_CONTENT:
+        connection = DiscordHelper().get_new_connection(account)
+        status = choose_action(account, connection, eng_text)
+        if status != HTTPStatus.NO_CONTENT:
+            bot.send_message(
+                chat_id=chat_id,
+                text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
+            )
+            logger.warning(f"Не удалось отправить сообщение, {account.login}, {status}")
 
 
 @shared_task
