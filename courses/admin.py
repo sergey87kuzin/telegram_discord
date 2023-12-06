@@ -32,9 +32,9 @@ class CourseAdmin(admin.ModelAdmin):
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     list_display = (
-        "course",
         "name",
         "order",
+        "course",
         "description",
         "cover",
     )
