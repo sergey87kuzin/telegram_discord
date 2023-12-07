@@ -103,14 +103,19 @@
     {% else %}
     <div class="col">
         <div class="col-12">
-            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">К списку курсов</a>
         </div>
         <div class="col-12">
-            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+            <a class="green-grey-button margin_from_top" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
         </div>
         <div class="col-12">
-            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+            <a class="green-grey-button margin_from_top" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
         </div>
+        {% if user.is_authenticated %}
+        <div class="col-12">
+            <a href="{% url 'users:detail-profile' %}" class="green-grey-button margin_from_top">Мой аккаунт</a>
+        </div>
+            {% endif %}
     </div>
     {% endif %}
 {% endblock %}
