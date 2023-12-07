@@ -420,6 +420,7 @@ def handle_message(request_data):
             message_text = button_data.get("data")
             if Message.objects.filter(eng_text=message_text).exists():
                 bot.send_message(chat_id=chat_id, text="Вы уже нажимали на эту кнопку)")
+                return "", "", ""
             chat_username = button_data.get("from", {}).get("username")
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
@@ -500,6 +501,18 @@ def handle_message(request_data):
         bot.send_message(
             chat_id=chat_id,
             text="Пожалуйста, оплатите доступ к боту",
+        )
+        return "", "", ""
+    if user.remain_paid_messages > 0:
+        user.remain_paid_messages -= 1
+        user.save()
+    elif user.remain_messages > 0:
+        user.remain_messages -= 1
+        user.save()
+    else:
+        bot.send_message(
+            chat_id=chat_id,
+            text="У вас не осталось генераций",
         )
         return "", "", ""
     created_message = Message.objects.create(

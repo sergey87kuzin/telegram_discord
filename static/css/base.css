@@ -20,6 +20,7 @@ body
     .text_in_center {
         display: flex;
         align-items: center;
+        max-width: 90%;
     }
     .black_text {
         color: black;
@@ -127,6 +128,10 @@ body
         font-size: 10px;
         color: #000000;
         text-decoration: none;
+    }
+
+    .margin_from_top {
+        margin-top: 2em;
     }
 
     @media screen and (max-width: 959px) {

@@ -25,6 +25,8 @@ class UserAdmin(BaseUserAdmin):
             "chat_id",
             "date_of_payment",
             "date_payment_expired",
+            "remain_messages",
+            "remain_paid_messages",
             "is_active",
             "account",
             "preset"

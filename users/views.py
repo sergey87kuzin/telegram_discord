@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -22,6 +24,15 @@ class Profile(generic.DetailView):
         user.email = request.POST.get("email")
         user.save()
         return redirect(reverse_lazy("users:detail-profile"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        MOBILE_AGENT_RE = re.compile(r".*(iphone|mobile|androidtouch)", re.IGNORECASE)
+        if MOBILE_AGENT_RE.match(self.request.META['HTTP_USER_AGENT']):
+            context["is_mobile"] = True
+        else:
+            context["is_mobile"] = False
+        return context
 
 
 @method_decorator(login_required, "dispatch")

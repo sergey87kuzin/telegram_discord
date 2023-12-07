@@ -130,6 +130,12 @@ class LessonView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
         lesson = Lesson.objects.filter(id=self.kwargs.get("lesson_id")).first()
+        next_lesson = Lesson.objects.filter(course_id=lesson.course_id, previous_lesson_id=lesson.id).first()
+        if next_lesson:
+            context["has_next_lesson"] = True
+            context["next_lesson"] = next_lesson.id
+        else:
+            context["has_next_lesson"] = False
         user = self.request.user
         if user.is_authenticated and UserCourses.objects.filter(user=user, course_id=lesson.course_id):
             context["has_course"] = True

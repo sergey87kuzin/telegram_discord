@@ -13,6 +13,7 @@ class User(AbstractUser):
     date_payment_expired = models.DateTimeField("дата истечения платежа", null=True, blank=True)
     is_active = models.BooleanField("Telegram подтвержден", default=False)
     remain_messages = models.PositiveIntegerField("Оставшиеся генерации", default=0)
+    remain_paid_messages = models.PositiveIntegerField("Оставшиеся платные генерации", default=0)
     account = models.ForeignKey(
         DiscordAccount,
         on_delete=models.SET_NULL,

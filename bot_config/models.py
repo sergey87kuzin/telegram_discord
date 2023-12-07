@@ -11,6 +11,14 @@ class SiteSettings(SingletonModel):
         "Стоимость месячной подписки",
         default=1000
     )
+    day_tariff_count = models.PositiveIntegerField(
+        "Количество генераций при покупке бота на день",
+        default=50
+    )
+    month_tariff_count = models.PositiveIntegerField(
+        "Количество генераций при покупке бота на месяц",
+        default=1000
+    )
     say_hi_video = models.FileField("Приветственное видео", blank=True, null=True)
 
     class Meta:

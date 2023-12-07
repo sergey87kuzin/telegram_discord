@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if not is_mobile %}
 <div id="allrecords" class="t-records tsort" data-hook="blocks-collection-content-node" data-blocks-animationoff="yes" data-tilda-mode="edit" style="position: relative;">
     <div class="record" off="" data-record-type="396" data-record-category="12" data-record-cod="T396" style="cursor: auto;">
         <div id="rec644135072" class="r" style=" " data-animationappear="off">
@@ -99,4 +100,17 @@
         </div>
     </div>
 </div>
+    {% else %}
+    <div class="col">
+        <div class="col-12">
+            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">Перейти к курсу</a>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

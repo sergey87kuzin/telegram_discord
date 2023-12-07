@@ -7,6 +7,7 @@
 
 
 {% block content %}
+    {% if not is_mobile %}
 <div class="col d-flex justify-content-center">
     <div class="width-to-media">
         <div class="n-container">
@@ -27,14 +28,15 @@
             БОТ
         </div>
         <br><br>
+        {% if not request.mobile %}
         <div class="row">
-            <div class="col-3 text_in_center dark-green-background">
+            <div class="col-3 text_in_center">
                 {% if user.date_of_payment %}
-                    <span class="black_text">
+                    <span class="black_text btn dark-green-background">
                         До:   {{ user.date_payment_expired }}
                     </span>
                 {% else %}
-                    <span class="black_text">
+                    <span class="black_text btn dark-green-background">
                         У вас еще не было оплат
                     </span>
                 {% endif %}
@@ -51,6 +53,7 @@
             <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
             </div>
         </div>
+        {% endif %}
         <br><br>
         <div style="text-align: center">
             КУРСЫ
@@ -58,4 +61,36 @@
         <br><br>
     </div>
 </div>
+    {% else %}
+        <div class="col">
+        <div class="col-12 margin_from_top">
+            <div class="profile__name" style="color: black;">Здравствуйте, {{ request.user.username }}!</div>
+        </div>
+        <div class="col-12 margin_from_top">
+            {% if user.date_of_payment %}
+                <span class="black_text btn dark-green-background">
+                    До:   {{ user.date_payment_expired }}
+                </span>
+            {% else %}
+                <span class="black_text btn dark-green-background">
+                    У вас еще не было оплат
+                </span>
+            {% endif %}
+        </div>
+        <div class="col-12 margin_from_top">
+            <span class="btn black_text dark-green-background">
+                Оставшиеся генерации:  {{ user.remain_messages }}
+            </span>
+        </div>
+        <div class="col-12 margin_from_top">
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+        </div>
+        <div class="col-12 margin_from_top">
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
+        </div>
+        <div class="col-12 margin_from_top">
+            <a href="{% url 'auth:logout' %}" class="btn dark-green-background" style="color: black;">Выход</a>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
