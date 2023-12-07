@@ -73,6 +73,7 @@ class NotificationView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         order_id = request.data.get("order_num")
+        site_settings = SiteSettings.get_solo()
         if order := Order.objects.filter(id=order_id).select_related("user").first():
             utc = pytz.UTC
             order.payment_status = "Paid"
@@ -84,11 +85,17 @@ class NotificationView(GenericAPIView):
                     course_id=order.course_id,
                     buying_date=datetime.now().replace(tzinfo=utc)
                 )
+                user.remain_paid_messages = site_settings.month_tariff_count
+                user.save(update_fields=["remain_paid_messages"])
                 return Response(status=HTTPStatus.OK, data={})
             if user.date_payment_expired and user.date_payment_expired >= datetime.now().replace(tzinfo=utc):
                 user.date_payment_expired += timedelta(days=order.days)
             else:
                 user.date_of_payment = datetime.now()
                 user.date_payment_expired = datetime.now() + timedelta(days=order.days)
+            if order.days == 1:
+                user.remain_paid_messages += site_settings.day_tariff_count
+            else:
+                user.remain_paid_messages += site_settings.month_tariff_count
             user.save()
         return Response(status=HTTPStatus.OK, data={})

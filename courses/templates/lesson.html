@@ -15,8 +15,10 @@
             {% endfor %}
             {% if has_course %}
                 <br><br>
-                <a href="{% url 'courses:open_lesson' lesson.course_id lesson.id %}" class="green-grey-button">Пометить урок пройденным</a>
-            {% endif %}
+                {% if has_next_lesson %}
+                    <a href="{% url 'courses:single_lesson' next_lesson %}" class="green-grey-button">К СЛЕДУЮЩЕМУ УРОКУ</a>
+                {% endif %}
+        {% endif %}
         </div>
     </div>
     </div>
