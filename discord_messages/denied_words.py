@@ -182,7 +182,7 @@ denied_words = {
 
 def check_words(eng_text):
     eng_words = re.sub(r'[^\w\s]', '', eng_text)
-    words = set(eng_words.split(" "))
+    words = set(eng_words.lower().split(" "))
     if wrong_words := denied_words & words:
         return ", ".join(wrong_words)
     return ""
