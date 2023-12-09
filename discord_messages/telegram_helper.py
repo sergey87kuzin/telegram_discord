@@ -196,7 +196,7 @@ def handle_command(message):
         )
         buttons.append(info_button)
         info_reply_markup.add(*buttons)
-        bot.send_message(chat_id, text=INFO_TEXT, reply_markup=info_reply_markup)
+        bot.send_message(chat_id, text=INFO_TEXT, reply_markup=info_reply_markup, parse_mode="HTML")
         return
     if message_text == "/support":
         bot.send_message(chat_id, text="Мы работаем над этим")
