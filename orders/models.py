@@ -49,6 +49,7 @@ class Order(models.Model):
         blank=True,
         null=True
     )
+    message_count = models.PositiveIntegerField("Число генераций", default=0)
 
     class Meta:
         verbose_name = "Заказ"

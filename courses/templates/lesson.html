@@ -1,25 +1,51 @@
 {% extends "natasha_base.html" %}
 {% block content %}
     <div class="col d-flex justify-content-center">
-    <div class="col d-flex justify-content-left width-to-media">
-        <div class="card text-center width-to-media">
-        <div class="card-header light_green_background">
-            <span class="big_text">{{ lesson.name }}</span>
+        <div class="col d-flex justify-content-left width-to-media">
+            <div class="card text-center width-to-media">
+                <div class="card-header light_green_background">
+                    <span class="big_text">{{ lesson.name }}</span>
+                </div>
+                <div class="card-body light_green_background">
+                    {% if lesson.video_url %}
+                        <div>{{ lesson.video_url|safe }}</div>
+                    {% endif %}
+                    {% for block in blocks %}
+                        {% include "includes/lesson_block_card.html" %}
+                    {% endfor %}
+                    {% if has_course %}
+                        <br><br>
+                        {% if has_next_lesson %}
+                            <a href="{% url 'courses:single_lesson' next_lesson %}" class="green-grey-button">К СЛЕДУЮЩЕМУ УРОКУ</a>
+                        {% else %}
+                            <div class="col">
+{#                                <form class="form" data-url="{% url 'courses:create_review' %}" method="post">#}
+{#                                    {% csrf_token %}#}
+                                    <input
+                                            id="id_course"
+                                            value="{{ lesson.course_id }}"
+                                            hidden="hidden"
+                                    />
+                                    <input
+                                            id="id_user"
+                                            value="{{ user_id }}"
+                                            hidden="hidden"
+                                    />
+                                    <textarea name="Text1" rows="5" id="id_text" style="width: 80%;"></textarea>
+                                    <input
+                                        type="button"
+                                        name="Send"
+                                        id="review-send-button"
+                                        value="Оставить отзыв"
+                                        class="green-grey-button"
+                                        style="margin-right: 20px;"
+                                    />
+{#                                </form>#}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="card-body light_green_background">
-            {% if lesson.video_url %}
-                <div>{{ lesson.video_url|safe }}</div>
-            {% endif %}
-            {% for block in blocks %}
-                {% include "includes/lesson_block_card.html" %}
-            {% endfor %}
-            {% if has_course %}
-                <br><br>
-                {% if has_next_lesson %}
-                    <a href="{% url 'courses:single_lesson' next_lesson %}" class="green-grey-button">К СЛЕДУЮЩЕМУ УРОКУ</a>
-                {% endif %}
-        {% endif %}
-        </div>
-    </div>
     </div>
 {% endblock %}

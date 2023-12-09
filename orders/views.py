@@ -31,14 +31,17 @@ class CreateOrderView(generic.View):
         if term == "month":
             cost = site_settings.month_tariff_cost
             days = 30
+            message_count = site_settings.month_tariff_count
         elif term == "day":
             cost = site_settings.day_tariff_cost
-            days = 1
+            days = 30
+            message_count = site_settings.day_tariff_count
         course_id = request.GET.get("course_id")
         if course_id:
             if course := Course.objects.get(id=course_id):
                 cost = course.cost
                 days = course.duration
+                message_count = site_settings.month_tariff_count
         if not term and not course_id:
             return redirect(reverse_lazy("index"))
 
@@ -46,6 +49,7 @@ class CreateOrderView(generic.View):
             user=user,
             total_cost=cost,
             days=days,
+            message_count=message_count
         )
         if course:
             order.course_id = course.id
@@ -72,8 +76,9 @@ class FailPage(TemplateView):
 class NotificationView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
+        if request.data.get("payment_status") != "success":
+            return Response(status=HTTPStatus.OK, data={})
         order_id = request.data.get("order_num")
-        site_settings = SiteSettings.get_solo()
         if order := Order.objects.filter(id=order_id).select_related("user").first():
             utc = pytz.UTC
             order.payment_status = "Paid"
@@ -85,17 +90,11 @@ class NotificationView(GenericAPIView):
                     course_id=order.course_id,
                     buying_date=datetime.now().replace(tzinfo=utc)
                 )
-                user.remain_paid_messages = site_settings.month_tariff_count
+                user.remain_paid_messages = order.message_count
                 user.save(update_fields=["remain_paid_messages"])
                 return Response(status=HTTPStatus.OK, data={})
-            if user.date_payment_expired and user.date_payment_expired >= datetime.now().replace(tzinfo=utc):
-                user.date_payment_expired += timedelta(days=order.days)
-            else:
-                user.date_of_payment = datetime.now()
-                user.date_payment_expired = datetime.now() + timedelta(days=order.days)
-            if order.days == 1:
-                user.remain_paid_messages += site_settings.day_tariff_count
-            else:
-                user.remain_paid_messages += site_settings.month_tariff_count
+            user.date_of_payment = datetime.now()
+            user.date_payment_expired = datetime.now() + timedelta(days=order.days)
+            user.remain_paid_messages = order.message_count
             user.save()
         return Response(status=HTTPStatus.OK, data={})

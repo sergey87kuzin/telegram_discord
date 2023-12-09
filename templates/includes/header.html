@@ -23,23 +23,28 @@
                     </a>
                 </li>
                 <li class="burger__menu-item">
-                    <a href="{% url 'courses:full_list' %}" class="d-block my-menu-link">
-                        Все курсы
+                    <a href="{% url 'courses:single_course' 2 %}" class="d-block my-menu-link">
+                        Нейрокурс
                     </a>
                 </li>
-                <li class="burger__menu-item">
-                    <a href="{% url 'courses:user_list' %}" class="d-block my-menu-link">
-                        Мои курсы
-                    </a>
-                </li>
-                <li>
-                      {% include 'includes/course_buttons.html' %}
-                </li>
-                {% if single_course %}
-                    <li>
-                      {% include 'includes/lesson_buttons.html' %}
-                    </li>
-                {% endif %}
+{#                <li class="burger__menu-item">#}
+{#                    <a href="{% url 'courses:full_list' %}" class="d-block my-menu-link">#}
+{#                        Все курсы#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="burger__menu-item">#}
+{#                    <a href="{% url 'courses:user_list' %}" class="d-block my-menu-link">#}
+{#                        Мои курсы#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li>#}
+{#                      {% include 'includes/course_buttons.html' %}#}
+{#                </li>#}
+{#                {% if single_course %}#}
+{#                    <li>#}
+{#                      {% include 'includes/lesson_buttons.html' %}#}
+{#                    </li>#}
+{#                {% endif %}#}
                 {% else %}
                 <li class="burger__menu-item">
                     <a href="#" class="d-block my-menu-link auth_open">

@@ -46,7 +46,32 @@ $(document).on('click', '#login-modal-button', function (e) {
       }
     },
     error: function error(data) {
-      alert("Error on authorization");
+      alert("Ошибка авторизации");
+    }
+  });
+});
+
+$(document).on('click', '#review-send-button', function (e) {
+  e.preventDefault();
+  // let data = {
+  //     text: $("#id_text").val(),
+  //     course: $("#id_course").val(),
+  //     user: $("#id_user").val()
+  // };
+  let url = '/courses/review/create/?course=' + $("#id_course").val() + '&user=' + $("#id_user").val() + '&text=' + $("#id_text").val();
+  $.ajax({
+    url: url,
+    // data: data,
+    method: "get",
+    success: function success(data) {
+      if (!!data.error) {
+        alert("Ошибка отправки отзыва");
+      } else {
+        alert("Спасибо за ваш отзыв!");
+      }
+    },
+    error: function error(data) {
+      alert("Ошибка отправки отзыва");
     }
   });
 });
@@ -176,45 +201,3 @@ $(document).on("click", "#profile_update_btn", function(e) {
         }
     });
 })
-// change_password() {
-//     const old_password = document.getElementById("password_old") ? document.getElementById("password_old").value : null;
-//     const new_password = document.getElementById("password_new").value;
-//     const password_new_confirm = document.getElementById("password_new_confirm").value;
-//     if (old_password) {
-//         var data = {
-//             old_password: old_password,
-//             new_password: new_password
-//         };
-//     } else {
-//         var data = {
-//             new_password: new_password
-//         };
-//     }
-//     ;
-//     $("#passwordOldError").text(null);
-//     $("#passwordNewError").text(null);
-//     $("#passwordNewConfirmError").text(null);
-//     $(".updprof-error").fadeOut();
-//     if (password_new_confirm !== new_password) {
-//         $("#passwordNewConfirmError").text("Пароли не совпадают");
-//         return;
-//     }
-//     const url = $("#profile").data("user-change-password");
-//     $.ajax({
-//         url: url,
-//         method: "put",
-//         contentType: "application/json; charset=utf-8",
-//         data: JSON.stringify(data),
-//         success: (data) => {
-//             $(".updprof-error").css("display", "block");
-//             $("#password_old").val(null);
-//             $("#password_new").val(null);
-//             $("#password_new_confirm").val(null);
-//         },
-//         error: (data) => {
-//             $("#passwordOldError").text(data.responseJSON.old_password);
-//             $("#passwordOldError").text(data.responseJSON.non_field_errors);
-//             $("#passwordNewError").text(data.responseJSON.new_password);
-//         }
-//     });
-// }

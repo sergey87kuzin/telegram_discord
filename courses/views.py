@@ -1,14 +1,16 @@
 from datetime import timedelta
+from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Value, Q, Case, When
+from django.db.models import Q, Case, When
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.timezone import now
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from courses.models import Course, UserCourses, Lesson, LessonTextBlock
+from courses.models import Course, UserCourses, Lesson, LessonTextBlock, Review
 
 
 class CoursesListView(ListView):
@@ -139,6 +141,7 @@ class LessonView(ListView):
         user = self.request.user
         if user.is_authenticated and UserCourses.objects.filter(user=user, course_id=lesson.course_id):
             context["has_course"] = True
+            context["user_id"] = user.id
         context["lesson"] = lesson
         context["single_course"] = False
         return context
@@ -159,3 +162,15 @@ class LessonView(ListView):
         ).exists() and not lesson.is_free:
             return redirect('index')
         return super().get(*args, **kwargs)
+
+
+class SendReview(APIView):
+
+    def get(self, request, *args, **kwargs):
+        data = request.query_params
+        Review.objects.create(
+            course_id=data.get("course"),
+            text=data.get("text"),
+            user_id=data.get("user")
+        )
+        return Response(status=HTTPStatus.CREATED)

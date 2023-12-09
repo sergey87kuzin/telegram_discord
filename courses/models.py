@@ -133,3 +133,28 @@ class UserCourses(models.Model):
     # @property
     # def expires_at(self):
     #     return self.buying_date + timedelta(days=self.course.duration)
+
+
+class Review(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        verbose_name="Курс",
+        related_name="reviews"
+    )
+    text = models.TextField("Текст отзыва", blank=True, null=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        verbose_name="Пользователь",
+        related_name="users_reviews",
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+
+    def __str__(self):
+        return self.text
