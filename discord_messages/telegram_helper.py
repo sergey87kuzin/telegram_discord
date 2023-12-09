@@ -406,7 +406,7 @@ def handle_message(request_data):
         if wrong_words:
             bot.send_message(
                 chat_id=chat_id,
-                text=f"<pre>Вы отправили запрещенные слова: {wrong_words}</pre>",
+                text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
                 parse_mode="HTML"
             )
             return "", "", ""
