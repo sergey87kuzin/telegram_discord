@@ -47,10 +47,10 @@
                     </span>
             </div>
             <div class="col-3">
-            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Тариф 200</a>
             </div>
             <div class="col-3">
-            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Тариф 1000</a>
             </div>
         </div>
         {% endif %}
@@ -79,17 +79,17 @@
         </div>
         <div class="col-12 margin_from_top">
             <span class="btn black_text dark-green-background">
-                Оставшиеся генерации:  {{ user.remain_messages }}
+                Оставшиеся генерации:  {{ user.all_messages }}
             </span>
         </div>
         <div class="col-12 margin_from_top">
-            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=day">Тариф 200</a>
         </div>
         <div class="col-12 margin_from_top">
-            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
+            <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Тариф 1000</a>
         </div>
         <div class="col-12 margin_from_top">
-            <a href="{% url 'auth:logout' %}" class="btn dark-green-background" style="color: black;">Выход</a>
+            <a href="{% url 'auth:logout' %}" class="btn dark-green-background" style="color: black;">Выход из аккаунта</a>
         </div>
     </div>
     {% endif %}

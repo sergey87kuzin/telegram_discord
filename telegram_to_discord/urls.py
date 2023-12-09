@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 from discord_messages.views import IndexView
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path("orders/", include("orders.urls")),
     path("courses/", include("courses.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
+    path("payments-page/", TemplateView.as_view(template_name="payments_page.html"), name="payments"),
 ]
 
 

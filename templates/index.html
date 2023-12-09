@@ -15,7 +15,7 @@
                         <div class="tn-atom" style="line-height: 70px;">РИСОВАТЬ НЕЙРОСЕТЬЮ</div>
                     </div>
                     <div class="text_unlim" data-elem-id="1687352227187" data-elem-type="text">
-                        <div class="tn-atom" style="line-height: 39px;">Безлимитная подписка midjourney</div>
+                        <div class="tn-atom" style="line-height: 39px;">Безлимитная подписка midjourney СКОРО!</div>
                     </div>
                     <div class="text_cheaper" data-elem-id="1687347652897" data-elem-type="text">
                         <div class="tn-atom" style="line-height: 31px;">ДеШЕВЛЕ. ПРОЩЕ. БЫСТРЕЕ</div>
@@ -103,13 +103,10 @@
     {% else %}
     <div class="col">
         <div class="col-12">
-            <a href="{% url 'courses:full_list' %}" class="green-grey-button margin_from_top">К списку курсов</a>
+            <a href="{% url 'courses:single_course' 2 %}" class="green-grey-button margin_from_top">Нейрокурс</a>
         </div>
         <div class="col-12">
-            <a class="green-grey-button margin_from_top" href="{% url 'orders:create' %}?term=day">Оплатить 1 день</a>
-        </div>
-        <div class="col-12">
-            <a class="green-grey-button margin_from_top" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
+            <a class="green-grey-button margin_from_top" href="{% url 'payments' %}?term=day">Оплатить бота</a>
         </div>
         <div class="col-12">
             <a href="https://t.me/ToMidjourneyBot" class="green-grey-button margin_from_top">Перейти в бот</a>

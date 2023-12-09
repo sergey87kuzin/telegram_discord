@@ -180,7 +180,7 @@ def handle_command(message):
         del_format_button = types.InlineKeyboardButton(
             "Продлить",
             # Установить нужную ссылку для продления
-            url="https://ya.ru"
+            url=settings.SITE_DOMAIN
         )
         buttons.append(del_format_button)
         my_bot_reply_markup.add(*buttons)
@@ -192,7 +192,7 @@ def handle_command(message):
         info_button = types.InlineKeyboardButton(
             "Перейти на сайт",
             # Установить нужную ссылку для продления
-            url="https://ya.ru"
+            url=settings.SITE_DOMAIN
         )
         buttons.append(info_button)
         info_reply_markup.add(*buttons)

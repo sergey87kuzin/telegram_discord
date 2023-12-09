@@ -5,4 +5,13 @@ from orders.models import Order
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ("user", "created_at")
+    list_filter = ("user", "created_at")
+    list_display = (
+        "id",
+        "user",
+        "total_cost",
+        "created_at",
+        "payment_status",
+        "payment_date",
+    )

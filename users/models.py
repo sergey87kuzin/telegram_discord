@@ -12,7 +12,7 @@ class User(AbstractUser):
     date_of_payment = models.DateTimeField("Дата платежа", null=True, blank=True)
     date_payment_expired = models.DateTimeField("дата истечения платежа", null=True, blank=True)
     is_active = models.BooleanField("Telegram подтвержден", default=False)
-    remain_messages = models.PositiveIntegerField("Оставшиеся генерации", default=0)
+    remain_messages = models.PositiveIntegerField("Оставшиеся генерации", default=10)
     remain_paid_messages = models.PositiveIntegerField("Оставшиеся платные генерации", default=0)
     account = models.ForeignKey(
         DiscordAccount,
@@ -42,3 +42,7 @@ class User(AbstractUser):
     @property
     def get_bot_end(self):
         return self.date_payment_expired.strftime("%d-%m-%Y %H:%M") or "Оплат пока не было(("
+
+    @property
+    def all_messages(self):
+        return self.remain_messages + self.remain_paid_messages
