@@ -6,7 +6,6 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from telegram_to_discord import settings
 from users.models import User
 
 

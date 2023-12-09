@@ -111,11 +111,9 @@
         <div class="col-12">
             <a class="green-grey-button margin_from_top" href="{% url 'orders:create' %}?term=month">Оплатить 1 месяц</a>
         </div>
-        {% if user.is_authenticated %}
         <div class="col-12">
-            <a href="{% url 'users:detail-profile' %}" class="green-grey-button margin_from_top">Мой аккаунт</a>
+            <a href="https://t.me/ToMidjourneyBot" class="green-grey-button margin_from_top">Перейти в бот</a>
         </div>
-            {% endif %}
     </div>
     {% endif %}
 {% endblock %}

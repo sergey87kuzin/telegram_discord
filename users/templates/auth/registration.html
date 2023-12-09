@@ -33,7 +33,7 @@
                             <div class="loginMessage">
                                 {{ form.non_field_errors }}
                             </div>
-                            <form class="form" method="post" style="color: #aaaaaa">
+                            <form class="form" method="post" style="color: #000000">
                                 {% csrf_token %}
                                 {{ form.username }}
                                 <div class="error"> <span class="error">{{ form.username.errors }}</span></div>
@@ -46,7 +46,7 @@
                                         type="button"
                                         name="send_code"
                                         value="Отправить код подтверждения"
-                                        class="btn"
+                                        class="green-grey-button"
                                         style="margin-right: 20px"
                                     />
                                 </div>
@@ -56,15 +56,12 @@
                                     <input
                                         type="submit"
                                         name="Login"
-                                        value="{% trans 'Создать аккаунт' %}"
-                                        class="btn"
+                                        value="Создать аккаунт"
+                                        class="green-grey-button"
                                         style="margin-right: 20px"
                                     />
-                                    <p class="modal-login__policy  policy_links">{% trans "Нажимая кнопку Создать аккаунт, я даю согласие на обработку и передачу моих" %}
-                                        <a class="modal-login__policy-link" href="{% if '/en/' in request.path %}/en{% endif %}/pages/policy/">{% trans "персональных данных" %}.</a></p>
-                                </div>
-                                <div class="center" style="padding-bottom: 20px;">
-                                    <a href="{% url 'auth:login' %}" style="color: #000000">Уже есть аккаунт?</a>
+                                    <p class="modal-login__policy  policy_links">Нажимая кнопку Создать аккаунт, я даю согласие на обработку и передачу моих
+                                        <a class="modal-login__policy-link" href="/pages/policy/">персональных данных.</a></p>
                                 </div>
                             </form>
                         </div>

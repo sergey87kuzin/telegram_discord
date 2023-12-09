@@ -1,12 +1,12 @@
 import logging
 import time
+from datetime import timedelta
 from http import HTTPStatus
 
 import requests
 from celery import shared_task
-from django.conf import settings
 from django.db.models import Q
-from rest_framework.response import Response
+from django.utils.timezone import now
 from telebot import types
 
 from discord_messages.choices import DiscordTypes
@@ -243,3 +243,30 @@ def send_messages_to_telegram():
         if message.seed:
             message.seed_send = True
         message.save()
+
+
+def send_message_no_answer():
+    messages = Message.objects.filter(
+        discord_message_id__isnull=True,
+        created_at__lte=now() - timedelta(minutes=20),
+        answer_sent=False
+    ).select_related("user")
+    for message in messages:
+        time.sleep(0.5)
+        bot.send_message(
+            chat_id=message.telegram_id,
+            text=f"""
+            <pre>К сожалению, при обработке сообщения {message.text} что-то пошло не так( \n\nМы добавили Вам одну бесплатную генерацию, можете воспользоваться ею</pre>
+            """,
+            parse_mode="HTML"
+        )
+        # message.answer_sent = True
+        # message.save()
+        user = message.user
+        user.remain_messages += 1
+        user.save()
+        user.refresh_from_db()
+
+
+def delete_old_messages():
+    Message.objects.filter(created_at__lt=now() - timedelta(hours=24)).delete()
