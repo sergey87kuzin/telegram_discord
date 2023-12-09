@@ -260,8 +260,8 @@ def send_message_no_answer():
             """,
             parse_mode="HTML"
         )
-        # message.answer_sent = True
-        # message.save()
+        message.answer_sent = True
+        message.save()
         user = message.user
         user.remain_messages += 1
         user.save()
