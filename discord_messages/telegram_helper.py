@@ -10,7 +10,7 @@ from telebot import types
 
 from bot_config.models import SiteSettings
 from discord_messages.choices import DiscordTypes
-from discord_messages.constants import INFO_TEXT
+from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
 from discord_messages.models import ConfirmMessage, Message  # , DiscordAccount, DiscordConnection
@@ -60,7 +60,11 @@ def handle_start_message(message):
                 user.save()
         except Exception as e:
             logger.warning(f"Ошибка регистрации пользователя, {username}, {str(e)}")
-            bot.send_message(chat_id, "Пожалуйста, попробуйте еще раз или напишите админу")
+            bot.send_message(
+                chat_id,
+                "<pre>Пожалуйста, попробуйте еще раз или напишите админу</pre>",
+                parse_mode="HTML"
+            )
             return
         site_settings = SiteSettings.get_solo()
         if site_settings.say_hi_video:
@@ -77,19 +81,15 @@ def handle_start_message(message):
         register_reply_markup.add(register_button)
         bot.send_message(
             chat_id,
-            text="Привет ✌️ Для продолжения регистрации нажмите на кнопку:",
-            reply_markup=register_reply_markup
+            text="<pre>Привет ✌️ Для продолжения регистрации нажмите на кнопку:</pre>",
+            reply_markup=register_reply_markup,
+            parse_mode="HTML"
         )
     else:
         bot.send_message(
             chat_id,
-            text="""
-                Упс! У вас в Telegram нет ника.
-                ▪️Перейдите в свой профиль
-                ▪️Нажмите «Выбрать имя пользователя»
-                ▪️Придумайте ник
-                ▪️После нажмите на кнопку Старт в меню): 
-            """
+            text="""<pre>Упс! У вас в Telegram нет ника.\n▪️Перейдите в свой профиль\n▪️Нажмите «Выбрать имя пользователя»\n▪️Придумайте ник\n▪️После нажмите на кнопку Старт в меню): </pre>""",
+            parse_mode="HTML"
         )
 
 
@@ -105,10 +105,8 @@ def handle_command(message):
     if message_text == "/help":
         bot.send_message(
             chat_id,
-            f"""Для того, чтобы начать генерацию, просто вводите текст промпта\n
-                Для того, чтобы поменять пароль, введите /password новый пароль\n
-                Переход на сайт: {settings.SITE_DOMAIN}
-            """
+            f"""<pre>Для того, чтобы начать генерацию, просто вводите текст промпта\nДля того, чтобы поменять пароль, введите /password новый пароль\nПереход на сайт: {settings.SITE_DOMAIN}</pre>""",
+            parse_mode="HTML"
         )
         return
     if message_text.startswith("/password"):
@@ -116,11 +114,19 @@ def handle_command(message):
         if password and password != " ":
             user = User.objects.filter(username=username, is_active=True).first()
             if not user:
-                bot.send_message(chat_id, f"Перейдите на сайт и зарегистрируйтесь")
+                bot.send_message(
+                    chat_id,
+                    f"<pre>Перейдите на сайт и зарегистрируйтесь</pre>",
+                    parse_mode="HTML"
+                )
                 return
             user.set_password(password)
             user.save()
-            bot.send_message(chat_id, f"Ваш новый пароль {password}")
+            bot.send_message(
+                chat_id,
+                f"<pre>Ваш новый пароль {password}</pre>",
+                parse_mode="HTML"
+            )
             return
     if message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
@@ -129,7 +135,11 @@ def handle_command(message):
             if preset.endswith("delete"):
                 user.preset = ""
                 user.save()
-                bot.send_message(chat_id, "Суффикс удален")
+                bot.send_message(
+                    chat_id,
+                    "<pre>Суффикс удален</pre>",
+                    parse_mode="HTML"
+                )
                 return
             preset = preset.replace("  ", " ").replace("—", "--").replace(" ::", "::").replace("-- ", "--")
             if re.findall("::\S+", preset):
@@ -140,11 +150,23 @@ def handle_command(message):
                 user.preset = preset
                 user.save()
             except Exception:
-                bot.send_message(chat_id, "Некорректное значение")
+                bot.send_message(
+                    chat_id,
+                    "<pre>Некорректное значение</pre>",
+                    parse_mode="HTML"
+                )
                 return
-            bot.send_message(chat_id, f"Установлен новый суффикс: '{preset }'")
+            bot.send_message(
+                chat_id,
+                f"<pre>Установлен новый суффикс: '{preset }'</pre>",
+                parse_mode="HTML"
+            )
             return
-        bot.send_message(chat_id, "Некорректное значение")
+        bot.send_message(
+            chat_id,
+            "<pre>Некорректное значение</pre>",
+            parse_mode="HTML"
+        )
     if message_text == "/format":
         presets = (
             ("3:2",  " --ar 3:2"),
@@ -165,33 +187,42 @@ def handle_command(message):
             )
             buttons.append(format_button)
         buttons_menu_markup.add(*buttons)
-        bot.send_message(chat_id, "Какой формат изображения будет?", reply_markup=buttons_menu_markup)
+        bot.send_message(
+            chat_id,
+            "<pre>Какой формат изображения будет?</pre>",
+            reply_markup=buttons_menu_markup,
+            parse_mode="HTML"
+        )
         return
     if message_text == "/mybot":
         user = User.objects.filter(username__iexact=username, is_active=True).first()
         if not user:
-            bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
-        info_text = f"""
-        Доступ до: {user.get_bot_end}\n
-        Доступные генерации: {user.remain_messages}\n
-        """
+            bot.send_message(
+                chat_id,
+                text="<pre>Ваш аккаунт не найден. Обратитесь в поддержку</pre>",
+                parse_mode="HTML"
+            )
+        info_text = f"""<pre>Доступ до: {user.get_bot_end}\nДоступные генерации: {user.all_messages}\n</pre>"""
         my_bot_reply_markup = types.InlineKeyboardMarkup()
         buttons = []
         del_format_button = types.InlineKeyboardButton(
             "Продлить",
-            # Установить нужную ссылку для продления
             url=settings.SITE_DOMAIN
         )
         buttons.append(del_format_button)
         my_bot_reply_markup.add(*buttons)
-        bot.send_message(chat_id, text=info_text, reply_markup=my_bot_reply_markup)
+        bot.send_message(
+            chat_id,
+            text=info_text,
+            reply_markup=my_bot_reply_markup,
+            parse_mode="HTML"
+        )
         return
     if message_text == "/instruction":
         info_reply_markup = types.InlineKeyboardMarkup()
         buttons = []
         info_button = types.InlineKeyboardButton(
             "Перейти на сайт",
-            # Установить нужную ссылку для продления
             url=settings.SITE_DOMAIN
         )
         buttons.append(info_button)
@@ -217,13 +248,8 @@ def preset_handler(chat_id, chat_username, message_text):
         bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
         return
     if preset == "info":
-        info_text = """
-        ▪️По умолчанию изображения создаются квадратными 1:1
-
-        ▪️Ваши изображения будут создаваться в выбранном формате до тех пор, пока вы не выберете другой, либо не удалите выбранный.
-
-        ▪️Чтобы создавать изображения в любом другом формате, нужно удалить предыдущий и дописать в конце запроса « --ar 4:5» (или по-русски « --ар 4:5») , где  4:5 - соотношение сторон. Собственный формат не сохраняется, добавлять к запросу каждый раз."""
-        bot.send_message(chat_id, text=info_text)
+        info_text = PRESET_INFO_TEXT
+        bot.send_message(chat_id, text=info_text, parse_mode="HTML")
     elif preset == "del":
         user.preset = ""
         user.save()
@@ -256,11 +282,16 @@ def add_upscaled_pic_buttons(message_id: int, buttons: list):
     :param buttons:
     :return:
     """
-    change_item = types.InlineKeyboardButton(
-        "Вариации",
-        callback_data=f"button_change&&{message_id}"
+    # Вместо кнопки вариаций добавляем сразу кнопку изменений(ту, что без сида)
+    # change_item = types.InlineKeyboardButton(
+    #     "Вариации",
+    #     callback_data=f"button_change&&{message_id}"
+    # )
+    strong_vary_item = types.InlineKeyboardButton(
+        "Изменение",
+        callback_data=f"button_vary_strong&&{message_id}"
     )
-    buttons.append(change_item)
+    buttons.append(strong_vary_item)
     return buttons
 
 
@@ -335,7 +366,11 @@ def handle_message(request_data):
         chat_id = message.get("chat", {}).get("id")
         message_text = message.get("text")
         if not message_text:
-            bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы отправили пустое сообщение</pre>",
+                parse_mode="HTML"
+            )
             return "", "", ""
         if message_text == "/start":
             handle_start_message(message)
@@ -351,12 +386,20 @@ def handle_message(request_data):
         chat_username = message.get("chat", {}).get("username")
         if not message_text or not chat_username or not chat_id:
             logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы отправили пустое сообщение</pre>",
+                parse_mode="HTML"
+            )
             return "", "", ""
         eng_text = translator.translate(message_text)
         if not eng_text:
             logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы отправили пустое сообщение</pre>",
+                parse_mode="HTML"
+            )
             return "", "", ""
         eng_text = eng_text.replace("-- ", "--")
         no_ar_text = eng_text.split(" --")[0]
@@ -364,7 +407,11 @@ def handle_message(request_data):
         user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
         if not user:
             logger.warning(f"Не найден пользователь(, user = {chat_username}")
-            bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы не зарегистрированы в приложении</pre>",
+                parse_mode="HTML"
+            )
             return "", "", ""
         if user.preset and user.preset not in message_text and user.preset not in eng_text:
             message_text = message_text + user.preset

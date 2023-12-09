@@ -37,7 +37,8 @@ def send_message_to_discord_task(user_id, eng_text, chat_id):
         if status != HTTPStatus.NO_CONTENT:
             bot.send_message(
                 chat_id=chat_id,
-                text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
+                text="<pre>Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру</pre>",
+                parse_mode="HTML"
             )
             logger.warning(f"Не удалось отправить сообщение, {account.login}, {status}")
 
