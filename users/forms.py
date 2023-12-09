@@ -123,7 +123,7 @@ class UserRegistrationForm(forms.ModelForm):
         user = User.objects.filter(username=self.cleaned_data["username"]).first()
         user.set_password(self.cleaned_data["password1"])
         user.is_active = True
-        user.save(update_fields=["is_active"])
+        user.save()
         return user
 
 

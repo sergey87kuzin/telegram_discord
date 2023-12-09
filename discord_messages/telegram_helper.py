@@ -1,18 +1,16 @@
 import random
 import logging
 import re
-import time
-from http import HTTPStatus
 
 import telebot
 from deep_translator import GoogleTranslator
 from django.conf import settings
 from django.utils.timezone import now
-from rest_framework.response import Response
 from telebot import types
 
 from bot_config.models import SiteSettings
 from discord_messages.choices import DiscordTypes
+from discord_messages.constants import INFO_TEXT
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
 from discord_messages.models import ConfirmMessage, Message  # , DiscordAccount, DiscordConnection
@@ -21,59 +19,6 @@ from users.models import User
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
 logger = logging.getLogger(__name__)
-
-
-instruction_text = """
-        ▪️Бот рисует в нейросети Midjourney v.5.2
-
-        ✅ 10 подарочных генераций каждый месяц 1 числа. Подарки не суммируются и сгорают в конце месяца.
-
-        ▪️Полученные изображения можно загружать на фотобанки для продажи. AdobeStock, FreePik, 123rf, Dreamstime
-
-        Как генерировать изображения?
-
-        ▪️1. Боту можно писать на русском и английском языке
-
-        ▪️2. Напишите, что вы хотите увидеть на изображении
-
-        ▪️ 3. Самое главное по смыслу слово всегда ставьте ближе к началу запроса
-
-        ▪️ 4. Чем более полным будет описание, тем легче нейросети рисовать
-
-        ▪️ 5. Можно добавлять стили изображений и параметры съемки в запрос
-
-        ▪️ 6. Выберите в меню формат изображения
-
-        ▪️ 7. Увеличить понравившийся кадр можно кнопками U1,U2,U3,U4
-        Изображения расположены так:
-                    U1      U2
-                    U3      U4
-
-        ▪️ 8. После увеличения U1,U2,U3,U4 изображения имеют размер:
-            1:1      1024 х 1024 px
-            3:2      1344 х 896 px
-            16:9     1456 x 816 px
-            3:1      1904 x 640 px
-
-        ▪️ 9. После увеличения изображение можно отдалить(ZoomOut), увеличить в 2 раза(Upscale2x) и изменить его, сделав вариации.
-
-        ✅ 10. Увеличивайте то, что вам нравится, СРАЗУ, чтобы не потерять.
-
-        ❌ 11. Кнопки под изображениями активны в течение суток от создания изображения.
-
-        ▪️ 12. Созданные и увеличенные изображения из бота не пропадают, сохранить на устройство вы сможете через любое время.
-
-        ▪️ 13. Каждая операция Upscale(2x) занимает 4 минуты и дольше, если вы генерите много изображений, лучше сохранять их на устройство после U1,U2,U3,U4, а увеличивать пакетно в программе Topaz Gigapixel 
-
-        ‼️ Когда готово будет‼️▪️ 14. Вы можете добавить свое изображение и написать запрос для нейросети, бот нарисует новое изображение на основе вашего.
-
-        ⏰ Терпение! Время генерации от 1 до 15 минут.
-
-        На сайте: 
-        ✅подробные видеоинструкции про работу с ботом, шпаргалки описаний, стилей, запрещенных слов 
-
-        ✅как продавать картинки через интернет на фотобанках
-        """
 
 
 def send_confirm_code(user: User):
@@ -161,12 +106,22 @@ def handle_command(message):
         bot.send_message(
             chat_id,
             f"""Для того, чтобы начать генерацию, просто вводите текст промпта\n
-                Для того, чтобы поменять пароль, введите /newpassword новый пароль\n
-                Личный кабинет: {settings.SITE_DOMAIN},\n
-                Техподдержка: {settings.TECH_BOT_URL}
+                Для того, чтобы поменять пароль, введите /password новый пароль\n
+                Переход на сайт: {settings.SITE_DOMAIN}
             """
         )
         return
+    if message_text.startswith("/password"):
+        password = message_text.replace("/password ", "")
+        if password and password != " ":
+            user = User.objects.filter(username=username, is_active=True).first()
+            if not user:
+                bot.send_message(chat_id, f"Перейдите на сайт и зарегистрируйтесь")
+                return
+            user.set_password(password)
+            user.save()
+            bot.send_message(chat_id, f"Ваш новый пароль {password}")
+            return
     if message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
@@ -241,7 +196,7 @@ def handle_command(message):
         )
         buttons.append(info_button)
         info_reply_markup.add(*buttons)
-        bot.send_message(chat_id, text=instruction_text, reply_markup=info_reply_markup)
+        bot.send_message(chat_id, text=INFO_TEXT, reply_markup=info_reply_markup)
         return
     if message_text == "/support":
         bot.send_message(chat_id, text="Мы работаем над этим")
@@ -403,6 +358,7 @@ def handle_message(request_data):
             logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
             bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
             return "", "", ""
+        eng_text = eng_text.replace("-- ", "--")
         no_ar_text = eng_text.split(" --")[0]
         message_type = DiscordTypes.START_GEN
         user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
@@ -497,24 +453,26 @@ def handle_message(request_data):
                 text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
             )
             return "", "", ""
-    if not user.date_of_payment or user.date_payment_expired < now():
-        bot.send_message(
-            chat_id=chat_id,
-            text="Пожалуйста, оплатите доступ к боту",
-        )
-        return "", "", ""
-    if user.remain_paid_messages > 0:
-        user.remain_paid_messages -= 1
-        user.save()
-    elif user.remain_messages > 0:
-        user.remain_messages -= 1
-        user.save()
-    else:
-        bot.send_message(
-            chat_id=chat_id,
-            text="У вас не осталось генераций",
-        )
-        return "", "", ""
+    if not message_text.startswith("button_u&&"):
+        if user.remain_messages == 0:
+            if not user.date_of_payment or user.date_payment_expired < now():
+                bot.send_message(
+                    chat_id=chat_id,
+                    text="Пожалуйста, оплатите доступ к боту",
+                )
+                return "", "", ""
+        if user.remain_paid_messages > 0:
+            user.remain_paid_messages -= 1
+            user.save()
+        elif user.remain_messages > 0:
+            user.remain_messages -= 1
+            user.save()
+        else:
+            bot.send_message(
+                chat_id=chat_id,
+                text="У вас не осталось генераций",
+            )
+            return "", "", ""
     created_message = Message.objects.create(
         text=message_text,
         eng_text=eng_text,
