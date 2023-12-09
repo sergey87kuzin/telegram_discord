@@ -1,0 +1,1 @@
+sudo celery multi start 2 -A telegram_to_discord -c 1 -B:2 -Q:1 messages -Q:2 telegram

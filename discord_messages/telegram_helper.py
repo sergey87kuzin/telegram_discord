@@ -237,7 +237,10 @@ def handle_command(message):
         bot.send_message(chat_id, text="Чуть позже")
         return
     if message_text == "/lessons":
-        bot.send_message(chat_id, text="Чуть позже")
+        bot.send_message(
+            chat_id,
+            text=f"{settings.SITE_DOMAIN}/courses/course/2/",
+        )
         return
     bot.send_message(chat_id, "Некорректное значение")
 
