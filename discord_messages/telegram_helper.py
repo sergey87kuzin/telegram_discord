@@ -11,6 +11,7 @@ from telebot import types
 from bot_config.models import SiteSettings
 from discord_messages.choices import DiscordTypes
 from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT
+from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
 from discord_messages.models import ConfirmMessage, Message  # , DiscordAccount, DiscordConnection
@@ -398,6 +399,14 @@ def handle_message(request_data):
             bot.send_message(
                 chat_id=chat_id,
                 text="<pre>Вы отправили пустое сообщение</pre>",
+                parse_mode="HTML"
+            )
+            return "", "", ""
+        wrong_words = check_words(eng_text)
+        if wrong_words:
+            bot.send_message(
+                chat_id=chat_id,
+                text=f"<pre>Вы отправили запрещенные слова: {wrong_words}</pre>",
                 parse_mode="HTML"
             )
             return "", "", ""
