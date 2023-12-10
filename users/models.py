@@ -41,7 +41,10 @@ class User(AbstractUser):
 
     @property
     def get_bot_end(self):
-        return self.date_payment_expired.strftime("%d-%m-%Y %H:%M") or "Оплат пока не было(("
+        try:
+            return self.date_payment_expired.strftime("%d-%m-%Y %H:%M") or "Оплат пока не было(("
+        except Exception:
+            return "Оплат пока не было(("
 
     @property
     def all_messages(self):
