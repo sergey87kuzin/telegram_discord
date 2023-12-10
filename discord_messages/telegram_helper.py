@@ -59,7 +59,7 @@ def handle_start_message(message):
             )
             if created:
                 user.set_password(str(random.randint(0, 99999999)).zfill(8))
-                account = DiscordAccount.objects.aggregate(users_count=Count("users")).order_by("users_count").first()
+                account = DiscordAccount.objects.annotate(users_count=Count("users")).order_by("users_count").first()
                 user.account = account
                 user.save()
         except Exception as e:
