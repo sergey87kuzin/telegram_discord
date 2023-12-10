@@ -544,7 +544,7 @@ def handle_message(request_data):
         user=user,
         answer_type=message_type
     )
-    if after_create_message_text.startswith(("button_zoom&&", "button_vary")):
+    if after_create_message_text.startswith(("button_zoom&&", "button_vary", "button_upscale")):
         created_message.eng_text = created_message.text
         created_message.no_ar_text = created_message.text.split(" --")[0]
         created_message.save()
