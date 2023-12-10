@@ -483,18 +483,18 @@ def handle_message(request_data):
             message_type = DiscordTypes.UPSCALED
             # переменная для определения типа сообщения после создания
             after_create_message_text = message_text
-            if message_text.startswith("button_upscale"):
-                url = "https://ya.ru/search/?text=topaz+gigapixel+ai&lr=2&" \
-                      "search_source=yaru_desktop_common&search_domain=yaru&src=suggest_B"
-                bot.send_message(
-                    chat_id=chat_id,
-                    text=f"<a href='{url}'>Upscale временно недоступен, используйте топаз</a>",
-                    parse_mode="HTML"
-                )
-                return "", "", ""
+            # if message_text.startswith("button_upscale"):
+            #     url = "https://ya.ru/search/?text=topaz+gigapixel+ai&lr=2&" \
+            #           "search_source=yaru_desktop_common&search_domain=yaru&src=suggest_B"
+            #     bot.send_message(
+            #         chat_id=chat_id,
+            #         text=f"<a href='{url}'>Upscale временно недоступен, используйте топаз</a>",
+            #         parse_mode="HTML"
+            #     )
+            #     return "", "", ""
             if message_text.startswith("button_u&&"):
                 answer_text = "Увеличиваем"
-            if message_text.startswith("button_zoom&&") or message_text.startswith("button_vary"):
+            if message_text.startswith(("button_zoom&&", "button_vary", "button_upscale")):
                 message_text = first_message.text
                 answer_text = "Делаем вариации" if message_text.startswith("button_vary") else "Отдаляем"
                 message_type = DiscordTypes.START_GEN
