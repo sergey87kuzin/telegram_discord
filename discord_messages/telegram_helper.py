@@ -136,6 +136,11 @@ def handle_command(message):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
             user = User.objects.filter(username=username).first()
+            if not user:
+                bot.send_message(
+                    chat_id,
+                    "Пользователь не найден"
+                )
             if preset.endswith("delete"):
                 user.preset = ""
                 user.save()
