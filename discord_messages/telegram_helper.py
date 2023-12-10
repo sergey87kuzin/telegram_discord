@@ -109,7 +109,7 @@ def handle_command(message):
     if message_text == "/help":
         bot.send_message(
             chat_id,
-            f"""<pre>Для того, чтобы начать генерацию, просто вводите текст промпта\nДля того, чтобы поменять пароль, введите /password новый пароль\nПереход на сайт: {settings.SITE_DOMAIN}</pre>""",
+            f"""<pre>Для того, чтобы начать генерацию, просто вводите текст промпта\n\nДля того, чтобы поменять пароль, введите /password новый пароль\n\nПереход на сайт: {settings.SITE_DOMAIN}</pre>""",
             parse_mode="HTML"
         )
         return
@@ -206,7 +206,7 @@ def handle_command(message):
                 text="<pre>Ваш аккаунт не найден. Обратитесь в поддержку</pre>",
                 parse_mode="HTML"
             )
-        info_text = f"""<pre>Доступ до: {user.get_bot_end}\nДоступные генерации: {user.all_messages}\n</pre>"""
+        info_text = f"""<pre>Доступ до: {user.get_bot_end}\n\nДоступные генерации: {user.all_messages}\n</pre>"""
         my_bot_reply_markup = types.InlineKeyboardMarkup()
         buttons = []
         del_format_button = types.InlineKeyboardButton(
@@ -439,6 +439,7 @@ def handle_message(request_data):
             if Message.objects.filter(eng_text=message_text).exists():
                 bot.send_message(chat_id=chat_id, text="Вы уже нажимали на эту кнопку)")
                 return "", "", ""
+            # if Message.objects.filter(message_type=DiscordTypes.UPSCALED, text=)
             chat_username = button_data.get("from", {}).get("username")
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
@@ -494,7 +495,11 @@ def handle_message(request_data):
             #     return "", "", ""
             if message_text.startswith("button_u&&"):
                 answer_text = "Увеличиваем"
-            if message_text.startswith(("button_zoom&&", "button_vary", "button_upscale")):
+            if message_text.startswith("button_upscale"):
+                message_text = first_message.text
+                answer_text = "Делаем upscale. Это долго. Ждите"
+                message_type = DiscordTypes.UPSCALED
+            if message_text.startswith(("button_zoom&&", "button_vary")):
                 message_text = first_message.text
                 answer_text = "Делаем вариации" if message_text.startswith("button_vary") else "Отдаляем"
                 message_type = DiscordTypes.START_GEN
