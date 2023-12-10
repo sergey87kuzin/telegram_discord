@@ -322,7 +322,7 @@ def add_seed_pic_buttons(buttons: list, message_id: int):
 
 
 def choose_action(account, connection, message_text):
-    if message_text.startswith("button_u&&") or message_text.startswith("button_zoom&&"):
+    if message_text.startswith(("button_u&&", "button_zoom&&", "button_upscale&&")):
         logger.warning(f"button zoom info: {message_text}")
         button_data = list(message_text.split("&&"))
         message = Message.objects.filter(id=button_data[2]).first()
