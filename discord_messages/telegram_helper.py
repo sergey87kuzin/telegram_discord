@@ -237,7 +237,7 @@ def handle_command(message):
         bot.send_message(chat_id, text="Мы работаем над этим")
         return
     if message_text == "/payment":
-        bot.send_message(chat_id, text="Чуть позже")
+        bot.send_message(chat_id, text=f"{settings.SITE_DOMAIN}/payments-page/")
         return
     if message_text == "/lessons":
         bot.send_message(
