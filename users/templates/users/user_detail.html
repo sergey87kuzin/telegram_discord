@@ -37,13 +37,13 @@
                     </span>
                 {% else %}
                     <span class="black_text btn dark-green-background">
-                        У вас еще не было оплат
+                        У вас еще не было оплат бота
                     </span>
                 {% endif %}
             </div>
             <div class="col-3 text_in_center dark-green-background">
                     <span class="col-12 black_text">
-                        Оставшиеся генерации:  {{ user.remain_messages }}
+                        Оставшиеся генерации:  {{ user.all_messages }}
                     </span>
             </div>
             <div class="col-3">
@@ -73,7 +73,7 @@
                 </span>
             {% else %}
                 <span class="black_text btn dark-green-background">
-                    У вас еще не было оплат
+                    У вас еще не было оплат бота
                 </span>
             {% endif %}
         </div>
