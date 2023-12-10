@@ -295,7 +295,7 @@ def add_upscaled_pic_buttons(message_id: int, buttons: list):
     #     callback_data=f"button_change&&{message_id}"
     # )
     strong_vary_item = types.InlineKeyboardButton(
-        "Изменение",
+        "Вариации",
         callback_data=f"button_vary_strong&&{message_id}"
     )
     buttons.append(strong_vary_item)

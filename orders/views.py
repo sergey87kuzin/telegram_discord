@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 import pytz
 import requests
+import telebot
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -17,6 +18,9 @@ from courses.models import Course, UserCourses
 from orders.helper import create_prodamus_order_object
 from orders.models import Order
 from users.models import User
+
+
+payment_bot = telebot.TeleBot(settings.PAYMENT_TELEGRAM_TOKEN)
 
 
 class CreateOrderView(generic.View):
@@ -97,4 +101,7 @@ class NotificationView(GenericAPIView):
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
             user.remain_paid_messages = order.message_count
             user.save()
+            chat_ids = ["1792622682", "344637537"]
+            for chat_id in chat_ids:
+                payment_bot.send_message(chat_id, text=f"Новая оплата, {order.total_cost}")
         return Response(status=HTTPStatus.OK, data={})

@@ -6,6 +6,11 @@
                 <span>1 числа каждого месяца Вам начисляется 10 генераций в подарок</span>
             </div>
             <div class='col card-body'>
+                {% if not user.is_authenticated %}
+                <div class="col margin_from_top">
+                    <span><b>Для оплаты бота или покупки курса нужно войти в аккаунт.</b></span>
+                </div>
+                {% endif %}
                 <div class="col margin_from_top">
                     <span>200 генераций в месяц - 300 рублей</span>
                     <a class="green-grey-button" href="{% url 'orders:create' %}?term=day">Тариф 200</a>
