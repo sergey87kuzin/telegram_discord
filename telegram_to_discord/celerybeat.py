@@ -10,7 +10,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "send_no_answer": {
         "task": "discord_messages.tasks.get_discord_messages",
-        "schedule": crontab(minute="*/15"),
+        "schedule": timedelta(minutes=15),
         "options": {"queue": "telegram"},
     },
     "delete_messages": {
