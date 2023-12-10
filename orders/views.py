@@ -86,6 +86,9 @@ class NotificationView(GenericAPIView):
         if order := Order.objects.filter(id=order_id).select_related("user").first():
             utc = pytz.UTC
             order.payment_status = "Paid"
+            chat_ids = ["1792622682", "344637537"]
+            for chat_id in chat_ids:
+                payment_bot.send_message(chat_id, text=f"Новая оплата, {order.total_cost}")
             order.save()
             user = order.user
             if order.course_id:
@@ -101,7 +104,4 @@ class NotificationView(GenericAPIView):
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
             user.remain_paid_messages = order.message_count
             user.save()
-            chat_ids = ["1792622682", "344637537"]
-            for chat_id in chat_ids:
-                payment_bot.send_message(chat_id, text=f"Новая оплата, {order.total_cost}")
         return Response(status=HTTPStatus.OK, data={})
