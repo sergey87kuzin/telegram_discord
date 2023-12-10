@@ -502,11 +502,11 @@ def handle_message(request_data):
             #     return "", "", ""
             if message_text.startswith("button_u&&"):
                 answer_text = "Увеличиваем"
-            if message_text.startswith("button_upscale"):
+            elif message_text.startswith("button_upscale"):
                 message_text = first_message.text
                 answer_text = "Делаем upscale. Это долго. Ждите"
                 message_type = DiscordTypes.UPSCALED
-            if message_text.startswith(("button_zoom&&", "button_vary")):
+            elif message_text.startswith(("button_zoom&&", "button_vary")):
                 message_text = first_message.text
                 answer_text = "Делаем вариации" if message_text.startswith("button_vary") else "Отдаляем"
                 message_type = DiscordTypes.START_GEN
@@ -527,7 +527,7 @@ def handle_message(request_data):
                 text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
             )
             return "", "", ""
-    if not message_text.startswith("button_u&&"):
+    if not eng_text.startswith("button_u&&"):
         if user.remain_messages == 0:
             if not user.date_of_payment or user.date_payment_expired < now():
                 bot.send_message(
