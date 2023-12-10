@@ -1,6 +1,6 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 
@@ -124,6 +124,7 @@ class UserRegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data["password1"])
         user.is_active = True
         user.save()
+        login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
         return user
 
 
