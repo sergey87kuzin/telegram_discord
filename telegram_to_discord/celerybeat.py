@@ -14,7 +14,7 @@ CELERY_BEAT_SCHEDULE = {
         "options": {"queue": "telegram"},
     },
     "delete_messages": {
-        "task": "discord_messages.tasks.get_discord_messages",
+        "task": "discord_messages.tasks.delete_old_messages",
         "schedule": crontab(minute="0", hour="0"),
         "options": {"queue": "telegram"},
     }
