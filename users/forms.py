@@ -74,7 +74,6 @@ class UserRegistrationForm(forms.ModelForm):
         self.fields["username"].widget.attrs.update(
             {
                 "placeholder": "Ваш ник telegram",
-                "class": "black_input",
                 "id": "telegram-nickname"
             }
         )
@@ -82,19 +81,16 @@ class UserRegistrationForm(forms.ModelForm):
         self.fields["password1"].widget.attrs.update(
             {
                 "placeholder": "Пароль",
-                "class": "black_input"
             }
         )
         self.fields["password2"].widget.attrs.update(
             {
                 "placeholder": "Подтверждение пароля",
-                "class": "black_input"
             }
         )
         self.fields["confirmation_code"].widget.attrs.update(
             {
                 "placeholder": "Код подтверждения telegram",
-                "class": "black_input"
             }
         )
 
