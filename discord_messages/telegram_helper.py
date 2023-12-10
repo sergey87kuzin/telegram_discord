@@ -502,11 +502,11 @@ def handle_message(request_data):
             #     return "", "", ""
             if message_text.startswith("button_u&&"):
                 answer_text = "Увеличиваем"
-            elif message_text.startswith("button_upscale"):
+            if message_text.startswith("button_upscale"):
                 message_text = first_message.text
                 answer_text = "Делаем upscale. Это долго. Ждите"
                 message_type = DiscordTypes.UPSCALED
-            elif message_text.startswith(("button_zoom&&", "button_vary")):
+            if message_text.startswith(("button_zoom&&", "button_vary")):
                 message_text = first_message.text
                 answer_text = "Делаем вариации" if message_text.startswith("button_vary") else "Отдаляем"
                 message_type = DiscordTypes.START_GEN
