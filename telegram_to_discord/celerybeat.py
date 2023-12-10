@@ -9,7 +9,7 @@ CELERY_BEAT_SCHEDULE = {
         "options": {"queue": "telegram"},
     },
     "send_no_answer": {
-        "task": "discord_messages.tasks.get_discord_messages",
+        "task": "discord_messages.tasks.send_message_no_answer",
         "schedule": timedelta(minutes=15),
         "options": {"queue": "telegram"},
     },
