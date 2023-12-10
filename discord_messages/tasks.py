@@ -257,7 +257,7 @@ def send_message_no_answer():
         bot.send_message(
             chat_id=message.telegram_id,
             text=f"""
-            <pre>К сожалению, при обработке сообщения {message.text} что-то пошло не так( \n\nМы добавили Вам одну бесплатную генерацию, можете воспользоваться ею</pre>
+            <pre>❌ Упс! Похоже что-то пошло не так, волшебство не удалось. Напишите новый запрос</pre>
             """,
             parse_mode="HTML"
         )

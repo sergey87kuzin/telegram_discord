@@ -1,8 +1,5 @@
 {% extends 'natasha_base.html' %}
 {% load static %}
-{% block title %}
-    "Сайт оплат доступа"
-{% endblock %}
 
 {% block content %}
     {% if not is_mobile %}
@@ -14,9 +11,9 @@
                     <div class="text_draw" data-elem-id="1666458108509" data-elem-type="text">
                         <div class="tn-atom" style="line-height: 70px;">РИСОВАТЬ НЕЙРОСЕТЬЮ</div>
                     </div>
-                    <div class="text_unlim" data-elem-id="1687352227187" data-elem-type="text">
-                        <div class="tn-atom" style="line-height: 39px;">Безлимитная подписка midjourney СКОРО!</div>
-                    </div>
+{#                    <div class="text_unlim" data-elem-id="1687352227187" data-elem-type="text">#}
+{#                        <div class="tn-atom" style="line-height: 39px;">Безлимитная подписка midjourney СКОРО!</div>#}
+{#                    </div>#}
                     <div class="text_cheaper" data-elem-id="1687347652897" data-elem-type="text">
                         <div class="tn-atom" style="line-height: 31px;">ДеШЕВЛЕ. ПРОЩЕ. БЫСТРЕЕ</div>
                     </div>
@@ -54,7 +51,7 @@
                         <span class="green_circle">1</span><p class="text_in_button">10 бесплатных тестовых генераций <br> </p>
                     </div>
                     <div class="row button_2 button_with_circle">
-                        <span class="green_circle">2</span><p class="text_in_button">Неограниченное количество генераций <br> после оплаты подписки</p>
+                        <span class="green_circle">2</span><p class="text_in_button">10 бесплатных уроков <br> из нейрокурса</p>
                     </div>
                     <div class="row button_3 button_with_circle">
                         <span class="green_circle">3</span><p class="text_in_button">Индивидуальность, никто не будет <br> видеть ваши генерации</p>
@@ -69,7 +66,7 @@
                         <div class="tn-atom" style="line-height: 31px;">ТАРИФЫ:</div>
                     </div>
                     <div class="prices" data-elem-id="1693861890577" data-elem-type="text">
-                        <div class="tn-atom" style="line-height: 31px;">300р - 1 день безлимитных генераций<br>1490р - 1 месяц безлимитных генераций</div>
+                        <div class="tn-atom" style="line-height: 31px;">300р - 200 генераций в месяц<br>1490р - 1000 генераций в месяц</div>
                     </div>
                     <div class="arrow" data-elem-id="1687356336262" data-elem-type="image">
                         <div class="tn-atom">
@@ -93,7 +90,7 @@
                         </div>
                     </div>
                     <div class="green_button green_button_fin">
-                        ПЕРЕЙТИ В БОТ
+                        <a href="https://t.me/ToMidjourneyBot">Перейти в бот</a>
                     </div>
                 </div>
             </div>
@@ -106,7 +103,7 @@
             <a href="{% url 'courses:single_course' 2 %}" class="green-grey-button margin_from_top">Нейрокурс</a>
         </div>
         <div class="col-12">
-            <a class="green-grey-button margin_from_top" href="{% url 'payments' %}?term=day">Оплатить бота</a>
+            <a class="green-grey-button margin_from_top" href="{% url 'payments' %}?term=day">Страница оплат</a>
         </div>
         <div class="col-12">
             <a href="https://t.me/ToMidjourneyBot" class="green-grey-button margin_from_top">Перейти в бот</a>

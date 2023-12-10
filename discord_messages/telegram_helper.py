@@ -5,6 +5,7 @@ import re
 import telebot
 from deep_translator import GoogleTranslator
 from django.conf import settings
+from django.db.models import Count
 from django.utils.timezone import now
 from telebot import types
 
@@ -14,7 +15,7 @@ from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT
 from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
-from discord_messages.models import ConfirmMessage, Message  # , DiscordAccount, DiscordConnection
+from discord_messages.models import ConfirmMessage, Message, DiscordAccount  # , DiscordAccount, DiscordConnection
 # from discord_messages.tasks import send_message_to_discord_task
 from users.models import User
 
@@ -58,6 +59,8 @@ def handle_start_message(message):
             )
             if created:
                 user.set_password(str(random.randint(0, 99999999)).zfill(8))
+                account = DiscordAccount.objects.aggregate(users_count=Count("users")).order_by("users_count").first()
+                user.account = account
                 user.save()
         except Exception as e:
             logger.warning(f"Ошибка регистрации пользователя, {username}, {str(e)}")
