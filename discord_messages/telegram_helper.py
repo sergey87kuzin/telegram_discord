@@ -141,6 +141,7 @@ def handle_command(message):
                     chat_id,
                     "Пользователь не найден"
                 )
+                return
             if preset.endswith("delete"):
                 user.preset = ""
                 user.save()
@@ -211,6 +212,7 @@ def handle_command(message):
                 text="<pre>Ваш аккаунт не найден. Обратитесь в поддержку</pre>",
                 parse_mode="HTML"
             )
+            return
         info_text = f"""<pre>Доступ до: {user.get_bot_end}\n\nДоступные генерации: {user.all_messages}\n</pre>"""
         my_bot_reply_markup = types.InlineKeyboardMarkup()
         buttons = []
