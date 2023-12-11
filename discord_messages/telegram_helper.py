@@ -505,7 +505,6 @@ def handle_message(request_data):
             if message_text.startswith("button_upscale"):
                 message_text = first_message.text
                 answer_text = "Делаем upscale. Это долго. Ждите"
-                message_type = DiscordTypes.UPSCALED
             if message_text.startswith(("button_zoom&&", "button_vary")):
                 message_text = first_message.text
                 answer_text = "Делаем вариации" if message_text.startswith("button_vary") else "Отдаляем"
