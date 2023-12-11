@@ -3,7 +3,7 @@
     <div class="col d-flex justify-content-center">
         <div class="card width-to-media text-center light_green_background">
             <div class="card-header">
-                <span>1 числа каждого месяца Вам начисляется 10 генераций в подарок</span>
+                <span>Здесь представлены ссылки на оплату для жителей стран, оплаты из которых сталкиваются со сложностями</span>
             </div>
             <div class='col card-body'>
                 {% if not user.is_authenticated %}
@@ -13,21 +13,23 @@
                 {% endif %}
                 <div class="col margin_from_top">
                     <span>200 генераций в месяц - 300 рублей</span>
-                    <a class="green-grey-button" href="{% url 'orders:create' %}?term=day">Тариф 200</a>
+                    <a class="green-grey-button" href="https://fotostocker.getcourse.ru/200tarif">Тариф 200</a>
                 </div>
                 <div class="col margin_from_top">
                     <span>1000 генераций в месяц - 1000 рублей</span>
-                    <a class="green-grey-button" href="{% url 'orders:create' %}?term=month">Тариф 1000</a>
+                    <a class="green-grey-button" href="https://fotostocker.getcourse.ru/1000tarif">Тариф 1000</a>
                 </div>
                 <div class="margin_from_top">
                     <span>Тарифы с безлимитными генерациями СКОРО</span>
                 </div>
                 <div class="col margin_from_top">
                     <span>+1000 генераций в подарок</span>
-                    <a href="{% url 'orders:create' %}?course_id=2" class="green-grey-button">КУПИТЬ КУРС</a>
+                    <a href="https://fotostocker.getcourse.ru/aicourse" class="green-grey-button">КУПИТЬ КУРС</a>
                 </div>
                 <div class="col margin_from_top">
-                    <a href="{% url 'alternative_payments' %}">Для жителей РБ, Украины, США</a>
+                    <span><b>После оплаты доступ открывается в ручном режиме по вашему нику в телеграм</b></span>
+                    <span>При проблемах с оплатой нажмите тут</span>
+                    <a href="https://api.whatsapp.com/send?phone=79217519186&text=&source=&data=" class="green-grey-button">СВЯЗАТЬСЯ С НАМИ</a>
                 </div>
             </div>
         </div>
