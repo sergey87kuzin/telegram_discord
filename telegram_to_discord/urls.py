@@ -18,6 +18,11 @@ urlpatterns = [
     path("courses/", include("courses.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("payments-page/", TemplateView.as_view(template_name="payments_page.html"), name="payments"),
+    path(
+        "alternative-payments/",
+        TemplateView.as_view(template_name="alternative_payment_methods.html"),
+        name="alternative_payments"
+    )
 ]
 
 
