@@ -59,6 +59,7 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(UserCourses)
 class UserCoursesAdmin(admin.ModelAdmin):
+    autocomplete_fields = ("user",)
     list_display = (
         "user",
         "course",
