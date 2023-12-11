@@ -241,7 +241,7 @@ def handle_command(message):
         bot.send_message(chat_id, text=INFO_TEXT, reply_markup=info_reply_markup, parse_mode="HTML")
         return
     if message_text == "/support":
-        bot.send_message(chat_id, text="Мы работаем над этим")
+        bot.send_message(chat_id, text="Скоро👌. Пока пишите @kuzinanatali")
         return
     if message_text == "/payment":
         bot.send_message(chat_id, text=f"{settings.SITE_DOMAIN}/payments-page/")
@@ -524,7 +524,7 @@ def handle_message(request_data):
             user = User.objects.first()
             bot.send_message(
                 chat_id=user.chat_id,
-                text="Неполадки с midjourney(( Попробуйте позже или обратитесь к менеджеру",
+                text="Кто-то опять косячит :)",
             )
             return "", "", ""
     if not eng_text.startswith("button_u&&"):

@@ -24,3 +24,14 @@ class SiteSettings(SingletonModel):
     class Meta:
         verbose_name = "Настройки сайта"
         verbose_name_plural = verbose_name
+
+
+class Notice(models.Model):
+    text = models.CharField("Текст уведомления", max_length=1024)
+
+    class Meta:
+        verbose_name = "Уведомление"
+        verbose_name_plural = "Уведомления"
+
+    def __str__(self):
+        return self.text
