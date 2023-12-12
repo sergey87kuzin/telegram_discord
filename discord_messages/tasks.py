@@ -246,6 +246,7 @@ def send_messages_to_telegram():
         message.save()
 
 
+@shared_task
 def send_message_no_answer():
     messages = Message.objects.filter(
         discord_message_id__isnull=True,
@@ -269,5 +270,6 @@ def send_message_no_answer():
         user.refresh_from_db()
 
 
+@shared_task
 def delete_old_messages():
     Message.objects.filter(created_at__lt=now() - timedelta(hours=24)).delete()
