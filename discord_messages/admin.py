@@ -11,15 +11,10 @@ class MessageAdmin(admin.ModelAdmin):
         "text",
         "eng_text",
         "user_telegram",
-        "telegram_id",
         "discord_message_id",
         "images",
-        "buttons",
         "answer_type",
         "answer_sent",
-        "seed",
-        "job",
-        "seed_send"
     )
 
 
