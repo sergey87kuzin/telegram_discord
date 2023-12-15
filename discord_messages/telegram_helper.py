@@ -559,6 +559,7 @@ def handle_message(request_data):
         )
     except Exception:
         bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")
+        return "", "", ""
     if after_create_message_text.startswith(("button_zoom&&", "button_vary", "button_upscale")):
         created_message.eng_text = created_message.text
         created_message.no_ar_text = created_message.text.split(" --")[0]
