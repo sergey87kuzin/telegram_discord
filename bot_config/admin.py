@@ -22,9 +22,12 @@ class NoticeAdmin(admin.ModelAdmin):
         for notice in queryset:
             for user in users:
                 if user.chat_id:
-                    bot.send_message(
-                        chat_id=user.chat_id,
-                        text=notice.text
-                    )
+                    try:
+                        bot.send_message(
+                            chat_id=user.chat_id,
+                            text=notice.text
+                        )
+                    except Exception:
+                        pass
 
     send_all.short_description = "Отправить всем"
