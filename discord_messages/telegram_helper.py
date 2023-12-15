@@ -547,15 +547,18 @@ def handle_message(request_data):
                 text="У вас не осталось генераций",
             )
             return "", "", ""
-    created_message = Message.objects.create(
-        text=message_text,
-        eng_text=eng_text,
-        no_ar_text=no_ar_text,
-        user_telegram=chat_username,
-        telegram_id=chat_id,
-        user=user,
-        answer_type=message_type
-    )
+    try:
+        created_message = Message.objects.create(
+            text=message_text,
+            eng_text=eng_text,
+            no_ar_text=no_ar_text,
+            user_telegram=chat_username,
+            telegram_id=chat_id,
+            user=user,
+            answer_type=message_type
+        )
+    except Exception:
+        bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")
     if after_create_message_text.startswith(("button_zoom&&", "button_vary", "button_upscale")):
         created_message.eng_text = created_message.text
         created_message.no_ar_text = created_message.text.split(" --")[0]
