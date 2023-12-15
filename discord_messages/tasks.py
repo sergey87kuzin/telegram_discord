@@ -221,14 +221,14 @@ def send_messages_to_telegram():
                         callback_data=callback_data
                     )
                     buttons.append(item)
-                elif button_key.startswith("Upscale (2x)"):
-                    button_prefix = "button_upscale"
-                    callback_data = f"{button_prefix}&&{button_key}&&{message.id}"
-                    item = types.InlineKeyboardButton(
-                        button_key,
-                        callback_data=callback_data
-                    )
-                    buttons.append(item)
+                # elif button_key.startswith("Upscale (2x)"):
+                #     button_prefix = "button_upscale"
+                #     callback_data = f"{button_prefix}&&{button_key}&&{message.id}"
+                #     item = types.InlineKeyboardButton(
+                #         button_key,
+                #         callback_data=callback_data
+                #     )
+                #     buttons.append(item)
         if message.answer_type == DiscordTypes.START_GEN:
             buttons = add_four_pics_buttons(buttons, message.id)
         elif message.answer_type == DiscordTypes.UPSCALED:
@@ -250,7 +250,7 @@ def send_messages_to_telegram():
 def send_message_no_answer():
     messages = Message.objects.filter(
         discord_message_id__isnull=True,
-        created_at__lte=now() - timedelta(minutes=20),
+        created_at__lte=now() - timedelta(minutes=30),
         answer_sent=False
     ).select_related("user")
     for message in messages:
