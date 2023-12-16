@@ -1,14 +1,33 @@
 from django.contrib import admin, auth
+from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from bot_config.models import SiteSettings
+from discord_messages.telegram_helper import bot
 from users.models import User
+
+
+class PaidFilter(SimpleListFilter):
+    title = 'Оплатившие'
+    parameter_name = 'remain_paid_messages'
+
+    def lookups(self, request, model_admin):
+        # define the filter options
+        return (
+            ('yes', 'Оплатившие'),
+            ('no', 'Не оплатившие'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(remain_paid_messages__gt=0)
 
 
 class UserAdmin(BaseUserAdmin):
     change_form_template = 'loginas/change_form.html'
     list_display = (
-        "id", "username", "is_superuser", "is_active",
+        "id", "username", "is_superuser", "is_active", "remain_paid_messages"
     )
     add_fieldsets = (
         (
@@ -35,6 +54,22 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["-id"]
     form = UserChangeForm
     search_fields = ("username", )
+    actions = ["send_message"]
+    list_filter = (PaidFilter,)
+
+    def send_message(self, request, queryset):
+        site_settings = SiteSettings.get_solo()
+        for user in queryset:
+            if user.chat_id:
+                try:
+                    bot.send_message(
+                        chat_id=user.chat_id,
+                        text=site_settings.notice_message
+                    )
+                except Exception:
+                    pass
+
+    send_message.short_description = "Отправить сообщение"
 
 
 admin.site.register(User, UserAdmin)
