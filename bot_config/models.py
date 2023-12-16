@@ -20,6 +20,12 @@ class SiteSettings(SingletonModel):
         default=1000
     )
     say_hi_video = models.FileField("Приветственное видео", blank=True, null=True)
+    notice_message = models.CharField(
+        "Сообщение для отправки пользователям",
+        blank=True,
+        null=True,
+        max_length=512
+    )
 
     class Meta:
         verbose_name = "Настройки сайта"
