@@ -63,6 +63,7 @@ class DiscordAccount(models.Model):
     last_message_id = models.CharField(
         "ID последнего запрошенного сообщения в акке", max_length=128, blank=True, null=True
     )
+    queue_number = models.PositiveIntegerField("Номер очереди", default=1)
 
     class Meta:
         verbose_name = "Аккаунт дискорд для подключения midjourney"

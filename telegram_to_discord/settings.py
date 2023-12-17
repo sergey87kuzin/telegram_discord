@@ -211,6 +211,9 @@ CELERY_TASK_ROUTES = {
     "discord_messages.tasks.send_message_to_discord_task": {"queue": "messages"},
     "discord_messages.tasks.send_message_no_answer": {"queue": "telegram"},
     "discord_messages.tasks.delete_old_messages": {"queue": "telegram"},
+    "discord_messages.tasks.send_message_to_discord_task_1": {"queue": "messages1"},
+    "discord_messages.tasks.send_message_to_discord_task_2": {"queue": "messages2"},
+    "discord_messages.tasks.send_message_to_discord_task_3": {"queue": "messages3"},
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 

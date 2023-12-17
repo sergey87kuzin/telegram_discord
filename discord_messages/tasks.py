@@ -44,6 +44,21 @@ def send_message_to_discord_task(user_id, eng_text, chat_id):
 
 
 @shared_task
+def send_message_to_discord_task_1(user_id, eng_text, chat_id):
+    send_message_to_discord_task(user_id, eng_text, chat_id)
+
+
+@shared_task
+def send_message_to_discord_task_2(user_id, eng_text, chat_id):
+    send_message_to_discord_task(user_id, eng_text, chat_id)
+
+
+@shared_task
+def send_message_to_discord_task_3(user_id, eng_text, chat_id):
+    send_message_to_discord_task(user_id, eng_text, chat_id)
+
+
+@shared_task
 def get_discord_messages():
     """
     Получаем непрочитанные сообщения, определяем их тип(первоначальная генерация 4 картинок
