@@ -6,7 +6,8 @@ import logging
 from django.views import generic
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from discord_messages.tasks import send_message_to_discord_task
+from discord_messages.tasks import send_message_to_discord_task, send_message_to_discord_task_1, \
+    send_message_to_discord_task_2, send_message_to_discord_task_3
 from discord_messages.telegram_helper import handle_message
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,14 @@ class GetTelegramMessage(APIView):
         logger.warning("get message")
         user, eng_text, chat_id = handle_message(request.data)
         if user and eng_text and chat_id:
-            send_message_to_discord_task.apply_async([user.id, eng_text, chat_id], queue="messages")
+            if user.account.queue_number == 0:
+                send_message_to_discord_task.apply_async([user.id, eng_text, chat_id], queue="messages")
+            elif user.account.queue_number == 1:
+                send_message_to_discord_task_1.apply_async([user.id, eng_text, chat_id], queue="messages1")
+            elif user.account.queue_number == 2:
+                send_message_to_discord_task_2.apply_async([user.id, eng_text, chat_id], queue="messages2")
+            elif user.account.queue_number == 3:
+                send_message_to_discord_task_3.apply_async([user.id, eng_text, chat_id], queue="messages3")
         return Response(HTTPStatus.OK)
 
 
