@@ -6,7 +6,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from telebot import types
 
-from stable_messages.stable_helper import stable_bot
+from discord_messages.telegram_helper import bot
 from stable_messages.choices import StableMessageTypeChoices
 from stable_messages.models import StableMessage, StableAccount
 
@@ -67,7 +67,7 @@ def send_zoom_to_stable(created_message_id):
         stable_message.single_image = response_data.get("output")
         stable_message.save()
         if response_data.get("status") == "error":
-            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
+            bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
 
 
 def send_first_messages(message: StableMessage):
@@ -107,14 +107,14 @@ def send_first_messages(message: StableMessage):
         buttons_u_markup.add(*buttons)
         photo = requests.get(image)
         try:
-            stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+            bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
         except Exception:
-            stable_bot.send_message(
+            bot.send_message(
                 message.telegram_chat_id,
                 text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
                 parse_mode="HTML"
             )
-        stable_bot.send_message(message.telegram_chat_id, text=new_message.initial_text, reply_markup=buttons_u_markup)
+        bot.send_message(message.telegram_chat_id, text=new_message.initial_text, reply_markup=buttons_u_markup)
     message.answer_sent = True
     message.save()
 
@@ -122,14 +122,14 @@ def send_first_messages(message: StableMessage):
 def send_upscaled_message(message: StableMessage):
     photo = requests.get(message.single_image)
     try:
-        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+        bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
     except Exception:
-        stable_bot.send_message(
+        bot.send_message(
             message.telegram_chat_id,
             text=f"<a href='{photo}'>Скачайте увеличенное фото тут</a>",
             parse_mode="HTML"
         )
-    stable_bot.send_message(
+    bot.send_message(
         chat_id=message.telegram_chat_id,
         text=f"Upscaled {message.initial_text}"
     )
