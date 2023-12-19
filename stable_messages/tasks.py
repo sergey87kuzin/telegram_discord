@@ -1,14 +1,16 @@
 import json
 
+import telebot
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse_lazy
 from telebot import types
 
-from discord_messages.telegram_helper import bot
 from stable_messages.choices import StableMessageTypeChoices
 from stable_messages.models import StableMessage, StableAccount
+
+stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
 
 
 @shared_task
