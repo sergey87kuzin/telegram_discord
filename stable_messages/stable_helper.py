@@ -3,7 +3,6 @@ import logging
 import re
 
 import requests
-import telebot
 from deep_translator import GoogleTranslator
 from django.conf import settings
 from django.urls import reverse_lazy
@@ -14,11 +13,10 @@ from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler
 from stable_messages.models import StableMessage, StableAccount
 from .choices import StableMessageTypeChoices
-from .tasks import send_upscale_to_stable, send_zoom_to_stable
+from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot
 from users.models import User
 
 logger = logging.getLogger(__name__)
-stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
 
 
 def add_buttons_to_u_message(created_message_id):
