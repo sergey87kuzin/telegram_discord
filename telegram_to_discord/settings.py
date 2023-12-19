@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "ckeditor",
     "ckeditor_uploader",
     "embed_video",
+    "stable_messages"
 ]
 
 MIDDLEWARE = [
@@ -187,6 +188,7 @@ DISCORD_CHANNEL = env.str("DISCORD_CHANNEL")
 
 TELEGRAM_TOKEN = env.str("TELEGRAM_TOKEN")
 PAYMENT_TELEGRAM_TOKEN = env.str("PAYMENT_TELEGRAM_TOKEN")
+STABLE_TELEGRAM_TOKEN = env.str("STABLE_TELEGRAM_TOKEN")
 
 # CELERY
 CELERY_BROKER_URL = env.str("REDIS_URL")
@@ -214,6 +216,8 @@ CELERY_TASK_ROUTES = {
     "discord_messages.tasks.send_message_to_discord_task_1": {"queue": "messages1"},
     "discord_messages.tasks.send_message_to_discord_task_2": {"queue": "messages2"},
     "discord_messages.tasks.send_message_to_discord_task_3": {"queue": "messages3"},
+    "stable_messages.tasks.send_upscale_to_stable": {"queue": "messages1"},
+    "stable_messages.tasks.send_zoom_to_stable": {"queue": "messages1"}
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 

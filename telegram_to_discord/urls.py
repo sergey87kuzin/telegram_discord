@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/users/", include("users.api_urls")),
     path("orders/", include("orders.urls")),
     path("courses/", include("courses.urls")),
+    path("stable/", include("stable_messages.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("payments-page/", TemplateView.as_view(template_name="payments_page.html"), name="payments"),
     path(

@@ -22,6 +22,14 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    stable_account = models.ForeignKey(
+        "stable_messages.StableAccount",
+        on_delete=models.SET_NULL,
+        verbose_name="Аккаунт stable",
+        related_name="stable_users",
+        blank=True,
+        null=True,
+    )
     preset = models.CharField(
         "Суффикс для всех сообщений пользователя",
         max_length=128,
