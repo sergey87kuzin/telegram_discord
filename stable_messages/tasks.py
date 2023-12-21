@@ -13,6 +13,18 @@ from stable_messages.models import StableMessage, StableAccount
 stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
 
 
+def get_sizes(scale):
+    result = ("1024", "1024")
+    SCALES = {
+        "3:2": ("1020", "680"),
+        "2:3": ("680", "1020"),
+        "3:1": ("1020", "340"),
+        "16:9": ("1024", "576"),
+        "9:16": ("576", "1024")
+    }
+    return SCALES.get(scale) or result
+
+
 @shared_task
 def send_upscale_to_stable(created_message_id):
     stable_message = StableMessage.objects.get(id=created_message_id)
@@ -43,16 +55,21 @@ def send_vary_to_stable(created_message_id):
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
         return
+    text = stable_message.initial_text
+    scale = ""
+    if "--ar " in text:
+        scale = text.split("--ar ")[-1]
+    width, height = get_sizes(scale)
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
     headers = {'Content-Type': 'application/json'}
     data = json.dumps(
         {
             "key": stable_account.api_key,
-            "prompt": stable_message.initial_text,
+            "prompt": text,
             "init_image": stable_message.first_image,
-            "width": "1024",
-            "height": "1024",
-            "samples": "1",
+            "width": width,
+            "height": height,
+            "samples": "4",
             "num_inference_steps": "20",
             "safety_checker": "yes",
             "enhance_prompt": "yes",
@@ -80,6 +97,11 @@ def send_zoom_to_stable(created_message_id):
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
         return
+    text = stable_message.initial_text
+    scale = ""
+    if "--ar " in text:
+        scale = text.split("--ar ")[-1]
+    width, height = get_sizes(scale)
     zoom_image_url = "https://stablediffusionapi.com/api/v5/outpaint"
     headers = {
         'Content-Type': 'application/json'
@@ -87,10 +109,10 @@ def send_zoom_to_stable(created_message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
-        "prompt": stable_message.initial_text,
+        "prompt": text,
         "image": stable_message.first_image,
-        "width": 1024,
-        "height": 1024,
+        "width": width,
+        "height": height,
         "height_translation_per_step": 64,
         "width_translation_per_step": 64,
         "num_inference_steps": 15,
