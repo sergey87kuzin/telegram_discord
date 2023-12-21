@@ -177,6 +177,42 @@ def send_upscaled_message(message: StableMessage):
     message.save()
 
 
+def send_varied_message(message):
+    photo = requests.get(message.single_image)
+    try:
+        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+    except Exception:
+        stable_bot.send_message(
+            message.telegram_chat_id,
+            text=f"<a href='{message.single_image}'>Скачайте измененное фото тут</a>",
+            parse_mode="HTML"
+        )
+    stable_bot.send_message(
+        chat_id=message.telegram_chat_id,
+        text=f"Varied {message.initial_text}"
+    )
+    message.answer_sent = True
+    message.save()
+
+
+def send_zoomed_message(message):
+    photo = requests.get(message.single_image)
+    try:
+        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+    except Exception:
+        stable_bot.send_message(
+            message.telegram_chat_id,
+            text=f"<a href='{message.single_image}'>Скачайте отдаленное фото тут</a>",
+            parse_mode="HTML"
+        )
+    stable_bot.send_message(
+        chat_id=message.telegram_chat_id,
+        text=f"Zoomed {message.initial_text}"
+    )
+    message.answer_sent = True
+    message.save()
+
+
 @shared_task
 def send_stable_messages_to_telegram():
     messages_to_send = StableMessage.objects.filter(
@@ -188,3 +224,7 @@ def send_stable_messages_to_telegram():
             send_first_messages(message)
         elif message.message_type == StableMessageTypeChoices.UPSCALED:
             send_upscaled_message(message)
+        elif message.message_type == StableMessageTypeChoices.VARY:
+            send_varied_message(message)
+        elif message.message_type == StableMessageTypeChoices.ZOOM:
+            send_zoomed_message(message)
