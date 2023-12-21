@@ -106,7 +106,7 @@ def handle_zoom_button(message_text, chat_id):
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при отдалении((")
         return
     created_message = StableMessage.objects.create(
-        initial_text=first_message.text,
+        initial_text=first_message.initial_text,
         eng_text=message_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
@@ -126,7 +126,7 @@ def handle_vary_button(message_text, chat_id):
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при отдалении((")
         return
     created_message = StableMessage.objects.create(
-        initial_text=first_message.text,
+        initial_text=first_message.initial_text,
         eng_text=message_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
