@@ -86,7 +86,7 @@ def handle_upscale_button(message_text, chat_id):
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при увеличении((")
         return
     created_message = StableMessage.objects.create(
-        initial_text=first_message.text,
+        initial_text=first_message.initial_text,
         eng_text=message_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
@@ -242,15 +242,14 @@ def handle_telegram_callback(message_data: dict):
             #     handle_u_button(message_text, chat_id)
             #     return "", "", ""
             if message_text.startswith("button_upscale"):
-                message_text = first_message.text
                 handle_upscale_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_zoom&&"):
-                message_text = first_message.text
+                message_text = first_message.initial_text
                 handle_zoom_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_vary"):
-                message_text = first_message.text
+                message_text = first_message.initial_text
                 handle_vary_button(message_text)
                 return "", "", ""
             elif message_text.startswith("button_send_again&&"):
