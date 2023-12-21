@@ -11,9 +11,9 @@ from telebot import types
 
 from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler
-from stable_messages.models import StableMessage, StableAccount
+from stable_messages.models import StableMessage, StableAccount, StableSettings
 from .choices import StableMessageTypeChoices
-from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot
+from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -118,8 +118,24 @@ def handle_zoom_button(message_text, chat_id):
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
-def handle_vary_button(message_text):
-    pass
+def handle_vary_button(message_text, chat_id):
+    answer_text = "Вносим изменения"
+    prefix, stable_message_id = message_text.split("&&")
+    first_message = StableMessage.objects.filter(id=stable_message_id).first()
+    if not first_message:
+        stable_bot.send_message(chat_id=chat_id, text="Ошибка при отдалении((")
+        return
+    created_message = StableMessage.objects.create(
+        initial_text=first_message.text,
+        eng_text=message_text,
+        telegram_chat_id=first_message.telegram_chat_id,
+        user_id=first_message.user_id,
+        first_image=first_message.single_image,
+        message_type=StableMessageTypeChoices.VARY
+    )
+    created_message.refresh_from_db()
+    send_vary_to_stable.delay(created_message.id)
+    stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
 def handle_repeat_button(message_text):
@@ -245,7 +261,6 @@ def handle_telegram_callback(message_data: dict):
                 handle_upscale_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_zoom&&"):
-                message_text = first_message.initial_text
                 handle_zoom_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_vary"):
@@ -299,6 +314,7 @@ def handle_telegram_callback(message_data: dict):
 
 
 def send_message_to_stable(user_id, eng_text, message_id):
+    stable_settings = StableSettings.get_solo()
     message = StableMessage.objects.filter(id=message_id).first()
     stable_account = StableAccount.objects.filter(stable_users=user_id).first()
     if not stable_account:
@@ -311,21 +327,21 @@ def send_message_to_stable(user_id, eng_text, message_id):
     # todo выделять негативный промпт
     data = json.dumps({
         "key": stable_account.api_key,
-        "model_id": "juggernaut-xl",
+        "model_id": stable_settings.model_id or "juggernaut-xl",
         "prompt": eng_text,
         "negative_prompt": None,
         "width": "1024",
         "height": "1024",
         "samples": "4",
-        "num_inference_steps": "20",
+        "num_inference_steps": stable_settings.num_inference_steps or "20",
         "seed": "-1",
-        "guidance_scale": 7,
+        "guidance_scale": stable_settings.guidance_scale or 7,
         "safety_checker": "yes",
         "multi_lingual": "no",
         "panorama": "no",
         "self_attention": "yes",
         "upscale": "no",
-        "embeddings_model": None,
+        "embeddings_model": stable_settings.embeddings_model or None,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
         "track_id": message_id
     })
