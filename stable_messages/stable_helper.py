@@ -319,7 +319,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "height": "1024",
         "samples": "4",
         "num_inference_steps": "20",
-        "seed": None,
+        "seed": "-1",
         "guidance_scale": 7,
         "safety_checker": "yes",
         "multi_lingual": "no",
