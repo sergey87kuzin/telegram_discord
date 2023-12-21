@@ -37,7 +37,7 @@ class GetStableCallback(APIView):
                 message.third_image = images[2]
                 message.fourth_image = images[3]
             except Exception:
-                pass
+                print("wrong one")
             message.save()
         if not data.get("status") == "success":
             message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
