@@ -19,6 +19,18 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
+def get_sizes(scale):
+    result = ("1024", "1024")
+    SCALES = {
+        "3:2": ("1020", "680"),
+        "2:3": ("680", "1020"),
+        "3:1": ("1020", "340"),
+        "16:9": ("1024", "576"),
+        "9:16": ("576", "1024")
+    }
+    return SCALES.get(scale) or result
+
+
 def add_buttons_to_u_message(created_message_id):
     BUTTONS = {
         "Zoom Out 1.5x": f"button_zoom_1.5x&&{created_message_id}",
@@ -318,19 +330,22 @@ def send_message_to_stable(user_id, eng_text, message_id):
     stable_account = StableAccount.objects.filter(stable_users=user_id).first()
     if not stable_account:
         return
+    scale = ""
+    if "--ar " in eng_text:
+        scale = eng_text.split("--ar ")[-1]
+    width, height = get_sizes(scale)
     text_message_url = "https://modelslab.com/api/v6/images/text2img"
     headers = {
         'Content-Type': 'application/json'
     }
-    # todo рассчитывать формат либо при его установке, либо при применении
     # todo выделять негативный промпт
     data = json.dumps({
         "key": stable_account.api_key,
         "model_id": stable_settings.model_id or "juggernaut-xl",
         "prompt": eng_text,
         "negative_prompt": None,
-        "width": "1024",
-        "height": "1024",
+        "width": width,
+        "height": height,
         "samples": "4",
         "num_inference_steps": stable_settings.num_inference_steps or "20",
         "seed": "-1",

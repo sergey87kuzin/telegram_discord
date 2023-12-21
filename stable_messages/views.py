@@ -31,6 +31,13 @@ class GetStableCallback(APIView):
         if images:
             message = StableMessage.objects.filter(id=message_id).first()
             message.single_image = images[0]
+            try:
+                message.first_image = images[0]
+                message.second_image = images[1]
+                message.third_image = images[2]
+                message.fourth_image = images[3]
+            except Exception:
+                pass
             message.save()
         if not data.get("status") == "success":
             message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
