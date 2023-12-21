@@ -12,3 +12,13 @@ class StableMessageTypeChoices:
         (ZOOM, "Отдалена"),
         (VARY, "Изменена")
     )
+
+
+class StableModels:
+    JUGGERNAUT = "juggernaut-xl"
+    DELIBERATE = "deliberate-v3"
+
+    CHOICES = (
+        (JUGGERNAUT, "Джаггернаут"),
+        (DELIBERATE, "Делиберейт")
+    )
