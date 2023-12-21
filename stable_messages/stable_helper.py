@@ -12,7 +12,7 @@ from telebot import types
 from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler
 from stable_messages.models import StableMessage, StableAccount, StableSettings
-from .choices import StableMessageTypeChoices
+from .choices import StableMessageTypeChoices, SCALES
 from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable
 from users.models import User
 
@@ -21,13 +21,6 @@ logger = logging.getLogger(__name__)
 
 def get_sizes(scale):
     result = ("1024", "1024")
-    SCALES = {
-        "3:2": ("1020", "680"),
-        "2:3": ("680", "1020"),
-        "3:1": ("1020", "340"),
-        "16:9": ("1024", "576"),
-        "9:16": ("576", "1024")
-    }
     return SCALES.get(scale) or result
 
 
