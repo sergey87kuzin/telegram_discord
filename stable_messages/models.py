@@ -1,4 +1,5 @@
 from django.db import models
+from solo.models import SingletonModel
 
 from stable_messages.choices import StableMessageTypeChoices
 from users.models import User
@@ -47,3 +48,15 @@ class StableAccount(models.Model):
 
     def __str__(self):
         return f"Аккаунт {self.name}"
+
+
+class StableSettings(SingletonModel):
+    model_id = models.CharField("Номер модели", max_length=256, blank=True, null=True, default="juggernaut-xl")
+    seed = models.CharField("Сид", max_length=128, blank=True, null=True, default="-1")
+    num_inference_steps = models.CharField("Число шагов", max_length=8, blank=True, null=True, default="20")
+    guidance_scale = models.PositiveIntegerField("Шкала", default=7)
+    embeddings_model = models.CharField("Связанная модель", max_length=256, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Настройки stable"
+        verbose_name_plural = verbose_name

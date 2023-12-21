@@ -38,6 +38,43 @@ def send_upscale_to_stable(created_message_id):
 
 
 @shared_task
+def send_vary_to_stable(created_message_id):
+    stable_message = StableMessage.objects.get(id=created_message_id)
+    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
+    if not stable_account:
+        return
+    vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps(
+        {
+            "key": stable_account.api_key,
+            "prompt": stable_message.initial_text,
+            "init_image": stable_message.first_image,
+            "width": "1024",
+            "height": "1024",
+            "samples": "1",
+            "num_inference_steps": "20",
+            "safety_checker": "yes",
+            "enhance_prompt": "yes",
+            "guidance_scale": 7.5,
+            "strength": 0.7,
+            "seed": "-1",
+            "base64": "no",
+            "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
+            "track_id": stable_message.id
+        }
+    )
+
+    response = requests.post(url=vary_image_url, headers=headers, data=data)
+    if response_data := response.json():
+        stable_message.stable_request_id = response_data.get("id")
+        stable_message.single_image = response_data.get("output")
+        stable_message.save()
+        if response_data.get("status") == "error":
+            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")
+
+
+@shared_task
 def send_zoom_to_stable(created_message_id):
     stable_message = StableMessage.objects.get(id=created_message_id)
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
@@ -50,7 +87,8 @@ def send_zoom_to_stable(created_message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
-        "prompt": stable_message.text,
+        "prompt": stable_message.initial_text,
+        "image": stable_message.first_image,
         "width": 1024,
         "height": 1024,
         "height_translation_per_step": 64,
@@ -128,12 +166,48 @@ def send_upscaled_message(message: StableMessage):
     except Exception:
         stable_bot.send_message(
             message.telegram_chat_id,
-            text=f"<a href='{photo}'>Скачайте увеличенное фото тут</a>",
+            text=f"<a href='{message.single_image}'>Скачайте увеличенное фото тут</a>",
             parse_mode="HTML"
         )
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
         text=f"Upscaled {message.initial_text}"
+    )
+    message.answer_sent = True
+    message.save()
+
+
+def send_varied_message(message):
+    photo = requests.get(message.single_image)
+    try:
+        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+    except Exception:
+        stable_bot.send_message(
+            message.telegram_chat_id,
+            text=f"<a href='{message.single_image}'>Скачайте измененное фото тут</a>",
+            parse_mode="HTML"
+        )
+    stable_bot.send_message(
+        chat_id=message.telegram_chat_id,
+        text=f"Varied {message.initial_text}"
+    )
+    message.answer_sent = True
+    message.save()
+
+
+def send_zoomed_message(message):
+    photo = requests.get(message.single_image)
+    try:
+        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+    except Exception:
+        stable_bot.send_message(
+            message.telegram_chat_id,
+            text=f"<a href='{message.single_image}'>Скачайте отдаленное фото тут</a>",
+            parse_mode="HTML"
+        )
+    stable_bot.send_message(
+        chat_id=message.telegram_chat_id,
+        text=f"Zoomed {message.initial_text}"
     )
     message.answer_sent = True
     message.save()
@@ -150,3 +224,7 @@ def send_stable_messages_to_telegram():
             send_first_messages(message)
         elif message.message_type == StableMessageTypeChoices.UPSCALED:
             send_upscaled_message(message)
+        elif message.message_type == StableMessageTypeChoices.VARY:
+            send_varied_message(message)
+        elif message.message_type == StableMessageTypeChoices.ZOOM:
+            send_zoomed_message(message)

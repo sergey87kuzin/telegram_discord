@@ -218,7 +218,8 @@ CELERY_TASK_ROUTES = {
     "discord_messages.tasks.send_message_to_discord_task_3": {"queue": "messages3"},
     "stable_messages.tasks.send_upscale_to_stable": {"queue": "messages1"},
     "stable_messages.tasks.send_zoom_to_stable": {"queue": "messages1"},
-    "stable_messages.tasks.send_stable_messages_to_telegram": {"queue": "telegram"}
+    "stable_messages.tasks.send_stable_messages_to_telegram": {"queue": "telegram"},
+    "stable_messages.tasks.send_vary_to_stable": {"queue": "messages2"},
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 

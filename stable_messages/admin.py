@@ -1,6 +1,7 @@
 from django.contrib import admin
+from solo.admin import SingletonModelAdmin
 
-from stable_messages.models import StableMessage, StableAccount
+from stable_messages.models import StableMessage, StableAccount, StableSettings
 
 
 @admin.register(StableMessage)
@@ -19,4 +20,9 @@ class StableMessageAdmin(admin.ModelAdmin):
 
 @admin.register(StableAccount)
 class StableAccountAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(StableSettings)
+class StableSettingsAdmin(SingletonModelAdmin):
     pass
