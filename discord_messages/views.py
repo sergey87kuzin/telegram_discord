@@ -31,15 +31,15 @@ class GetTelegramMessage(APIView):
     def post(self, request):
         logger.warning("get message")
         user, eng_text, chat_id = handle_message(request.data)
-        if user and eng_text and chat_id:
-            if user.account.queue_number == 0:
-                send_message_to_discord_task.apply_async([user.id, eng_text, chat_id], queue="messages")
-            elif user.account.queue_number == 1:
-                send_message_to_discord_task_1.apply_async([user.id, eng_text, chat_id], queue="messages1")
-            elif user.account.queue_number == 2:
-                send_message_to_discord_task_2.apply_async([user.id, eng_text, chat_id], queue="messages2")
-            elif user.account.queue_number == 3:
-                send_message_to_discord_task_3.apply_async([user.id, eng_text, chat_id], queue="messages3")
+        # if user and eng_text and chat_id:
+        #     if user.account.queue_number == 0:
+        #         send_message_to_discord_task.apply_async([user.id, eng_text, chat_id], queue="messages")
+        #     elif user.account.queue_number == 1:
+        #         send_message_to_discord_task_1.apply_async([user.id, eng_text, chat_id], queue="messages1")
+        #     elif user.account.queue_number == 2:
+        #         send_message_to_discord_task_2.apply_async([user.id, eng_text, chat_id], queue="messages2")
+        #     elif user.account.queue_number == 3:
+        #         send_message_to_discord_task_3.apply_async([user.id, eng_text, chat_id], queue="messages3")
         return Response(HTTPStatus.OK)
 
 
