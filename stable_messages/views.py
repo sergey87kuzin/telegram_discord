@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
+from .tasks import send_stable_messages_to_telegram
 from stable_messages.stable_helper import send_message_to_stable, handle_telegram_callback
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class GetStableCallback(APIView):
                     chat_id=message.telegram_id,
                     text="Ошибка генерации сообщения"
                 )
+        send_stable_messages_to_telegram.delay()
         Response(HTTPStatus.OK)
 
 
