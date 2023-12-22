@@ -150,6 +150,7 @@ def send_first_messages(message: StableMessage):
             ("Upscale", f"button_upscale&&{new_message.id}"),
             ("Вариации", f"button_vary&&{new_message.id}"),
         )
+        stickers = "➡️,⬅️,⬆️,⬇️,↔️,🔄,:mag_right:,"
         buttons_u_markup = types.InlineKeyboardMarkup()
         buttons_u_markup.row_width = 1
         buttons = []
@@ -186,7 +187,7 @@ def send_upscaled_message(message: StableMessage):
         )
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
-        text=f"Upscaled {message.initial_text}"
+        text=f"🔍 {message.initial_text}"
     )
     message.answer_sent = True
     message.save()
