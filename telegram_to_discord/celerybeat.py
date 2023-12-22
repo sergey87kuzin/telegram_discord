@@ -18,11 +18,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="0", hour="0"),
         "options": {"queue": "telegram"},
     },
-    # "send_stable_to_telegram": {
-    #     "task": "stable_messages.tasks.send_stable_messages_to_telegram",
-    #     "schedule": timedelta(seconds=63),
-    #     "options": {"queue": "telegram"},
-    # }
+    "send_stable_to_telegram": {
+        "task": "stable_messages.tasks.send_stable_messages_to_telegram",
+        "schedule": timedelta(seconds=63),
+        "options": {"queue": "telegram"},
+    },
     # "send_discord_answers": {
     #     "task": "discord_messages.tasks.send_messages_to_telegram",
     #     "schedule": timedelta(seconds=31),
