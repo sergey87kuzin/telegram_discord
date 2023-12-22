@@ -46,7 +46,6 @@ class GetStableCallback(APIView):
                     chat_id=message.telegram_id,
                     text="Ошибка генерации сообщения"
                 )
-        send_stable_messages_to_telegram.delay()
         Response(HTTPStatus.OK)
 
 

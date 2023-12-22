@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from random import randint
 
 import requests
 from deep_translator import GoogleTranslator
@@ -327,6 +328,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
     if "--ar " in eng_text:
         scale = eng_text.split("--ar ")[-1]
     width, height = get_sizes(scale)
+    seed = randint(0, 16000000)
     text_message_url = "https://modelslab.com/api/v6/images/text2img"
     headers = {
         'Content-Type': 'application/json'
@@ -341,7 +343,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "height": height,
         "samples": "4",
         "num_inference_steps": stable_settings.num_inference_steps or "20",
-        "seed": "-1",
+        "seed": str(seed),
         "guidance_scale": stable_settings.guidance_scale or 7,
         "safety_checker": "yes",
         "multi_lingual": "no",
