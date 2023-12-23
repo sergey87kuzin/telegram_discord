@@ -337,8 +337,10 @@ def send_message_to_stable(user_id, eng_text, message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "model_id": stable_settings.model_id or "juggernaut-xl",
-        "prompt": eng_text,
-        "negative_prompt": None,
+        "lora_model": "flat-illustration",
+        "sampling_method": "euler",
+        "prompt": f"{stable_settings.positive_prompt}, {eng_text}",
+        "negative_prompt": stable_settings.negative_prompt,
         "width": width,
         "height": height,
         "samples": "4",

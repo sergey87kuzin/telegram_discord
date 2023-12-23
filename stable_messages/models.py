@@ -63,6 +63,8 @@ class StableSettings(SingletonModel):
     num_inference_steps = models.CharField("Число шагов", max_length=8, blank=True, null=True, default="20")
     guidance_scale = models.PositiveIntegerField("Шкала", default=7)
     embeddings_model = models.CharField("Связанная модель", max_length=256, blank=True, null=True)
+    negative_prompt = models.CharField("Негативный промпт", max_length=256, blank=True, null=True)
+    positive_prompt = models.CharField("Позитивный промпт", max_length=256, blank=True, null=True)
 
     class Meta:
         verbose_name = "Настройки stable"
