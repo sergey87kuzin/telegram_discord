@@ -337,8 +337,6 @@ def send_message_to_stable(user_id, eng_text, message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "model_id": stable_settings.model_id or "juggernaut-xl",
-        "lora_model": "flat-illustration",
-        "sampling_method": "euler",
         "prompt": f"{stable_settings.positive_prompt}, {eng_text}",
         "negative_prompt": stable_settings.negative_prompt,
         "width": width,
@@ -352,6 +350,11 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "panorama": "no",
         "self_attention": "yes",
         "upscale": "no",
+        "lora_model": "flat-illustration",
+        "lora_strength": 0.5,
+        "sampling_method": "euler",
+        "algorithm_type": "",
+        "scheduler": "DPMSolverMultistepScheduler",
         "embeddings_model": stable_settings.embeddings_model or None,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
         "track_id": message_id
