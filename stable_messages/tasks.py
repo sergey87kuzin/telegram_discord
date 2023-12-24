@@ -106,17 +106,17 @@ def send_zoom_to_stable(created_message_id):
         "key": stable_account.api_key,
         "url": stable_message.first_image,
         "prompt": f"{stable_settings.positive_prompt}, {text}",
-        # "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
+        "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
         "image": stable_message.first_image,
         "width": stable_message.width,
         "height": stable_message.height,
         "seed": stable_message.seed,
-        "height_translation_per_step": int(stable_message.height) / 4,
-        "width_translation_per_step": int(stable_message.width) / 4,
+        "height_translation_per_step": int(stable_message.height) / 32,
+        "width_translation_per_step": int(stable_message.width) / 32,
         # "num_inference_steps": 20,
         "as_video": "no",
         # "num_interpolation_steps": 32,
-        "walk_type": ["backward", "backward", "backward", "backward"],
+        "walk_type": ["backward"] * 32,
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
@@ -127,7 +127,8 @@ def send_zoom_to_stable(created_message_id):
             stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
             return
         stable_message.stable_request_id = response_data.get("id")
-        stable_message.single_image = response_data.get("output")[0]
+        if response_data.get("status") == "success":
+            stable_message.single_image = response_data.get("output")[0]
         stable_message.save()
 
 
