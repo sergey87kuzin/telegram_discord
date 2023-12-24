@@ -155,8 +155,8 @@ def send_first_messages(message: StableMessage):
         )
         new_message.refresh_from_db()
         buttons_u_markup = add_buttons_to_message(new_message.id)
-        photo = requests.get(image)
         try:
+            photo = requests.get(image)
             stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
         except Exception:
             stable_bot.send_message(
@@ -170,8 +170,8 @@ def send_first_messages(message: StableMessage):
 
 
 def send_upscaled_message(message: StableMessage):
-    photo = requests.get(message.single_image)
     try:
+        photo = requests.get(message.single_image)
         stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
     except Exception:
         stable_bot.send_message(
@@ -210,8 +210,8 @@ def send_varied_message(message):
             seed=message.seed
         )
         new_message.refresh_from_db()
-        photo = requests.get(image)
         try:
+            photo = requests.get(image)
             stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
         except Exception:
             stable_bot.send_message(
@@ -230,8 +230,8 @@ def send_varied_message(message):
 
 
 def send_zoomed_message(message):
-    photo = requests.get(message.single_image)
     try:
+        photo = requests.get(message.single_image)
         stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
     except Exception:
         stable_bot.send_message(
