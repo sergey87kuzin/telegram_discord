@@ -111,14 +111,14 @@ def send_zoom_to_stable(created_message_id):
         "width": stable_message.width,
         "height": stable_message.height,
         "seed": stable_message.seed,
-        "height_translation_per_step": int(stable_message.height) / 32,
-        "width_translation_per_step": int(stable_message.width) / 32,
+        # "height_translation_per_step": int(stable_message.height) / 32,
+        # "width_translation_per_step": int(stable_message.width) / 32,
         # "num_inference_steps": 20,
         "as_video": "no",
         # "num_interpolation_steps": 32,
-        "walk_type": ["backward"] * 32,
-        "track_id": stable_message.id,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
+        "walk_type": ["back"] * 4,
+        # "track_id": stable_message.id,
+        # "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
 
     response = requests.post(url=zoom_image_url, headers=headers, data=data)
