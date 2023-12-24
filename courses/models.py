@@ -77,6 +77,7 @@ class LessonTextBlock(models.Model):
         Lesson,
         on_delete=models.CASCADE,
         verbose_name="Урок",
+        related_name="blocks"
     )
     image = models.ImageField("Картинка", blank=True, null=True)
     text = RichTextUploadingField("Текст к картинке", blank=True, null=True)
