@@ -118,7 +118,6 @@ def send_zoom_to_stable(created_message_id, direction):
     width, height = get_zoom_sizes(scale)
     data = json.dumps({
         "key": stable_account.api_key,
-        "url": stable_message.first_image,
         "prompt": f"{text}, {stable_settings.positive_prompt}",
         "negative_prompt": f"{negative_prompt}, {stable_settings.negative_prompt}",
         "image": stable_message.first_image,
