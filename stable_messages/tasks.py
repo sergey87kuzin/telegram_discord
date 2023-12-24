@@ -8,7 +8,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from telebot import types
 
-from stable_messages.choices import StableMessageTypeChoices
+from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES
 from stable_messages.models import StableMessage, StableAccount, StableSettings
 
 stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
@@ -85,6 +85,11 @@ def send_vary_to_stable(created_message_id):
             stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")
 
 
+def get_zoom_sizes(scale):
+    result = (64, 64)
+    return ZOOM_SCALES.get(scale) or result
+
+
 @shared_task
 def send_zoom_to_stable(created_message_id, direction):
     stable_settings = StableSettings.get_solo()
@@ -102,6 +107,8 @@ def send_zoom_to_stable(created_message_id, direction):
     headers = {
         'Content-Type': 'application/json'
     }
+    scale = text.split("--ar ")[-1]
+    width, height = get_zoom_sizes(scale)
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
@@ -112,8 +119,8 @@ def send_zoom_to_stable(created_message_id, direction):
         # "height": stable_message.height,
         # "translation_factor": 0.125,
         "seed": stable_message.seed,
-        "height_translation_per_step": int(stable_message.height) / 8,
-        "width_translation_per_step": int(stable_message.width) / 8,
+        "height_translation_per_step": height,
+        "width_translation_per_step": width,
         "num_inference_steps": 20,
         "as_video": "no",
         # "num_interpolation_steps": 32,
