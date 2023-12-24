@@ -105,8 +105,8 @@ def send_zoom_to_stable(created_message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
-        "prompt": f"{stable_settings.positive_prompt}, {text}",
-        "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
+        # "prompt": f"{stable_settings.positive_prompt}, {text}",
+        # "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
         "image": stable_message.first_image,
         "width": stable_message.width,
         "height": stable_message.height,
