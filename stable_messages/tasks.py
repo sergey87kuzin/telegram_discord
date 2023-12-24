@@ -58,8 +58,8 @@ def send_vary_to_stable(created_message_id):
     data = json.dumps(
         {
             "key": stable_account.api_key,
-            "prompt": f"{stable_settings.positive_prompt}, {text}",
-            "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
+            "prompt": f"{text}, {stable_settings.positive_prompt}",
+            "negative_prompt": f"{negative_prompt}, {stable_settings.negative_prompt}",
             "init_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
@@ -105,8 +105,8 @@ def send_zoom_to_stable(created_message_id, direction):
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
-        "prompt": f"{stable_settings.positive_prompt}, {text}",
-        "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
+        "prompt": f"{text}, {stable_settings.positive_prompt}",
+        "negative_prompt": f"{negative_prompt}, {stable_settings.negative_prompt}",
         "image": stable_message.first_image,
         # "width": stable_message.width,
         # "height": stable_message.height,
