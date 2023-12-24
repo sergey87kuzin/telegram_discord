@@ -78,7 +78,9 @@ def handle_u_button(message_text, chat_id):
         eng_text=message_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
-        single_image=image_url
+        single_image=image_url,
+        width=first_message.width,
+        height=first_message.height
     )
     buttons_markup = add_buttons_to_u_message(created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=answer_text, reply_markup=buttons_markup)
@@ -117,7 +119,10 @@ def handle_zoom_button(message_text, chat_id):
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
         first_image=first_message.single_image,
-        message_type=StableMessageTypeChoices.ZOOM
+        message_type=StableMessageTypeChoices.ZOOM,
+        width=first_message.width,
+        height=first_message.height,
+        seed=first_message.seed
     )
     created_message.refresh_from_db()
     send_zoom_to_stable.delay(created_message.id)
@@ -137,7 +142,10 @@ def handle_vary_button(message_text, chat_id):
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
         first_image=first_message.single_image,
-        message_type=StableMessageTypeChoices.VARY
+        message_type=StableMessageTypeChoices.VARY,
+        width=first_message.width,
+        height=first_message.height,
+        seed=first_message.seed
     )
     created_message.refresh_from_db()
     send_vary_to_stable.delay(created_message.id)
@@ -329,16 +337,22 @@ def send_message_to_stable(user_id, eng_text, message_id):
         scale = eng_text.split("--ar ")[-1]
     width, height = get_sizes(scale)
     seed = randint(0, 16000000)
+    message.width = width
+    message.height = height
+    message.seed = seed
+    message.save()
+    negative_prompt = ""
+    if "--no " in eng_text:
+        negative_prompt = eng_text.split("--no ")[-1]
     text_message_url = "https://modelslab.com/api/v6/images/text2img"
     headers = {
         'Content-Type': 'application/json'
     }
-    # todo выделять негативный промпт
     data = json.dumps({
         "key": stable_account.api_key,
         "model_id": stable_settings.model_id or "juggernaut-xl",
         "prompt": f"{stable_settings.positive_prompt}, {eng_text}",
-        "negative_prompt": stable_settings.negative_prompt,
+        "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
         "width": width,
         "height": height,
         "samples": "4",
