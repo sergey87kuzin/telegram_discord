@@ -111,7 +111,7 @@ def send_zoom_to_stable(created_message_id, direction):
         # "width": stable_message.width,
         # "height": stable_message.height,
         # "translation_factor": 0.125,
-        # "seed": stable_message.seed,
+        "seed": stable_message.seed,
         "height_translation_per_step": 64,
         "width_translation_per_step": 64,
         "num_inference_steps": 20,
