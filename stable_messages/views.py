@@ -1,6 +1,7 @@
 import logging
 from http import HTTPStatus
 
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,7 +30,7 @@ class GetStableCallback(APIView):
         images = data.get("output")
         message_id = data.get("track_id")
         if images:
-            message = StableMessage.objects.filter(id=message_id).first()
+            message = StableMessage.objects.filter(Q(id=message_id) | Q(stable_request_id=data.get("id"))).first()
             message.single_image = images[0]
             try:
                 message.first_image = images[0]
