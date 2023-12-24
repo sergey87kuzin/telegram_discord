@@ -378,7 +378,7 @@ def choose_action(account, connection, message_text):
 
 def handle_message(request_data):
     translator = GoogleTranslator(source='auto', target='en')
-    answer_text = "Творим волшебство"
+    answer_text = "Бот отключен. Идет обновление. Не скучайте"
     message = request_data.get("message")
     if message:
         chat_id = message.get("chat", {}).get("id")
