@@ -86,7 +86,7 @@ def send_vary_to_stable(created_message_id):
 
 
 @shared_task
-def send_zoom_to_stable(created_message_id):
+def send_zoom_to_stable(created_message_id, direction):
     stable_settings = StableSettings.get_solo()
     stable_message = StableMessage.objects.get(id=created_message_id)
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
@@ -114,10 +114,10 @@ def send_zoom_to_stable(created_message_id):
         "seed": stable_message.seed,
         "height_translation_per_step": 64,
         "width_translation_per_step": 64,
-        "num_inference_steps": 15,
+        "num_inference_steps": 30,
         "as_video": "no",
         "num_interpolation_steps": 32,
-        "walk_type": ["left", "left", "right", "right", "up", "up", "down", "down"],
+        "walk_type": [direction] * 4,
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
@@ -138,6 +138,10 @@ def add_buttons_to_message(message_id):
         ("Zoom Out", f"button_zoom&&{message_id}"),
         ("Upscale", f"button_upscale&&{message_id}"),
         ("Вариации", f"button_vary&&{message_id}"),
+        ("Сдвиг влево", f"button_move&&left&&{message_id}"),
+        ("Сдвиг вправо", f"button_move&&right&&{message_id}"),
+        ("Сдвиг вверх", f"button_move&&up&&{message_id}"),
+        ("Сдвиг вниз", f"button_move&&down&&{message_id}"),
     )
     buttons_u_markup = types.InlineKeyboardMarkup()
     buttons_u_markup.row_width = 1
