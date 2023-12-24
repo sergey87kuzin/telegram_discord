@@ -123,6 +123,7 @@ def send_zoom_to_stable(created_message_id, direction):
         "image": stable_message.first_image,
         "width": stable_message.width,
         "height": stable_message.height,
+        "strength": 0.9,
         # "translation_factor": 0.4,
         "seed": stable_message.seed,
         "height_translation_per_step": height,
