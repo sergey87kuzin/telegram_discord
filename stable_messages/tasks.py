@@ -117,7 +117,7 @@ def send_zoom_to_stable(created_message_id, direction):
         "num_inference_steps": 30,
         "as_video": "no",
         "num_interpolation_steps": 32,
-        "walk_type": [direction] * 4,
+        "walk_type": [direction] * 8,
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })

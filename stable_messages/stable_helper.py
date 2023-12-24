@@ -108,7 +108,7 @@ def handle_upscale_button(message_text, chat_id):
 
 def handle_zoom_button(message_text, chat_id, direction):
     answer_text = "Отдаляем"
-    prefix, stable_message_id = message_text.split("&&")
+    stable_message_id = message_text.split("&&")[-1]
     first_message = StableMessage.objects.filter(id=stable_message_id).first()
     if not first_message:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при отдалении((")
