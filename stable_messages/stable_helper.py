@@ -64,8 +64,8 @@ def handle_u_button(message_text, chat_id):
     if not image_url:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при увеличении((")
         return
-    photo = requests.get(image_url)
     try:
+        photo = requests.get(image_url)
         stable_bot.send_photo(chat_id=chat_id, photo=photo.content)
     except Exception:
         stable_bot.send_message(
