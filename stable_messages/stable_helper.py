@@ -106,7 +106,7 @@ def handle_upscale_button(message_text, chat_id):
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
-def handle_zoom_button(message_text, chat_id):
+def handle_zoom_button(message_text, chat_id, direction):
     answer_text = "Отдаляем"
     prefix, stable_message_id = message_text.split("&&")
     first_message = StableMessage.objects.filter(id=stable_message_id).first()
@@ -125,7 +125,7 @@ def handle_zoom_button(message_text, chat_id):
         seed=first_message.seed
     )
     created_message.refresh_from_db()
-    send_zoom_to_stable.delay(created_message.id)
+    send_zoom_to_stable.delay(created_message.id, direction)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
@@ -275,7 +275,11 @@ def handle_telegram_callback(message_data: dict):
                 handle_upscale_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_zoom&&"):
-                handle_zoom_button(message_text, chat_id)
+                handle_zoom_button(message_text, chat_id, "back")
+                return "", "", ""
+            elif message_text.startswith("button_move"):
+                direction = message_text.split("&&")[1]
+                handle_zoom_button(message_text, chat_id, direction)
                 return "", "", ""
             elif message_text.startswith("button_vary"):
                 handle_vary_button(message_text, chat_id)
@@ -368,7 +372,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "upscale": "no",
         # "lora_model": stable_settings.lora_model or "flat-illustration",
         # "lora_strength": stable_settings.lora_strength or 0.5,
-        # "sampling_method": stable_settings.sampling_method or "euler",
+        "sampling_method": stable_settings.sampling_method or "euler",
         # "algorithm_type": stable_settings.algorithm_type or "",
         # "scheduler": stable_settings.scheduler or "DPMSolverMultistepScheduler",
         "embeddings_model": stable_settings.embeddings_model or None,
