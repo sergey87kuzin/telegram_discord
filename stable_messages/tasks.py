@@ -7,15 +7,10 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from telebot import types
 
-from stable_messages.choices import StableMessageTypeChoices, SCALES
+from stable_messages.choices import StableMessageTypeChoices
 from stable_messages.models import StableMessage, StableAccount
 
 stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
-
-
-def get_sizes(scale):
-    result = ("1024", "1024")
-    return SCALES.get(scale) or result
 
 
 @shared_task
@@ -49,10 +44,6 @@ def send_vary_to_stable(created_message_id):
     if not stable_account:
         return
     text = stable_message.initial_text
-    scale = ""
-    if "--ar " in text:
-        scale = text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
     headers = {'Content-Type': 'application/json'}
     data = json.dumps(
@@ -60,15 +51,15 @@ def send_vary_to_stable(created_message_id):
             "key": stable_account.api_key,
             "prompt": text,
             "init_image": stable_message.first_image,
-            "width": width,
-            "height": height,
+            "width": stable_message.width,
+            "height": stable_message.height,
             "samples": "4",
             "num_inference_steps": "20",
             "safety_checker": "yes",
             "enhance_prompt": "yes",
             "guidance_scale": 7.5,
             "strength": 0.7,
-            "seed": "-1",
+            "seed": None,
             "base64": "no",
             "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
             "track_id": stable_message.id
@@ -91,10 +82,6 @@ def send_zoom_to_stable(created_message_id):
     if not stable_account:
         return
     text = stable_message.initial_text
-    scale = ""
-    if "--ar " in text:
-        scale = text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
     zoom_image_url = "https://stablediffusionapi.com/api/v5/outpaint"
     headers = {
         'Content-Type': 'application/json'
@@ -104,14 +91,14 @@ def send_zoom_to_stable(created_message_id):
         "url": stable_message.first_image,
         "prompt": text,
         "image": stable_message.first_image,
-        "width": width,
-        "height": height,
+        "width": stable_message.width,
+        "height": stable_message.height,
         "height_translation_per_step": 64,
         "width_translation_per_step": 64,
         "num_inference_steps": 15,
         "as_video": "no",
         "num_interpolation_steps": 32,
-        "walk_type": ["back", "back", "left", "left", "up", "up"],
+        "walk_type": ["back", "back", "back", "back", "back", "back"],
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
@@ -123,6 +110,25 @@ def send_zoom_to_stable(created_message_id):
         stable_message.save()
         if response_data.get("status") == "error":
             stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
+
+
+def add_buttons_to_message(message_id):
+    buttons_data = (
+        ("Zoom Out", f"button_zoom&&{message_id}"),
+        ("Upscale", f"button_upscale&&{message_id}"),
+        ("Вариации", f"button_vary&&{message_id}"),
+    )
+    buttons_u_markup = types.InlineKeyboardMarkup()
+    buttons_u_markup.row_width = 1
+    buttons = []
+    for button in buttons_data:
+        format_button = types.InlineKeyboardButton(
+            button[0],
+            callback_data=button[1]
+        )
+        buttons.append(format_button)
+    buttons_u_markup.add(*buttons)
+    return buttons_u_markup
 
 
 def send_first_messages(message: StableMessage):
@@ -142,25 +148,13 @@ def send_first_messages(message: StableMessage):
             user_id=message.user_id,
             single_image=image,
             answer_sent=True,
-            message_type=StableMessageTypeChoices.U
+            message_type=StableMessageTypeChoices.U,
+            width=message.width,
+            height=message.height,
+            seed=message.seed
         )
         new_message.refresh_from_db()
-        buttons_data = (
-            ("Zoom Out", f"button_zoom&&{new_message.id}"),
-            ("Upscale", f"button_upscale&&{new_message.id}"),
-            ("Вариации", f"button_vary&&{new_message.id}"),
-        )
-        stickers = "➡️,⬅️,⬆️,⬇️,↔️,🔄,:mag_right:,"
-        buttons_u_markup = types.InlineKeyboardMarkup()
-        buttons_u_markup.row_width = 1
-        buttons = []
-        for button in buttons_data:
-            format_button = types.InlineKeyboardButton(
-                button[0],
-                callback_data=button[1]
-            )
-            buttons.append(format_button)
-        buttons_u_markup.add(*buttons)
+        buttons_u_markup = add_buttons_to_message(new_message.id)
         photo = requests.get(image)
         try:
             stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
@@ -194,19 +188,43 @@ def send_upscaled_message(message: StableMessage):
 
 
 def send_varied_message(message):
-    photo = requests.get(message.single_image)
-    try:
-        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
-    except Exception:
-        stable_bot.send_message(
-            message.telegram_chat_id,
-            text=f"<a href='{message.single_image}'>Скачайте измененное фото тут</a>",
-            parse_mode="HTML"
+    images = {
+        "V1": message.first_image,
+        "V2": message.second_image,
+        "V3": message.third_image,
+        "V4": message.fourth_image
+    }
+    for button_name, image in images.items():
+        if not image:
+            continue
+        new_message = StableMessage.objects.create(
+            initial_text=message.eng_text,
+            eng_text=f"button_u&&{button_name}&&{message.id}",
+            telegram_chat_id=message.telegram_chat_id,
+            user_id=message.user_id,
+            single_image=image,
+            answer_sent=True,
+            message_type=StableMessageTypeChoices.U,
+            width=message.width,
+            height=message.height,
+            seed=message.seed
         )
-    stable_bot.send_message(
-        chat_id=message.telegram_chat_id,
-        text=f"Varied {message.initial_text}"
-    )
+        new_message.refresh_from_db()
+        photo = requests.get(image)
+        try:
+            stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+        except Exception:
+            stable_bot.send_message(
+                message.telegram_chat_id,
+                text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
+                parse_mode="HTML"
+            )
+        markup = add_buttons_to_message(message.id)
+        stable_bot.send_message(
+            chat_id=message.telegram_chat_id,
+            text=f"Varied {message.initial_text}",
+            reply_markup=markup
+        )
     message.answer_sent = True
     message.save()
 
@@ -221,9 +239,11 @@ def send_zoomed_message(message):
             text=f"<a href='{message.single_image}'>Скачайте отдаленное фото тут</a>",
             parse_mode="HTML"
         )
+    markup = add_buttons_to_message(message.id)
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
-        text=f"Zoomed {message.initial_text}"
+        text=f"Zoomed {message.initial_text}",
+        reply_markup=markup
     )
     message.answer_sent = True
     message.save()

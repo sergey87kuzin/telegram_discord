@@ -22,6 +22,9 @@ class StableMessage(models.Model):
     third_image = models.CharField("Третья картинка", max_length=1024, blank=True, null=True)
     fourth_image = models.CharField("Четвертая картинка", max_length=1024, blank=True, null=True)
     answer_sent = models.BooleanField("Ответ отправлен", default=False)
+    width = models.CharField("Ширина", max_length=8, blank=True, null=True)
+    height = models.CharField("Высота", max_length=8, blank=True, null=True)
+    seed = models.CharField("Сид", max_length=16, blank=True, null=True)
     created_at = models.DateTimeField("Создан в", auto_now_add=True)
     message_type = models.CharField(
         "Тип сообщения",
