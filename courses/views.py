@@ -98,6 +98,7 @@ class CourseView(ListView):
         context["course_cover"] = course.cover
         context["course_id"] = course.id
         context["single_course"] = True
+        context["course_description"] = course.description
         if user.is_authenticated and UserCourses.objects.filter(
                 course=course, user=user, buying_date__gte=now() - timedelta(days=course.duration)
         ).exists():

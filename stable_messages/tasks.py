@@ -230,7 +230,7 @@ def send_varied_message(message):
         if not image:
             continue
         new_message = StableMessage.objects.create(
-            initial_text=message.eng_text,
+            initial_text=message.initial_text,
             eng_text=f"button_u&&{button_name}&&{message.id}",
             telegram_chat_id=message.telegram_chat_id,
             user_id=message.user_id,
