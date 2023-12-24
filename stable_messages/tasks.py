@@ -79,7 +79,14 @@ def send_vary_to_stable(created_message_id):
     response = requests.post(url=vary_image_url, headers=headers, data=data)
     if response_data := response.json():
         stable_message.stable_request_id = response_data.get("id")
-        stable_message.single_image = response_data.get("output")
+        if response_data.get("status") == "success":
+            stable_message.single_image = response_data.get("output")[0]
+            stable_message.first_image = response_data.get("output")[0]
+            stable_message.second_image = response_data.get("output")[1]
+            stable_message.third_image = response_data.get("output")[2]
+            stable_message.fourth_image = response_data.get("output")[3]
+        elif response_data.get("status") == "processing":
+            stable_message.single_image = response_data.get("output")
         stable_message.save()
         if response_data.get("status") == "error":
             stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")
