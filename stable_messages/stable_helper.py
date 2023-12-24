@@ -343,7 +343,9 @@ def send_message_to_stable(user_id, eng_text, message_id):
     message.save()
     negative_prompt = ""
     if "--no " in eng_text:
-        negative_prompt = eng_text.split("--no ")[-1]
+        texts = eng_text.split("--no ")
+        negative_prompt = texts[-1]
+        eng_text = texts[0]
     text_message_url = "https://modelslab.com/api/v6/images/text2img"
     headers = {
         'Content-Type': 'application/json'
