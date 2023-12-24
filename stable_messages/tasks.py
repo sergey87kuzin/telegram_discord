@@ -149,16 +149,16 @@ def send_zoom_to_stable(created_message_id, direction):
 
 def add_buttons_to_message(message_id):
     buttons_data = (
-        ("Zoom Out", f"button_zoom&&{message_id}"),
-        ("Upscale", f"button_upscale&&{message_id}"),
-        ("Вариации", f"button_vary&&{message_id}"),
-        ("Сдвиг влево", f"button_move&&left&&{message_id}"),
-        ("Сдвиг вправо", f"button_move&&right&&{message_id}"),
-        ("Сдвиг вверх", f"button_move&&up&&{message_id}"),
-        ("Сдвиг вниз", f"button_move&&down&&{message_id}"),
+        ("⬅️", f"button_move&&left&&{message_id}"),
+        ("➡️", f"button_move&&right&&{message_id}"),
+        ("⬆️", f"button_move&&up&&{message_id}"),
+        ("⬇️", f"button_move&&down&&{message_id}"),
+        ("🔍", f"button_zoom&&{message_id}"),
+        ("4️⃣x", f"button_upscale&&{message_id}"),
+        ("🔢", f"button_vary&&{message_id}"),
     )
     buttons_u_markup = types.InlineKeyboardMarkup()
-    buttons_u_markup.row_width = 1
+    buttons_u_markup.row_width = 4
     buttons = []
     for button in buttons_data:
         format_button = types.InlineKeyboardButton(
