@@ -15,6 +15,7 @@ class Course(models.Model):
     cover = models.FileField("Обложка курса")
     cost = models.PositiveIntegerField("Стоимость курса")
     duration = models.PositiveIntegerField("Продолжительность курса, дней")
+    description = models.CharField("Описание", max_length=512, blank=True, null=True)
     is_active = models.BooleanField(
         "Активный", default=False
     )

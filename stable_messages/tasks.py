@@ -124,7 +124,7 @@ def send_zoom_to_stable(created_message_id, direction):
         "num_inference_steps": 20,
         "as_video": "no",
         # "num_interpolation_steps": 32,
-        "walk_type": [direction] * 8,
+        "walk_type": [direction] * 16,
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
@@ -230,7 +230,7 @@ def send_varied_message(message):
         if not image:
             continue
         new_message = StableMessage.objects.create(
-            initial_text=message.eng_text,
+            initial_text=message.initial_text,
             eng_text=f"button_u&&{button_name}&&{message.id}",
             telegram_chat_id=message.telegram_chat_id,
             user_id=message.user_id,

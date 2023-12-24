@@ -64,5 +64,5 @@ class UserCoursesAdmin(admin.ModelAdmin):
         "user",
         "course",
         "buying_date",
-        "expires_at"
+        "expires_at",
     )

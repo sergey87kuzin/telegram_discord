@@ -10,9 +10,12 @@
                 <span style="font-size: 20px"><b>{{ course_name }}</b></span>
             </div>
             <div class="course-card-body">
-                <span>{{ course_description }}</span>
+                {% if course_description %}
+                <span style="font-size: 26px">{{ course_description }}</span>
+                {% endif %}
+                {% if course_id == 2 %}
                 <a href="https://foto-stocker.com/aicourse" class="green-grey-button">ПОДРОБНЕЕ</a>
-
+                {% endif %}
             </div>
             <div class='card-group'>
                 {% for lesson in lessons %}

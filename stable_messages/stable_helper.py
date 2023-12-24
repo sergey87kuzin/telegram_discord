@@ -156,6 +156,31 @@ def handle_repeat_button(message_text):
     pass
 
 
+def check_remains(eng_text, user, chat_id):
+    if not eng_text.startswith("button_u&&"):
+        if user.remain_messages == 0:
+            if not user.date_of_payment or user.date_payment_expired < now():
+                stable_bot.send_message(
+                    chat_id=chat_id,
+                    text="Пожалуйста, оплатите доступ к боту",
+                )
+                return "", "", ""
+        if user.remain_paid_messages > 0:
+            user.remain_paid_messages -= 1
+            user.save()
+        elif user.remain_messages > 0:
+            user.remain_messages -= 1
+            user.save()
+        else:
+            stable_bot.send_message(
+                chat_id=chat_id,
+                text="У вас не осталось генераций",
+            )
+            return False
+    return True
+
+
+
 def handle_telegram_callback(message_data: dict):
     translator = GoogleTranslator(source='auto', target='en')
     answer_text = "Творим волшебство"
@@ -267,6 +292,8 @@ def handle_telegram_callback(message_data: dict):
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 stable_bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
                 return "", "", ""
+            if not check_remains(eng_text, user, chat_id):
+                return "", "", ""
             first_message = StableMessage.objects.filter(id=message_text.split("&&")[-1]).first()
             # if message_text.startswith("button_u&&"):
             #     handle_u_button(message_text, chat_id)
@@ -296,26 +323,8 @@ def handle_telegram_callback(message_data: dict):
                 text="Кто-то опять косячит :)",
             )
             return "", "", ""
-    if not eng_text.startswith("button_u&&"):
-        if user.remain_messages == 0:
-            if not user.date_of_payment or user.date_payment_expired < now():
-                stable_bot.send_message(
-                    chat_id=chat_id,
-                    text="Пожалуйста, оплатите доступ к боту",
-                )
-                return "", "", ""
-        if user.remain_paid_messages > 0:
-            user.remain_paid_messages -= 1
-            user.save()
-        elif user.remain_messages > 0:
-            user.remain_messages -= 1
-            user.save()
-        else:
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text="У вас не осталось генераций",
-            )
-            return "", "", ""
+    if not check_remains(eng_text, user, chat_id):
+        return "", "", ""
     try:
         created_message = StableMessage.objects.create(
             initial_text=message_text,
