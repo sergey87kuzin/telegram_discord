@@ -111,8 +111,8 @@ def send_zoom_to_stable(created_message_id):
         "width": stable_message.width,
         "height": stable_message.height,
         "seed": stable_message.seed,
-        "height_translation_per_step": 64,
-        "width_translation_per_step": 64,
+        "height_translation_per_step": int(stable_message.height) / 8,
+        "width_translation_per_step": int(stable_message.width) / 8,
         "num_inference_steps": 20,
         "as_video": "no",
         "num_interpolation_steps": 32,
@@ -129,7 +129,6 @@ def send_zoom_to_stable(created_message_id):
         stable_message.stable_request_id = response_data.get("id")
         stable_message.single_image = response_data.get("output")[0]
         stable_message.save()
-
 
 
 def add_buttons_to_message(message_id):
