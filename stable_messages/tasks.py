@@ -111,19 +111,19 @@ def send_zoom_to_stable(created_message_id):
         "width": stable_message.width,
         "height": stable_message.height,
         "seed": stable_message.seed,
-        "height_translation_per_step": int(stable_message.height) / 8,
-        "width_translation_per_step": int(stable_message.width) / 8,
+        "height_translation_per_step": int(stable_message.height) / 4,
+        "width_translation_per_step": int(stable_message.width) / 4,
         "num_inference_steps": 20,
         "as_video": "no",
         "num_interpolation_steps": 32,
-        "walk_type": ["back", "back", "back", "back", "back", "back", "back", "back"],
+        "walk_type": ["back", "back", "back", "back"],
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
 
     response = requests.post(url=zoom_image_url, headers=headers, data=data)
     if response_data := response.json():
-        if response_data.get("status") == "error":
+        if response_data.get("status") == "error" or "error_id" in response_data:
             stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
             return
         stable_message.stable_request_id = response_data.get("id")
