@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from telebot import types
 
 from stable_messages.choices import StableMessageTypeChoices
-from stable_messages.models import StableMessage, StableAccount
+from stable_messages.models import StableMessage, StableAccount, StableSettings
 
 stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
 
@@ -40,11 +40,17 @@ def send_upscale_to_stable(created_message_id):
 
 @shared_task
 def send_vary_to_stable(created_message_id):
+    stable_settings = StableSettings.get_solo()
     stable_message = StableMessage.objects.get(id=created_message_id)
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
         return
     text = stable_message.initial_text
+    negative_prompt = ""
+    if "--no " in text:
+        texts = text.split("--no ")
+        negative_prompt = texts[-1]
+        text = texts[0]
     seed = randint(0, 16000000)
     stable_message.seed = seed
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
@@ -52,7 +58,8 @@ def send_vary_to_stable(created_message_id):
     data = json.dumps(
         {
             "key": stable_account.api_key,
-            "prompt": text,
+            "prompt": f"{stable_settings.positive_prompt}, {text}",
+            "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
             "init_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
@@ -80,11 +87,17 @@ def send_vary_to_stable(created_message_id):
 
 @shared_task
 def send_zoom_to_stable(created_message_id):
+    stable_settings = StableSettings.get_solo()
     stable_message = StableMessage.objects.get(id=created_message_id)
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
         return
     text = stable_message.initial_text
+    negative_prompt = ""
+    if "--no " in text:
+        texts = text.split("--no ")
+        negative_prompt = texts[-1]
+        text = texts[0]
     zoom_image_url = "https://stablediffusionapi.com/api/v5/outpaint"
     headers = {
         'Content-Type': 'application/json'
@@ -92,7 +105,8 @@ def send_zoom_to_stable(created_message_id):
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
-        "prompt": text,
+        "prompt": f"{stable_settings.positive_prompt}, {text}",
+        "negative_prompt": f"{stable_settings.negative_prompt}, {negative_prompt}",
         "image": stable_message.first_image,
         "width": stable_message.width,
         "height": stable_message.height,
