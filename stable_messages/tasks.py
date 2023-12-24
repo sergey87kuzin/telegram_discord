@@ -1,4 +1,5 @@
 import json
+from random import randint
 
 import telebot
 import requests
@@ -44,6 +45,8 @@ def send_vary_to_stable(created_message_id):
     if not stable_account:
         return
     text = stable_message.initial_text
+    seed = randint(0, 16000000)
+    stable_message.seed = seed
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
     headers = {'Content-Type': 'application/json'}
     data = json.dumps(
@@ -59,7 +62,7 @@ def send_vary_to_stable(created_message_id):
             "enhance_prompt": "yes",
             "guidance_scale": 7.5,
             "strength": 0.7,
-            "seed": None,
+            "seed": seed,
             "base64": "no",
             "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
             "track_id": stable_message.id
@@ -99,7 +102,7 @@ def send_zoom_to_stable(created_message_id):
         "num_inference_steps": 20,
         "as_video": "no",
         "num_interpolation_steps": 32,
-        "walk_type": ["back"],
+        "walk_type": ["back", "back", "back", "back"],
         "track_id": stable_message.id,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
     })
