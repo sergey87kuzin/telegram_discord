@@ -29,7 +29,7 @@ class GetStableCallback(APIView):
         data = request.data
         images = data.get("output")
         message_id = data.get("track_id")
-        if images:
+        if images and data.get("status") == "success":
             message = StableMessage.objects.filter(Q(id=message_id) | Q(stable_request_id=data.get("id"))).first()
             message.single_image = images[0]
             try:
