@@ -55,6 +55,7 @@ def send_vary_to_stable(created_message_id):
     stable_message.seed = seed
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
     headers = {'Content-Type': 'application/json'}
+    stable_settings = StableSettings.get_solo()
     data = json.dumps(
         {
             "key": stable_account.api_key,
@@ -64,11 +65,11 @@ def send_vary_to_stable(created_message_id):
             "width": stable_message.width,
             "height": stable_message.height,
             "samples": "4",
-            "num_inference_steps": "20",
+            "num_inference_steps": stable_settings.vary_num_inference_steps or "20",
             "safety_checker": "yes",
             "enhance_prompt": "yes",
-            "guidance_scale": 7.5,
-            "strength": 0.7,
+            "guidance_scale": stable_settings.vary_guidance_scale or 7.5,
+            "strength": stable_settings.vary_strength or 0.7,
             "seed": seed,
             "base64": "no",
             "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),

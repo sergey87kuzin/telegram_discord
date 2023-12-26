@@ -33,6 +33,10 @@ class StableMessage(models.Model):
         default=StableMessageTypeChoices.FIRST
     )
 
+    vary_num_inference_steps = models.CharField("Вариации число шагов", max_length=16, blank=True, null=True)
+    vary_guidance_scale = models.FloatField("Вариации шкала(7.5)", blank=True, null=True)
+    vary_strength = models.FloatField("Вариации сила картинки", blank=True, null=True)
+
     class Meta:
         verbose_name = "Сообщение в stable"
         verbose_name_plural = "Сообщения в stable"
