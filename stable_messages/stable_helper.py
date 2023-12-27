@@ -327,7 +327,7 @@ def handle_telegram_callback(message_data: dict):
                 text="Кто-то опять косячит :)",
             )
             return "", "", ""
-    if not eng_text or check_remains(eng_text, user, chat_id):
+    if not eng_text or not check_remains(eng_text, user, chat_id):
         return "", "", ""
     try:
         created_message = StableMessage.objects.create(
