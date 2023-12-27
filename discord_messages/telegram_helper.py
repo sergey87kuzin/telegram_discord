@@ -376,72 +376,77 @@ def choose_action(account, connection, message_text):
     return status
 
 
+def work_with_text_message(message: dict, translator):
+    chat_id = message.get("chat", {}).get("id")
+    message_text = message.get("text")
+    if not message_text:
+        bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", ""
+    if message_text == "/start":
+        handle_start_message(message)
+        return "", "", ""
+    if message_text.startswith("/"):
+        handle_command(message)
+        return "", "", ""
+    message_text = message.get("text") \
+        .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
+    if re.findall("::\S+", message_text):
+        message_text = message_text.replace("::", ":: ")
+    after_create_message_text = message_text
+    chat_username = message.get("chat", {}).get("username")
+    if not message_text or not chat_username or not chat_id:
+        logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
+        bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", ""
+    eng_text = translator.translate(message_text)
+    if not eng_text:
+        logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
+        bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", ""
+    wrong_words = check_words(eng_text)
+    if wrong_words:
+        bot.send_message(
+            chat_id=chat_id,
+            text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", ""
+    eng_text = eng_text.replace("-- ", "--")
+    no_ar_text = eng_text.split(" --")[0]
+    user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
+    if not user:
+        logger.warning(f"Не найден пользователь(, user = {chat_username}")
+        bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы не зарегистрированы в приложении</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", ""
+    if user.preset and user.preset not in message_text and user.preset not in eng_text:
+        message_text = message_text + user.preset
+        eng_text = eng_text + user.preset
+    return user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id
+
+
 def handle_message(request_data):
     translator = GoogleTranslator(source='auto', target='en')
     answer_text = "Бот отключен. Идет обновление. Не скучайте"
     message = request_data.get("message")
     if message:
-        chat_id = message.get("chat", {}).get("id")
-        message_text = message.get("text")
-        if not message_text:
-            bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        if message_text == "/start":
-            handle_start_message(message)
-            return "", "", ""
-        if message_text.startswith("/"):
-            handle_command(message)
-            return "", "", ""
-        message_text = message.get("text")\
-            .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
-        if re.findall("::\S+", message_text):
-            message_text = message_text.replace("::", ":: ")
-        after_create_message_text = message_text
-        chat_username = message.get("chat", {}).get("username")
-        if not message_text or not chat_username or not chat_id:
-            logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        eng_text = translator.translate(message_text)
-        if not eng_text:
-            logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        wrong_words = check_words(eng_text)
-        if wrong_words:
-            bot.send_message(
-                chat_id=chat_id,
-                text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        eng_text = eng_text.replace("-- ", "--")
-        no_ar_text = eng_text.split(" --")[0]
         message_type = DiscordTypes.START_GEN
-        user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
-        if not user:
-            logger.warning(f"Не найден пользователь(, user = {chat_username}")
-            bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы не зарегистрированы в приложении</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        if user.preset and user.preset not in message_text and user.preset not in eng_text:
-            message_text = message_text + user.preset
-            eng_text = eng_text + user.preset
+        user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id = work_with_text_message(message, translator)
     else:
         button_data = request_data.get("callback_query")
         if button_data:

@@ -6,9 +6,10 @@ import requests
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils.timezone import now
 from telebot import types
 
-from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES
+from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES, SCALES
 from stable_messages.models import StableMessage, StableAccount, StableSettings
 
 stable_bot = telebot.TeleBot(settings.STABLE_TELEGRAM_TOKEN)
@@ -40,7 +41,6 @@ def send_upscale_to_stable(created_message_id):
 
 @shared_task
 def send_vary_to_stable(created_message_id):
-    stable_settings = StableSettings.get_solo()
     stable_message = StableMessage.objects.get(id=created_message_id)
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
@@ -304,3 +304,41 @@ def send_stable_messages_to_telegram():
             send_varied_message(message)
         elif message.message_type == StableMessageTypeChoices.ZOOM:
             send_zoomed_message(message)
+
+
+def get_sizes(scale):
+    result = ("1024", "1024")
+    return SCALES.get(scale) or result
+
+
+@shared_task
+def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_username: str, user_id: int):
+    try:
+        photo_id = photos[1].get("file_id")
+        file_info = stable_bot.get_file(photo_id)
+        downloaded_file = stable_bot.download_file(file_info.file_path)
+        file_name = f"{chat_username}, {now()}.jpg"
+        with open(f"media/messages/{file_name}", 'wb') as new_file:
+            new_file.write(downloaded_file)
+        image_url = settings.SITE_DOMAIN + "/media/messages/" + file_name
+    except Exception as e:
+        stable_bot.send_message(chat_id, text="Ошибка обработки картинки")
+        return
+    scale = ""
+    if "--ar " in eng_text:
+        scale = eng_text.split("--ar ")[-1]
+    width, height = get_sizes(scale)
+    seed = randint(0, 16000000)
+    created_message = StableMessage.objects.create(
+        initial_text=eng_text,
+        eng_text=eng_text,
+        telegram_chat_id=chat_id,
+        user_id=user_id,
+        first_image=image_url,
+        message_type=StableMessageTypeChoices.FIRST,
+        width=width,
+        height=height,
+        seed=seed
+    )
+    created_message.refresh_from_db()
+    send_vary_to_stable(created_message_id=created_message.id)

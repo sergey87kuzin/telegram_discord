@@ -14,7 +14,7 @@ from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler
 from stable_messages.models import StableMessage, StableAccount, StableSettings
 from .choices import StableMessageTypeChoices, SCALES
-from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable
+from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable, handle_image_message
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -180,70 +180,77 @@ def check_remains(eng_text, user, chat_id):
     return True
 
 
+def handle_text_message(message: dict, translator):
+    chat_id = message.get("chat", {}).get("id")
+    message_text = message.get("text") or message.get("caption")
+    if not message_text:
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", "", ""
+    if message_text == "/start":
+        handle_start_message(message)
+        return "", "", "", ""
+    if message_text.startswith("/"):
+        handle_command(message)
+        return "", "", "", ""
+    message_text = message_text \
+        .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
+    if re.findall("::\S+", message_text):
+        message_text = message_text.replace("::", ":: ")
+    chat_username = message.get("chat", {}).get("username")
+    if not message_text or not chat_username or not chat_id:
+        logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", "", ""
+    eng_text = translator.translate(message_text)
+    if not eng_text:
+        logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы отправили пустое сообщение</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", "", ""
+    wrong_words = check_words(eng_text)
+    if wrong_words:
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", "", ""
+    eng_text = eng_text.replace("-- ", "--")
+    user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
+    if not user:
+        logger.warning(f"Не найден пользователь(, user = {chat_username}")
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="<pre>Вы не зарегистрированы в приложении</pre>",
+            parse_mode="HTML"
+        )
+        return "", "", "", ""
+    if user.preset and user.preset not in message_text and user.preset not in eng_text:
+        message_text = message_text + user.preset
+        eng_text = eng_text + user.preset
+    if photos := message.get("photo"):
+        handle_image_message.delay(eng_text, chat_id, photos, chat_username, user.id)
+        return "", "", "", ""
+    return user, message_text, eng_text, chat_id
+
 
 def handle_telegram_callback(message_data: dict):
     translator = GoogleTranslator(source='auto', target='en')
     answer_text = "Творим волшебство"
     message = message_data.get("message")
     if message:
-        chat_id = message.get("chat", {}).get("id")
-        message_text = message.get("text")
-        if not message_text:
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        if message_text == "/start":
-            handle_start_message(message)
-            return "", "", ""
-        if message_text.startswith("/"):
-            handle_command(message)
-            return "", "", ""
-        message_text = message.get("text") \
-            .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
-        if re.findall("::\S+", message_text):
-            message_text = message_text.replace("::", ":: ")
-        chat_username = message.get("chat", {}).get("username")
-        if not message_text or not chat_username or not chat_id:
-            logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        eng_text = translator.translate(message_text)
-        if not eng_text:
-            logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы отправили пустое сообщение</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        wrong_words = check_words(eng_text)
-        if wrong_words:
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        eng_text = eng_text.replace("-- ", "--")
-        user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
-        if not user:
-            logger.warning(f"Не найден пользователь(, user = {chat_username}")
-            stable_bot.send_message(
-                chat_id=chat_id,
-                text="<pre>Вы не зарегистрированы в приложении</pre>",
-                parse_mode="HTML"
-            )
-            return "", "", ""
-        if user.preset and user.preset not in message_text and user.preset not in eng_text:
-            message_text = message_text + user.preset
-            eng_text = eng_text + user.preset
+        user, message_text, eng_text, chat_id = handle_text_message(message, translator)
     else:
         button_data = message_data.get("callback_query")
         if button_data:
@@ -295,9 +302,6 @@ def handle_telegram_callback(message_data: dict):
             if not check_remains(eng_text, user, chat_id):
                 return "", "", ""
             first_message = StableMessage.objects.filter(id=message_text.split("&&")[-1]).first()
-            # if message_text.startswith("button_u&&"):
-            #     handle_u_button(message_text, chat_id)
-            #     return "", "", ""
             if message_text.startswith("button_upscale"):
                 handle_upscale_button(message_text, chat_id)
                 return "", "", ""
@@ -323,7 +327,7 @@ def handle_telegram_callback(message_data: dict):
                 text="Кто-то опять косячит :)",
             )
             return "", "", ""
-    if not check_remains(eng_text, user, chat_id):
+    if not eng_text or check_remains(eng_text, user, chat_id):
         return "", "", ""
     try:
         created_message = StableMessage.objects.create(
