@@ -69,7 +69,7 @@ class StableSettings(SingletonModel):
     negative_prompt = models.CharField("Негативный промпт", max_length=2048, blank=True, null=True)
     positive_prompt = models.CharField("Позитивный промпт", max_length=2048, blank=True, null=True)
     lora_model = models.CharField("Модель Лора", max_length=256, blank=True, null=True)
-    lora_strength = models.FloatField("lora strength", blank=True, null=True)
+    lora_strength = models.CharField("lora strength", max_length=128, blank=True, null=True)
     sampling_method = models.CharField("Метод семплинга", max_length=256, blank=True, null=True)
     algorithm_type = models.CharField("Тип алгоритма", max_length=256, blank=True, null=True)
     scheduler = models.CharField("scheduler", max_length=256, blank=True, null=True)

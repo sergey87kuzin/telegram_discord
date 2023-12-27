@@ -382,11 +382,14 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "lora_model": stable_settings.lora_model or "flat-illustration",
         "lora_strength": stable_settings.lora_strength or 0.5,
         "sampling_method": stable_settings.sampling_method or "euler",
-        # "algorithm_type": stable_settings.algorithm_type or "",
-        # "scheduler": stable_settings.scheduler or "DPMSolverMultistepScheduler",
+        "algorithm_type": stable_settings.algorithm_type or "",
+        "scheduler": stable_settings.scheduler or "DPMSolverMultistepScheduler",
         "embeddings_model": stable_settings.embeddings_model or None,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-        "track_id": message_id
+        "track_id": message_id,
+        "tomesd": "yes",
+        "use_karras_sigmas": "yes",
+        "vae": None,
     })
 
     response = requests.post(url=text_message_url, headers=headers, data=data)
