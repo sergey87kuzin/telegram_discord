@@ -17,10 +17,12 @@ class StableMessageTypeChoices:
 class StableModels:
     JUGGERNAUT = "juggernaut-xl"
     DELIBERATE = "deliberate-v3"
+    SDXL = "sdxl"
 
     CHOICES = (
         (JUGGERNAUT, "Джаггернаут"),
-        (DELIBERATE, "Делиберейт")
+        (DELIBERATE, "Делиберейт"),
+        (SDXL, "sdxl")
     )
 
 
