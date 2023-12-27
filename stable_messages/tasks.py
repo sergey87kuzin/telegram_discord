@@ -318,7 +318,8 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
         photo_id = photos[1].get("file_id")
         file_info = stable_bot.get_file(photo_id)
         downloaded_file = stable_bot.download_file(file_info.file_path)
-        file_name = f"{chat_username}{count}.jpeg"
+        extension = file_info.file_path.split(".")[-1]
+        file_name = f"{chat_username}{count}.{extension}"
         with open(f"media/messages/{file_name}", 'wb') as new_file:
             new_file.write(downloaded_file)
         image_url = settings.SITE_DOMAIN + "/media/messages/" + file_name
