@@ -385,13 +385,13 @@ def work_with_text_message(message: dict, translator):
             text="<pre>Вы отправили пустое сообщение</pre>",
             parse_mode="HTML"
         )
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     if message_text == "/start":
         handle_start_message(message)
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     if message_text.startswith("/"):
         handle_command(message)
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     message_text = message.get("text") \
         .replace("—", "--").replace(" ::", "::").replace("  ", " ").replace("-- ", "--")
     if re.findall("::\S+", message_text):
@@ -405,7 +405,7 @@ def work_with_text_message(message: dict, translator):
             text="<pre>Вы отправили пустое сообщение</pre>",
             parse_mode="HTML"
         )
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     eng_text = translator.translate(message_text)
     if not eng_text:
         logger.warning(f"Ошибка входящего сообщения. {chat_id}, {chat_username}, {message_text}")
@@ -414,7 +414,7 @@ def work_with_text_message(message: dict, translator):
             text="<pre>Вы отправили пустое сообщение</pre>",
             parse_mode="HTML"
         )
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     wrong_words = check_words(eng_text)
     if wrong_words:
         bot.send_message(
@@ -422,7 +422,7 @@ def work_with_text_message(message: dict, translator):
             text=f"<pre>❌Вы отправили запрещенные слова: {wrong_words}</pre>",
             parse_mode="HTML"
         )
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     eng_text = eng_text.replace("-- ", "--")
     no_ar_text = eng_text.split(" --")[0]
     user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
@@ -433,11 +433,11 @@ def work_with_text_message(message: dict, translator):
             text="<pre>Вы не зарегистрированы в приложении</pre>",
             parse_mode="HTML"
         )
-        return "", "", ""
+        return "", "", "", "", "", "", ""
     if user.preset and user.preset not in message_text and user.preset not in eng_text:
         message_text = message_text + user.preset
         eng_text = eng_text + user.preset
-    return user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id
+    return user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id, chat_username
 
 
 def handle_message(request_data):
@@ -446,7 +446,10 @@ def handle_message(request_data):
     message = request_data.get("message")
     if message:
         message_type = DiscordTypes.START_GEN
-        user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id = work_with_text_message(message, translator)
+        user, message_text, eng_text, no_ar_text, after_create_message_text, chat_id, chat_username\
+            = work_with_text_message(message, translator)
+        if not eng_text:
+            return "", "", ""
     else:
         button_data = request_data.get("callback_query")
         if button_data:

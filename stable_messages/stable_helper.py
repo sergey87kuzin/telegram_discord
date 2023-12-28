@@ -375,7 +375,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "width": width,
         "height": height,
         "samples": "4",
-        "num_inference_steps": stable_settings.num_inference_steps or "20",
+        "num_inference_steps": stable_settings.num_inference_steps or "31",
         "seed": str(seed),
         "guidance_scale": stable_settings.guidance_scale or 7,
         "safety_checker": "no",
