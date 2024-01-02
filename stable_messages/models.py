@@ -59,7 +59,7 @@ class StableSettings(SingletonModel):
         max_length=256,
         blank=True,
         null=True,
-        choices=StableModels.CHOICES,
+        # choices=StableModels.CHOICES,
         default=StableModels.JUGGERNAUT
     )
     seed = models.CharField("Сид", max_length=128, blank=True, null=True, default="-1")
