@@ -29,7 +29,8 @@ def send_upscale_to_stable(created_message_id):
         "key": stable_account.api_key,
         "url": stable_message.first_image,
         "scale": 4,
-        "webhook": None,    # settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
+        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
+        "track_id": stable_message.id,
         "face_enhance": False
     })
     response = requests.post(url=upscale_image_url, headers=headers, data=data)
@@ -293,7 +294,7 @@ def send_zoomed_message(message):
 def send_stable_messages_to_telegram():
     messages_to_send = StableMessage.objects.filter(
         answer_sent=False,
-        single_image__isnull=False
+        single_image__icontains="."
     ).order_by("id").distinct("id")
     for message in messages_to_send:
         if message.message_type == StableMessageTypeChoices.FIRST:

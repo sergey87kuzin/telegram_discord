@@ -54,7 +54,8 @@ class GetStableUpscaleCallback(APIView):
 
     def post(self, request):
         data = request.data
-        message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
+        message_id = data.get("track_id")
+        message = StableMessage.objects.filter(Q(id=message_id) | Q(stable_request_id=data.get("id"))).first()
         if message:
             message.single_image = data.get("output")
             if not data.get("status") == "success":
