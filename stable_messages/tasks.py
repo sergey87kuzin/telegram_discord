@@ -65,7 +65,7 @@ def send_vary_to_stable(created_message_id):
             "width": stable_message.width,
             "height": stable_message.height,
             "samples": "4",
-            "num_inference_steps": stable_settings.vary_num_inference_steps or "20",
+            "num_inference_steps": stable_settings.vary_num_inference_steps or "31",
             "safety_checker": "yes",
             "enhance_prompt": "yes",
             "guidance_scale": stable_settings.vary_guidance_scale or 7.5,

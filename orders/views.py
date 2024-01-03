@@ -17,7 +17,6 @@ from bot_config.models import SiteSettings
 from courses.models import Course, UserCourses
 from orders.helper import create_prodamus_order_object
 from orders.models import Order
-from users.models import User
 
 
 payment_bot = telebot.TeleBot(settings.PAYMENT_TELEGRAM_TOKEN)
