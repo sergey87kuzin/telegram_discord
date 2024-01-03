@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     "ckeditor",
     "ckeditor_uploader",
     "embed_video",
-    "stable_messages"
+    "stable_messages",
+    "support",
 ]
 
 MIDDLEWARE = [
@@ -189,6 +190,7 @@ DISCORD_CHANNEL = env.str("DISCORD_CHANNEL")
 TELEGRAM_TOKEN = env.str("TELEGRAM_TOKEN")
 PAYMENT_TELEGRAM_TOKEN = env.str("PAYMENT_TELEGRAM_TOKEN")
 STABLE_TELEGRAM_TOKEN = env.str("STABLE_TELEGRAM_TOKEN")
+SUPPORT_TELEGRAM_TOKEN = env.str("SUPPORT_TELEGRAM_TOKEN")
 
 # CELERY
 CELERY_BROKER_URL = env.str("REDIS_URL")
@@ -273,4 +275,6 @@ CKEDITOR_CONFIGS = {
         "width": 650,
     },
 }
+
+ADMIN_CHAT_IDS = ["1792622682", "344637537"]
 

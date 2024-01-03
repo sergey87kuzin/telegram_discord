@@ -23,7 +23,8 @@ urlpatterns = [
         "alternative-payments/",
         TemplateView.as_view(template_name="alternative_payment_methods.html"),
         name="alternative_payments"
-    )
+    ),
+    path("support/", include("support.urls")),
 ]
 
 
