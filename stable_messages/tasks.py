@@ -29,7 +29,7 @@ def send_upscale_to_stable(created_message_id):
         "key": stable_account.api_key,
         "url": stable_message.first_image,
         "scale": 4,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
+        "webhook": None,  # settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
         "track_id": stable_message.id,
         "face_enhance": False
     })
