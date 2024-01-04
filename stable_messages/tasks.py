@@ -361,7 +361,10 @@ def check_not_sent_messages():
         response = requests.post(url=fetch_url, headers=headers, data=json.dumps({"key": stable_account.api_key}))
         if response_data := response.json():
             if response_data.get("status") in ("error", "failed") or "error_id" in response_data:
-                stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка генерации")
+                stable_bot.send_message(
+                    chat_id=message.telegram_chat_id,
+                    text=f"Ошибка генерации {message.initial_text}"
+                )
                 message.answer_sent = True
             if response_data.get("status") == "success":
                 output = response_data.get("output")
