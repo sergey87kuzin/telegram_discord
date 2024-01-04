@@ -24,7 +24,7 @@ CELERY_BEAT_SCHEDULE = {
         "options": {"queue": "telegram"},
     },
     "check_not_sent_messages": {
-        "task": "stable+mesages.tasks.check_not_sent_messages",
+        "task": "stable_messages.tasks.check_not_sent_messages",
         "schedule": timedelta(minutes=10),
         "options": {"queue": "telegram"},
     }
