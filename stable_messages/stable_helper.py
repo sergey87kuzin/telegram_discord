@@ -407,7 +407,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
             message.fourth_image = single_images[3]
         except Exception:
             # todo решить, что делать, если фотки не пришли
-            pass
+            print("no images")
         message.save()
     else:
-        raise Warning("Не отправилось сообщение в stable")
+        stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка создания сообщения")
