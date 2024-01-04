@@ -223,6 +223,7 @@ CELERY_TASK_ROUTES = {
     "stable_messages.tasks.send_stable_messages_to_telegram": {"queue": "telegram"},
     "stable_messages.tasks.send_vary_to_stable": {"queue": "messages2"},
     "stable_messages.tasks.handle_image_message": {"queue": "messages"},
+    "stable_messages.tasks.check_not_sent_messages": {"queue": "telegram"},
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
