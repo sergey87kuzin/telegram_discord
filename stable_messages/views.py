@@ -44,7 +44,7 @@ class GetStableCallback(APIView):
             message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
             if message:
                 bot.send_message(
-                    chat_id=message.telegram_id,
+                    chat_id=message.telegram_chat_id,
                     text="Ошибка генерации сообщения"
                 )
         Response(HTTPStatus.OK)
