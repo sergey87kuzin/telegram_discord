@@ -345,3 +345,35 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
     )
     created_message.refresh_from_db()
     send_vary_to_stable(created_message_id=created_message.id)
+
+
+@shared_task
+def check_not_sent_messages():
+    not_sent_messages = StableMessage.objects.filter(
+        stable_request_id__isnull=False,
+        single_image__isnull=True,
+        answer_sent=False
+    )
+    for message in not_sent_messages:
+        fetch_url = f"https://stablediffusionapi.com/api/v3/fetch/{message.stable_request_id}"
+        headers = {'Content-Type': 'application/json'}
+        stable_account = StableAccount.objects.filter(stable_users__id=message.user_id).first()
+        if not stable_account:
+            return
+        response = requests.post(url=fetch_url, headers=headers, data=json.dumps({"key": stable_account.api_key}))
+        if response_data := response.json():
+            if response_data.get("status") in ("error", "failed") or "error_id" in response_data:
+                stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка генерации")
+                message.answer_sent = True
+            if response_data.get("status") == "success":
+                output = response_data.get("output")
+                message.single_image = output[0]
+                if len(output) > 1:
+                    try:
+                        message.first_image = output[0]
+                        message.second_image = output[1]
+                        message.third_image = output[2]
+                        message.fourth_image = output[3]
+                    except Exception:
+                        pass
+            message.save()
