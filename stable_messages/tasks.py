@@ -6,7 +6,6 @@ import requests
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.utils.timezone import now
 from telebot import types
 
 from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES, SCALES
@@ -22,15 +21,12 @@ def send_upscale_to_stable(created_message_id):
     if not stable_account:
         return
     upscale_image_url = "https://stablediffusionapi.com/api/v5/super_resolution"
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {'Content-Type': 'application/json'}
     data = json.dumps({
         "key": stable_account.api_key,
         "url": stable_message.first_image,
         "scale": 4,
         "webhook": None,  # settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
-        "track_id": stable_message.id,
         "face_enhance": False
     })
     response = requests.post(url=upscale_image_url, headers=headers, data=data)
@@ -73,6 +69,8 @@ def send_vary_to_stable(created_message_id):
             "strength": stable_settings.vary_strength or 0.7,
             "seed": seed,
             "base64": "no",
+            "lora_model": stable_settings.lora_model,
+            "lora_strength": stable_settings.lora_strength,
             "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
             "track_id": stable_message.id
         }
