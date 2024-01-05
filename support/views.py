@@ -32,7 +32,7 @@ class SupportMessageAPIView(APIView):
         if str(chat_id) in settings.ADMIN_CHAT_IDS:
             support_bot.send_message(
                 chat_id=answer_to_id,
-                text=str("message")
+                text=str(message)
             )
             if answer_to_id:
                 support_bot.send_message(
