@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from support.models import SupportMessage
+from users.models import User
 
 support_bot = telebot.TeleBot(settings.SUPPORT_TELEGRAM_TOKEN)
 
@@ -21,7 +22,9 @@ class SupportMessageAPIView(APIView):
         telegram_username = message.get("chat", {}).get("username")
         answer_to_id = None
         if reply := message.get("reply_to_message"):
-            answer_to_id = reply.get("chat").get("id")
+            username = reply.get("text").split(":")[0]
+            user = User.objects.filter(username=username).first()
+            answer_to_id = user.chat_id
         support_message = SupportMessage.objects.create(
             telegram_username=telegram_username,
             message_text=message_text,
@@ -30,10 +33,6 @@ class SupportMessageAPIView(APIView):
             answer_to_id=answer_to_id
         )
         if str(chat_id) in settings.ADMIN_CHAT_IDS:
-            support_bot.send_message(
-                chat_id=answer_to_id,
-                text=str(message)
-            )
             if answer_to_id:
                 support_bot.send_message(
                     chat_id=answer_to_id,
