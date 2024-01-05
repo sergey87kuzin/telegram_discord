@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from bot_config.models import SiteSettings
 from discord_messages.telegram_helper import bot
-from users.models import User
+from users.models import User, Style
 
 
 class PaidFilter(SimpleListFilter):
@@ -49,7 +49,8 @@ class UserAdmin(BaseUserAdmin):
             "is_active",
             "account",
             "stable_account",
-            "preset"
+            "preset",
+            "style"
         )}),
     )
     ordering = ["-id"]
@@ -71,6 +72,11 @@ class UserAdmin(BaseUserAdmin):
                     pass
 
     send_message.short_description = "Отправить сообщение"
+
+
+@admin.register(Style)
+class StyleAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.register(User, UserAdmin)

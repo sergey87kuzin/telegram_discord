@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 
 from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
-from .tasks import send_stable_messages_to_telegram
-from stable_messages.stable_helper import send_message_to_stable, handle_telegram_callback
+from .tasks import send_stable_messages_to_telegram, send_message_to_stable
+from stable_messages.stable_helper import handle_telegram_callback
 
 logger = logging.getLogger(__name__)
 
