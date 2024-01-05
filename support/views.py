@@ -30,6 +30,10 @@ class SupportMessageAPIView(APIView):
             answer_to_id=answer_to_id
         )
         if str(chat_id) in settings.ADMIN_CHAT_IDS:
+            support_bot.send_message(
+                chat_id=chat_id,
+                text=str("message")
+            )
             if answer_to_id:
                 support_bot.send_message(
                     chat_id=answer_to_id,
@@ -39,7 +43,7 @@ class SupportMessageAPIView(APIView):
             for chat_id in settings.ADMIN_CHAT_IDS:
                 support_bot.send_message(
                     chat_id=chat_id,
-                    text=message_text
+                    text=f"{telegram_username}: {message_text}"
                 )
             support_message.answered = True
             support_message.save()
