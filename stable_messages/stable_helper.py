@@ -127,7 +127,7 @@ def handle_zoom_button(message_text, chat_id, direction):
 
 
 def handle_vary_button(message_text, chat_id):
-    answer_text = "Вносим изменения"
+    answer_text = "Делаем вариации"
     prefix, stable_message_id = message_text.split("&&")
     first_message = StableMessage.objects.filter(id=stable_message_id).first()
     if not first_message:

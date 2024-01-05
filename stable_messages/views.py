@@ -40,7 +40,7 @@ class GetStableCallback(APIView):
             except Exception:
                 print("wrong one")
             message.save()
-        if data.get("status") in ("error", "processing"):
+        if data.get("status") in ("error", "failed"):
             message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
             if message:
                 bot.send_message(
