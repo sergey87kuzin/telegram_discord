@@ -5,6 +5,19 @@ from discord_messages.models import DiscordAccount
 from users.managers import CustomUserManager
 
 
+class Style(models.Model):
+    name = models.CharField("Название", max_length=128)
+    positive_prompt = models.CharField("Позитивный промпт", max_length=2048)
+    negative_prompt = models.CharField("Негативный промпт", max_length=2048)
+
+    class Meta:
+        verbose_name = "Стиль"
+        verbose_name_plural = "Стили"
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
     username = models.CharField("Ник telegram аккаунта", unique=True, max_length=32)
     chat_id = models.CharField("id чата с ботом", max_length=64, blank=True, null=True)
@@ -33,6 +46,14 @@ class User(AbstractUser):
     preset = models.CharField(
         "Суффикс для всех сообщений пользователя",
         max_length=128,
+        blank=True,
+        null=True
+    )
+    style = models.ForeignKey(
+        Style,
+        on_delete=models.SET_NULL,
+        verbose_name="Стиль",
+        related_name="users",
         blank=True,
         null=True
     )

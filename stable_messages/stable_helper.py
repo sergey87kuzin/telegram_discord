@@ -1,18 +1,15 @@
 import json
 import logging
 import re
-from random import randint
 
 import requests
 from deep_translator import GoogleTranslator
-from django.conf import settings
-from django.urls import reverse_lazy
 from django.utils.timezone import now
 from telebot import types
 
 from discord_messages.denied_words import check_words
-from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler
-from stable_messages.models import StableMessage, StableAccount, StableSettings
+from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler, style_handler
+from stable_messages.models import StableMessage
 from .choices import StableMessageTypeChoices, SCALES
 from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable, handle_image_message
 from users.models import User
@@ -263,6 +260,9 @@ def handle_telegram_callback(message_data: dict):
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
                 return "", "", ""
+            if message_text.startswith("style&&"):
+                style_handler(chat_id, chat_username, message_text)
+                return "", "", ""
             reply_markup = button_data.get("message").get("reply_markup")
             buttons_markup = types.InlineKeyboardMarkup()
             buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
@@ -341,73 +341,3 @@ def handle_telegram_callback(message_data: dict):
         return "", "", ""
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
     return user, eng_text, created_message.id
-
-
-def send_message_to_stable(user_id, eng_text, message_id):
-    stable_settings = StableSettings.get_solo()
-    message = StableMessage.objects.filter(id=message_id).first()
-    stable_account = StableAccount.objects.filter(stable_users=user_id).first()
-    if not stable_account:
-        return
-    scale = ""
-    if "--ar " in eng_text:
-        scale = eng_text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
-    seed = randint(0, 16000000)
-    message.width = width
-    message.height = height
-    message.seed = seed
-    message.save()
-    negative_prompt = ""
-    if "--no " in eng_text:
-        texts = eng_text.split("--no ")
-        negative_prompt = texts[-1]
-        eng_text = texts[0]
-    text_message_url = "https://modelslab.com/api/v6/images/text2img"
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    data = json.dumps({
-        "key": stable_account.api_key,
-        "model_id": stable_settings.model_id or "juggernaut-xl",
-        "prompt": f"{eng_text}, {stable_settings.positive_prompt}",
-        "negative_prompt": f"{negative_prompt}, {stable_settings.negative_prompt}",
-        "width": width,
-        "height": height,
-        "samples": "4",
-        "num_inference_steps": stable_settings.num_inference_steps or "31",
-        "seed": str(seed),
-        "guidance_scale": stable_settings.guidance_scale or 7,
-        "safety_checker": "no",
-        "multi_lingual": "no",
-        "panorama": "no",
-        "self_attention": "yes",
-        "upscale": "no",
-        "lora_model": stable_settings.lora_model,
-        "lora_strength": stable_settings.lora_strength,
-        "sampling_method": stable_settings.sampling_method or "euler",
-        "algorithm_type": stable_settings.algorithm_type or "",
-        "scheduler": stable_settings.scheduler or "DPMSolverMultistepScheduler",
-        "embeddings_model": stable_settings.embeddings_model or None,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-        "track_id": message_id,
-        "tomesd": "yes",
-        "use_karras_sigmas": "yes",
-        "vae": None,
-    })
-
-    response = requests.post(url=text_message_url, headers=headers, data=data)
-    if response_data := response.json():
-        message.stable_request_id = response_data.get("id")
-        single_images = response_data.get("future_links")
-        try:
-            message.first_image = single_images[0]
-            message.second_image = single_images[1]
-            message.third_image = single_images[2]
-            message.fourth_image = single_images[3]
-        except Exception:
-            # todo решить, что делать, если фотки не пришли
-            print("no images")
-        message.save()
-    else:
-        stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка создания сообщения")

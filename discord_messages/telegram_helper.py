@@ -17,7 +17,7 @@ from discord_messages.discord_helper import send_u_line_button_command_to_discor
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
 from discord_messages.models import ConfirmMessage, Message, DiscordAccount  # , DiscordAccount, DiscordConnection
 # from discord_messages.tasks import send_message_to_discord_task
-from users.models import User
+from users.models import User, Style
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
 logger = logging.getLogger(__name__)
@@ -208,6 +208,30 @@ def handle_command(message):
             parse_mode="HTML"
         )
         return
+    if message_text == "/style":
+        styles = (
+            ("Иллюстрация",  "illustration"),
+            ("Фото еды", "food photography"),
+            ("Акварель", "watercolor"),
+            ("Удалить", "del"),
+        )
+        buttons_menu_markup = types.InlineKeyboardMarkup()
+        buttons_menu_markup.row_width = 1
+        buttons = []
+        for style in styles:
+            style_button = types.InlineKeyboardButton(
+                style[0],
+                callback_data=f"style&&{style[1]}"
+            )
+            buttons.append(style_button)
+        buttons_menu_markup.add(*buttons)
+        bot.send_message(
+            chat_id,
+            "<pre>Выберите стиль изображения</pre>",
+            reply_markup=buttons_menu_markup,
+            parse_mode="HTML"
+        )
+        return
     if message_text == "/mybot":
         user = User.objects.filter(username__iexact=username, is_active=True).first()
         if not user:
@@ -276,6 +300,23 @@ def preset_handler(chat_id, chat_username, message_text):
         user.preset = preset
         user.save()
         bot.send_message(chat_id, text=f"Установлен формат {preset}")
+
+
+def style_handler(chat_id, chat_username, message_text):
+    style_name = message_text.split("&&")[-1]
+    user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
+    if not user:
+        bot.send_message(chat_id, text="Ваш аккаунт не найден. Обратитесь в поддержку")
+        return
+    if style_name == "del":
+        user.style = None
+        user.save()
+        bot.send_message(chat_id, text="Стиль удален")
+    else:
+        style = Style.objects.filter(name=style_name).first()
+        user.style = style
+        user.save()
+        bot.send_message(chat_id, text=f"Установлен стиль {style_name}")
 
 
 def add_four_pics_buttons(buttons: list, message_id: int):
