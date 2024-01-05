@@ -504,6 +504,9 @@ def handle_message(request_data):
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
                 return "", "", ""
+            if message_text.startswith("style&&"):
+                style_handler(chat_id, chat_username, message_text)
+                return "", "", ""
             reply_markup = button_data.get("message").get("reply_markup")
             buttons_markup = types.InlineKeyboardMarkup()
             buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
