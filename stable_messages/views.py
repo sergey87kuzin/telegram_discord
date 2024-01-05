@@ -19,7 +19,7 @@ class GetTelegramCallback(APIView):
         logger.warning("get message")
         user, eng_text, message_id = handle_telegram_callback(request.data)
         if user and eng_text and message_id:
-            send_message_to_stable(user, eng_text, message_id)
+            send_message_to_stable(user.id, eng_text, message_id)
         return Response(HTTPStatus.OK)
 
 
