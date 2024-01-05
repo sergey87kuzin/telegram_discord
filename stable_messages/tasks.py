@@ -229,7 +229,7 @@ def send_upscaled_message(message: StableMessage):
         )
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
-        text=f"🔍 {message.initial_text}"
+        text=f"4х: {message.initial_text}"
     )
     message.answer_sent = True
     message.save()
@@ -270,7 +270,7 @@ def send_varied_message(message):
         markup = add_buttons_to_message(message.id)
         stable_bot.send_message(
             chat_id=message.telegram_chat_id,
-            text=f"Varied {message.initial_text}",
+            text=f"Вариация: {message.initial_text}",
             reply_markup=markup
         )
     message.answer_sent = True
@@ -290,7 +290,7 @@ def send_zoomed_message(message):
     markup = add_buttons_to_message(message.id)
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
-        text=f"Zoomed {message.initial_text}",
+        text=f"Отдаление: {message.initial_text}",
         reply_markup=markup
     )
     message.answer_sent = True
@@ -372,7 +372,8 @@ def check_not_sent_messages():
             if response_data.get("status") in ("error", "failed") or "error_id" in response_data:
                 stable_bot.send_message(
                     chat_id=message.telegram_chat_id,
-                    text=f"Ошибка генерации {message.initial_text}"
+                    text=f"<pre>❌Ошибка генерации\n✅ вам добавлена 1 генерация, отправьте запрос заново\n{message.initial_text}</pre>",
+                    parse_mode="HTML"
                 )
                 message.answer_sent = True
             if response_data.get("status") == "success":
