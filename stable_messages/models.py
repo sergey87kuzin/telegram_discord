@@ -76,6 +76,8 @@ class StableSettings(SingletonModel):
     vary_num_inference_steps = models.CharField("Вариации число шагов", max_length=16, blank=True, null=True)
     vary_guidance_scale = models.FloatField("Вариации шкала(7.5)", blank=True, null=True)
     vary_strength = models.FloatField("Вариации сила картинки", blank=True, null=True)
+    controlnet_model = models.CharField("controlnet_model", max_length=256, blank=True, null=True)
+    controlnet_type = models.CharField("controlnet_type", max_length=256, blank=True, null=True)
 
     class Meta:
         verbose_name = "Настройки stable"
