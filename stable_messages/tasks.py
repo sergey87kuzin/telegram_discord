@@ -75,6 +75,8 @@ def send_vary_to_stable(created_message_id):
             "controlnet_model": stable_settings.controlnet_model,
             "controlnet_type": stable_settings.controlnet_type,
             "init_image": stable_message.first_image,
+            "control_image": stable_message.first_image,
+            "mask_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
             "samples": "4",
