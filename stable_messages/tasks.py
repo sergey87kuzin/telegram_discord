@@ -269,7 +269,7 @@ def send_varied_message(message):
                 text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
                 parse_mode="HTML"
             )
-        markup = add_buttons_to_message(message.id)
+        markup = add_buttons_to_message(new_message.id)
         stable_bot.send_message(
             chat_id=message.telegram_chat_id,
             text=f"Вариация: {message.initial_text}",
