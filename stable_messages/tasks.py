@@ -72,6 +72,8 @@ def send_vary_to_stable(created_message_id):
             "key": stable_account.api_key,
             "prompt": positive_prompt,
             "negative_prompt": negative_prompt,
+            "controlnet_model": stable_settings.controlnet_model,
+            "controlnet_type": stable_settings.controlnet_type,
             "init_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
