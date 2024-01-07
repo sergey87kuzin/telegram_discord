@@ -23,7 +23,7 @@ class SupportMessageAPIView(APIView):
         answer_to_id = None
         if reply := message.get("reply_to_message"):
             username = reply.get("text").split(":")[0]
-            user = User.objects.filter(username=username).first()
+            user = User.objects.filter(username=username[1:]).first()
             answer_to_id = user.chat_id
         support_message = SupportMessage.objects.create(
             telegram_username=telegram_username,
@@ -42,7 +42,7 @@ class SupportMessageAPIView(APIView):
             for chat_id in settings.ADMIN_CHAT_IDS:
                 support_bot.send_message(
                     chat_id=chat_id,
-                    text=f"{telegram_username}: {message_text}"
+                    text=f"@{telegram_username}: {message_text}"
                 )
             support_message.answered = True
             support_message.save()

@@ -170,7 +170,7 @@ def handle_repeat_button(message_text, chat_id):
     )
     created_message.refresh_from_db()
     send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
-    stable_bot.send_message(chat_id=chat_id, text=answer_text)
+    stable_bot.send_message(chat_id=chat_id, text=f"Творим волшебство: {answer_text}")
 
 
 def check_remains(eng_text, user, chat_id):
