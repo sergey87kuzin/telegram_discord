@@ -15,6 +15,7 @@ class StableMessageAdmin(admin.ModelAdmin):
         "stable_request_id",
         "single_image",
         "answer_sent",
+        "created_at"
     )
 
 

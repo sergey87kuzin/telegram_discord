@@ -18,10 +18,25 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="0", hour="0"),
         "options": {"queue": "telegram"},
     },
-    "send_stable_to_telegram": {
-        "task": "stable_messages.tasks.send_stable_messages_to_telegram",
+    "send_stable_to_telegram_1": {
+        "task": "stable_messages.tasks.send_stable_messages_to_telegram_1",
         "schedule": timedelta(seconds=63),
         "options": {"queue": "telegram"},
+    },
+    "send_stable_to_telegram_2": {
+        "task": "stable_messages.tasks.send_stable_messages_to_telegram_2",
+        "schedule": timedelta(seconds=60),
+        "options": {"queue": "messages"},
+    },
+    "send_stable_to_telegram_3": {
+        "task": "stable_messages.tasks.send_stable_messages_to_telegram_3",
+        "schedule": timedelta(seconds=61),
+        "options": {"queue": "messages1"},
+    },
+    "send_stable_to_telegram_4": {
+        "task": "stable_messages.tasks.send_stable_messages_to_telegram_4",
+        "schedule": timedelta(seconds=62),
+        "options": {"queue": "messages3"},
     },
     "check_not_sent_messages": {
         "task": "stable_messages.tasks.check_not_sent_messages",
