@@ -17,6 +17,9 @@ class SupportMessageAPIView(APIView):
         message = data.get("message")
         chat_id = message.get("chat", {}).get("id")
         message_text = message.get("text") or message.get("caption")
+        if not message_text:
+            support_bot.send_message(chat_id=chat_id, text="Вы отправили пустое сообщение")
+            return
         if message_text == "/start":
             return Response(status=HTTPStatus.OK)
         telegram_username = message.get("chat", {}).get("username")
