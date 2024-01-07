@@ -16,6 +16,7 @@ from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
 from discord_messages.models import ConfirmMessage, Message, DiscordAccount  # , DiscordAccount, DiscordConnection
+from stable_messages.models import StableAccount
 # from discord_messages.tasks import send_message_to_discord_task
 from users.models import User, Style
 
@@ -61,6 +62,7 @@ def handle_start_message(message):
                 user.set_password(str(random.randint(0, 99999999)).zfill(8))
                 account = DiscordAccount.objects.annotate(users_count=Count("users")).order_by("users_count").first()
                 user.account = account
+                user.stable_account_id = 1
                 user.save()
         except Exception as e:
             logger.warning(f"Ошибка регистрации пользователя, {username}, {str(e)}")
@@ -209,21 +211,27 @@ def handle_command(message):
         )
         return
     if message_text == "/style":
-        styles = (
-            ("Иллюстрация",  "illustration"),
-            ("Фото еды", "food photography"),
-            ("Акварель", "watercolor"),
-            ("Удалить", "del"),
-        )
+        # styles = (
+        #     ("Иллюстрация",  "illustration"),
+        #     ("Фото еды", "food photography"),
+        #     ("Акварель", "watercolor"),
+        #     ("Удалить", "del"),
+        # )
+        styles = Style.objects.all()
         buttons_menu_markup = types.InlineKeyboardMarkup()
         buttons_menu_markup.row_width = 1
         buttons = []
         for style in styles:
             style_button = types.InlineKeyboardButton(
-                style[0],
-                callback_data=f"style&&{style[1]}"
+                style.name_for_menu,
+                callback_data=f"style&&{style.name}"
             )
             buttons.append(style_button)
+        style_button = types.InlineKeyboardButton(
+            "Удалить",
+            callback_data=f"style&&del"
+        )
+        buttons.append(style_button)
         buttons_menu_markup.add(*buttons)
         bot.send_message(
             chat_id,
