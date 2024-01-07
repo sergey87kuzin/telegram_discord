@@ -158,8 +158,8 @@ def handle_repeat_button(message_text, chat_id):
         return
     answer_text = first_message.initial_text
     created_message = StableMessage.objects.create(
-        initial_text=first_message.initial_text,
-        eng_text=message_text,
+        initial_text=answer_text,
+        eng_text=answer_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
         first_image=first_message.single_image,
@@ -169,7 +169,7 @@ def handle_repeat_button(message_text, chat_id):
         seed=first_message.seed
     )
     created_message.refresh_from_db()
-    send_message_to_stable.delay(first_message.user_id, first_message.initial_text, created_message.id)
+    send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
