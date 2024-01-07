@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 
@@ -8,10 +7,11 @@ from django.utils.timezone import now
 from telebot import types
 
 from discord_messages.denied_words import check_words
+from discord_messages.telegram_helper import bot as stable_bot
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler, style_handler
 from stable_messages.models import StableMessage
 from .choices import StableMessageTypeChoices, SCALES
-from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable, handle_image_message, \
+from .tasks import send_upscale_to_stable, send_zoom_to_stable, send_vary_to_stable, handle_image_message, \
     send_message_to_stable
 from users.models import User
 
