@@ -336,7 +336,6 @@ def handle_telegram_callback(message_data: dict):
                 handle_vary_button(message_text, chat_id)
                 return "", "", ""
             elif message_text.startswith("button_send_again&&"):
-                message_text = first_message.eng_text
                 handle_repeat_button(message_text, chat_id)
                 return "", "", ""
         else:
