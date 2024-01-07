@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
-from .tasks import send_stable_messages_to_telegram, send_message_to_stable
+from .tasks import send_message_to_stable
 from stable_messages.stable_helper import handle_telegram_callback
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class GetTelegramCallback(APIView):
         logger.warning("get message")
         user, eng_text, message_id = handle_telegram_callback(request.data)
         if user and eng_text and message_id:
-            send_message_to_stable(user.id, eng_text, message_id)
+            send_message_to_stable.delay(user.id, eng_text, message_id)
         return Response(HTTPStatus.OK)
 
 

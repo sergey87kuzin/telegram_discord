@@ -301,12 +301,13 @@ def send_zoomed_message(message):
     message.save()
 
 
-@shared_task
-def send_stable_messages_to_telegram():
+# @shared_task(time_limit=360)
+def send_stable_messages_to_telegram(account_id: int):
     messages_to_send = StableMessage.objects.filter(
         answer_sent=False,
-        single_image__icontains="."
-    ).order_by("id").distinct("id")
+        single_image__icontains=".",
+        user__account_id=account_id
+    ).order_by("id").distinct("id")[:20]
     for message in messages_to_send:
         if message.message_type == StableMessageTypeChoices.FIRST:
             send_first_messages(message)
@@ -316,6 +317,26 @@ def send_stable_messages_to_telegram():
             send_varied_message(message)
         elif message.message_type == StableMessageTypeChoices.ZOOM:
             send_zoomed_message(message)
+
+
+@shared_task(time_limit=360)
+def send_stable_messages_to_telegram_1():
+    send_stable_messages_to_telegram(account_id=1)
+
+
+@shared_task(time_limit=360)
+def send_stable_messages_to_telegram_2():
+    send_stable_messages_to_telegram(account_id=2)
+
+
+@shared_task(time_limit=360)
+def send_stable_messages_to_telegram_3():
+    send_stable_messages_to_telegram(account_id=3)
+
+
+@shared_task(time_limit=360)
+def send_stable_messages_to_telegram_4():
+    send_stable_messages_to_telegram(account_id=4)
 
 
 def get_sizes(scale):
@@ -394,6 +415,7 @@ def check_not_sent_messages():
             message.save()
 
 
+@shared_task
 def send_message_to_stable(user_id, eng_text, message_id):
     stable_settings = StableSettings.get_solo()
     message = StableMessage.objects.filter(id=message_id).first()
