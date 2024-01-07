@@ -211,13 +211,7 @@ def handle_command(message):
         )
         return
     if message_text == "/style":
-        # styles = (
-        #     ("Иллюстрация",  "illustration"),
-        #     ("Фото еды", "food photography"),
-        #     ("Акварель", "watercolor"),
-        #     ("Удалить", "del"),
-        # )
-        styles = Style.objects.all()
+        styles = Style.objects.all().order_by("id")
         buttons_menu_markup = types.InlineKeyboardMarkup()
         buttons_menu_markup.row_width = 1
         buttons = []

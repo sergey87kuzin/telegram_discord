@@ -223,15 +223,11 @@ def send_first_messages(message: StableMessage):
 
 
 def send_upscaled_message(message: StableMessage):
-    try:
-        photo = requests.get(message.single_image)
-        stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
-    except Exception:
-        stable_bot.send_message(
-            message.telegram_chat_id,
-            text=f"<a href='{message.single_image}'>Скачайте увеличенное фото тут</a>",
-            parse_mode="HTML"
-        )
+    stable_bot.send_message(
+        message.telegram_chat_id,
+        text=f"<a href='{message.single_image}'>Скачайте увеличенное фото тут</a>",
+        parse_mode="HTML"
+    )
     stable_bot.send_message(
         chat_id=message.telegram_chat_id,
         text=f"4х: {message.initial_text}"
