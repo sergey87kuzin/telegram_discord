@@ -16,7 +16,7 @@ class SupportMessageAPIView(APIView):
         data = request.data
         message = data.get("message")
         chat_id = message.get("chat", {}).get("id")
-        message_text = message.get("text")
+        message_text = message.get("text") or message.get("caption")
         if message_text == "/start":
             return Response(status=HTTPStatus.OK)
         telegram_username = message.get("chat", {}).get("username")
