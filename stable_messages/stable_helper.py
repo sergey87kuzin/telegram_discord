@@ -11,7 +11,8 @@ from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler, style_handler
 from stable_messages.models import StableMessage
 from .choices import StableMessageTypeChoices, SCALES
-from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable, handle_image_message
+from .tasks import send_upscale_to_stable, send_zoom_to_stable, stable_bot, send_vary_to_stable, handle_image_message, \
+    send_message_to_stable
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -149,8 +150,27 @@ def handle_vary_button(message_text, chat_id):
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
-def handle_repeat_button(message_text):
-    pass
+def handle_repeat_button(message_text, chat_id):
+    prefix, stable_message_id = message_text.split("&&")
+    first_message = StableMessage.objects.filter(id=stable_message_id).first()
+    if not first_message:
+        stable_bot.send_message(chat_id=chat_id, text="Ошибка при повторной генерации((")
+        return
+    answer_text = first_message.initial_text
+    created_message = StableMessage.objects.create(
+        initial_text=first_message.initial_text,
+        eng_text=message_text,
+        telegram_chat_id=first_message.telegram_chat_id,
+        user_id=first_message.user_id,
+        first_image=first_message.single_image,
+        message_type=StableMessageTypeChoices.FIRST,
+        width=first_message.width,
+        height=first_message.height,
+        seed=first_message.seed
+    )
+    created_message.refresh_from_db()
+    send_message_to_stable.delay(first_message.user_id, first_message.initial_text, created_message.id)
+    stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
 def check_remains(eng_text, user, chat_id):
@@ -317,8 +337,7 @@ def handle_telegram_callback(message_data: dict):
                 return "", "", ""
             elif message_text.startswith("button_send_again&&"):
                 message_text = first_message.eng_text
-                eng_text = first_message.eng_text
-                handle_repeat_button(message_text)
+                handle_repeat_button(message_text, chat_id)
                 return "", "", ""
         else:
             user = User.objects.first()

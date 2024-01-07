@@ -6,6 +6,7 @@ from users.managers import CustomUserManager
 
 
 class Style(models.Model):
+    name_for_menu = models.CharField("Название для меню", max_length=128, default="Стиль")
     name = models.CharField("Название", max_length=128)
     positive_prompt = models.CharField("Позитивный промпт", max_length=2048)
     negative_prompt = models.CharField("Негативный промпт", max_length=2048)
