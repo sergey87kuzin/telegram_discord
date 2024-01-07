@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
+from users.models import User
 from .tasks import send_message_to_stable
 from stable_messages.stable_helper import handle_telegram_callback
 
@@ -47,6 +48,10 @@ class GetStableCallback(APIView):
                     chat_id=message.telegram_chat_id,
                     text=f"Ошибка генерации сообщения {message.initial_text}"
                 )
+                user = message.user
+                user.remain_messages += 1
+                user.save()
+                user.refresh_from_db()
         Response(HTTPStatus.OK)
 
 

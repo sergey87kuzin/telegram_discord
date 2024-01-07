@@ -11,7 +11,8 @@ from telebot import types
 
 from bot_config.models import SiteSettings
 from discord_messages.choices import DiscordTypes
-from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT
+from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT, STYLE_INFO_TEXT, MENU_INFORMATION_TEXT, \
+    SUPPORT_TEXT, PASSWORD_TEXT
 from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
@@ -138,7 +139,7 @@ def handle_command(message):
                 parse_mode="HTML"
             )
             return
-    if message_text.startswith("/preset"):
+    elif message_text.startswith("/preset"):
         preset = message_text.replace("/preset", "")
         if preset and preset != " ":
             user = User.objects.filter(username=username).first()
@@ -183,7 +184,7 @@ def handle_command(message):
             "<pre>Некорректное значение</pre>",
             parse_mode="HTML"
         )
-    if message_text == "/format":
+    elif message_text == "/format":
         presets = (
             ("3:2",  " --ar 3:2"),
             ("2:3", " --ar 2:3"),
@@ -210,7 +211,7 @@ def handle_command(message):
             parse_mode="HTML"
         )
         return
-    if message_text == "/style":
+    elif message_text == "/style":
         styles = Style.objects.all().order_by("id")
         buttons_menu_markup = types.InlineKeyboardMarkup()
         buttons_menu_markup.row_width = 1
@@ -226,6 +227,11 @@ def handle_command(message):
             callback_data=f"style&&del"
         )
         buttons.append(style_button)
+        style_button = types.InlineKeyboardButton(
+            "Инфо ℹ️",
+            callback_data=f"style&&info"
+        )
+        buttons.append(style_button)
         buttons_menu_markup.add(*buttons)
         bot.send_message(
             chat_id,
@@ -234,7 +240,7 @@ def handle_command(message):
             parse_mode="HTML"
         )
         return
-    if message_text == "/mybot":
+    elif message_text == "/mybot":
         user = User.objects.filter(username__iexact=username, is_active=True).first()
         if not user:
             bot.send_message(
@@ -259,24 +265,30 @@ def handle_command(message):
             parse_mode="HTML"
         )
         return
-    if message_text == "/instruction":
+    elif message_text == "/instruction":
         info_reply_markup = types.InlineKeyboardMarkup()
         buttons = []
         info_button = types.InlineKeyboardButton(
             "Перейти на сайт",
-            url=settings.SITE_DOMAIN
+            url=f"{settings.SITE_DOMAIN}/courses/course/2/"
         )
         buttons.append(info_button)
         info_reply_markup.add(*buttons)
         bot.send_message(chat_id, text=INFO_TEXT, reply_markup=info_reply_markup, parse_mode="HTML")
         return
-    if message_text == "/support":
-        bot.send_message(chat_id, text="Скоро👌. Пока пишите @kuzinanatali")
+    elif message_text == "/information":
+        bot.send_message(chat_id, text=MENU_INFORMATION_TEXT, parse_mode="HTML")
         return
-    if message_text == "/payment":
+    elif message_text == "/authorization":
+        bot.send_message(chat_id, text=PASSWORD_TEXT, parse_mode="HTML")
+        return
+    elif message_text == "/support":
+        bot.send_message(chat_id, text=SUPPORT_TEXT, parse_mode="HTML")
+        return
+    elif message_text == "/payment":
         bot.send_message(chat_id, text=f"{settings.SITE_DOMAIN}/payments-page/")
         return
-    if message_text == "/lessons":
+    elif message_text == "/lessons":
         bot.send_message(
             chat_id,
             text=f"{settings.SITE_DOMAIN}/courses/course/2/",
@@ -314,6 +326,8 @@ def style_handler(chat_id, chat_username, message_text):
         user.style = None
         user.save()
         bot.send_message(chat_id, text="Стиль удален")
+    elif style_name == "info":
+        bot.send_message(chat_id, text=STYLE_INFO_TEXT, parse_mode="HTML")
     else:
         style = Style.objects.filter(name=style_name).first()
         user.style = style

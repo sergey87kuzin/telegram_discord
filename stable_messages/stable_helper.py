@@ -321,7 +321,6 @@ def handle_telegram_callback(message_data: dict):
                 return "", "", ""
             if not check_remains(eng_text, user, chat_id):
                 return "", "", ""
-            first_message = StableMessage.objects.filter(id=message_text.split("&&")[-1]).first()
             if message_text.startswith("button_upscale"):
                 handle_upscale_button(message_text, chat_id)
                 return "", "", ""
