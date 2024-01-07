@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         result = bot.set_webhook(
-            url=f"{settings.SITE_DOMAIN}/api/discord_messages/get-messages/"
+            url=f"{settings.SITE_DOMAIN}/stable/telegram_webhook/"
         )
         if result:
             print("started")

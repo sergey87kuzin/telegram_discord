@@ -15,10 +15,8 @@ from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT, STYLE_INFO_T
     SUPPORT_TEXT, PASSWORD_TEXT
 from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
-    send_vary_strong_message, send_vary_soft_message, send_message_to_discord, DiscordHelper
-from discord_messages.models import ConfirmMessage, Message, DiscordAccount  # , DiscordAccount, DiscordConnection
-from stable_messages.models import StableAccount
-# from discord_messages.tasks import send_message_to_discord_task
+    send_vary_strong_message, send_vary_soft_message, send_message_to_discord
+from discord_messages.models import ConfirmMessage, Message, DiscordAccount
 from users.models import User, Style
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -284,6 +282,7 @@ def handle_command(message):
         return
     elif message_text == "/support":
         bot.send_message(chat_id, text=SUPPORT_TEXT, parse_mode="HTML")
+        bot.send_message(chat_id, text="@ai_stocker_help_bot")
         return
     elif message_text == "/payment":
         bot.send_message(chat_id, text=f"{settings.SITE_DOMAIN}/payments-page/")
