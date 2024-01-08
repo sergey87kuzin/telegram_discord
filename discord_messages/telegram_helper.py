@@ -78,10 +78,6 @@ def handle_start_message(message):
             chat_id,
             text="https://www.youtube.com/watch?v=PupAadTlhNQ"
         )
-        bot.send_message(
-            chat_id=chat_id,
-            text="❌ТЕХНИЧЕСКИЕ РАБОТЫ❌ Бот остановлен на обновление. Приносим извинение за вынужденную паузу. Самое время описать и загрузить созданное ранее😉 О возобновлении работы скоро придет уведомление."
-        )
         register_reply_markup = types.InlineKeyboardMarkup()
         register_button = types.InlineKeyboardButton(
             "Зарегистрироваться",
