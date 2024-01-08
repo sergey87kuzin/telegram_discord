@@ -227,8 +227,11 @@ CELERY_TASK_ROUTES = {
     "stable_messages.tasks.send_vary_to_stable": {"queue": "messages2"},
     "stable_messages.tasks.handle_image_message": {"queue": "messages"},
     "stable_messages.tasks.check_not_sent_messages": {"queue": "telegram"},
+    "stable_messages.tasks.send_message_to_stable_1": {"queue": "telegram1"},
+    "stable_messages.tasks.send_message_to_stable_2": {"queue": "telegram2"},
+    "stable_messages.tasks.send_message_to_stable_3": {"queue": "telegram3"},
+    "stable_messages.tasks.send_message_to_stable_4": {"queue": "telegram4"},
     "stable_messages.tasks.send_message_to_stable": {"queue": "messages2"},
-
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 

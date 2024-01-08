@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
 from users.models import User
-from .tasks import send_message_to_stable
+from .tasks import send_message_to_stable, send_message_to_stable_1, send_message_to_stable_2, send_message_to_stable_3, \
+    send_message_to_stable_4
 from stable_messages.stable_helper import handle_telegram_callback
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,15 @@ class GetTelegramCallback(APIView):
         logger.warning("get message")
         user, eng_text, message_id = handle_telegram_callback(request.data)
         if user and eng_text and message_id:
-            send_message_to_stable.delay(user.id, eng_text, message_id)
+            # send_message_to_stable.delay(user.id, eng_text, message_id)
+            if user.account.queue_number == 0:
+                send_message_to_stable_1.apply_async([user.id, eng_text, message_id], queue="telegram1")
+            elif user.account.queue_number == 1:
+                send_message_to_stable_2.apply_async([user.id, eng_text, message_id], queue="telegram2")
+            elif user.account.queue_number == 2:
+                send_message_to_stable_3.apply_async([user.id, eng_text, message_id], queue="telegram3")
+            elif user.account.queue_number == 3:
+                send_message_to_stable_4.apply_async([user.id, eng_text, message_id], queue="telegram4")
         return Response(HTTPStatus.OK)
 
 
