@@ -61,7 +61,7 @@ class GetStableCallback(APIView):
                 user.remain_messages += 1
                 user.save()
                 user.refresh_from_db()
-        Response(HTTPStatus.OK)
+        return Response(HTTPStatus.OK)
 
 
 class GetStableUpscaleCallback(APIView):
@@ -76,4 +76,4 @@ class GetStableUpscaleCallback(APIView):
                     chat_id=message.telegram_id,
                     text="Ошибка upscale картинки"
                 )
-        Response(HTTPStatus.OK)
+        return Response(HTTPStatus.OK)
