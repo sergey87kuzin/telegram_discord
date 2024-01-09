@@ -32,9 +32,8 @@ class SupportMessageAPIView(APIView):
         if reply := message.get("reply_to_message"):
             username = reply.get("text").split(":")[0]
             user = User.objects.filter(username=username[1:]).first()
-            if not user:
-                return Response(status=HTTPStatus.OK)
-            answer_to_id = user.chat_id
+            if user:
+                answer_to_id = user.chat_id
         support_message = SupportMessage.objects.create(
             telegram_username=telegram_username,
             message_text=message_text,
