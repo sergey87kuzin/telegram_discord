@@ -15,6 +15,8 @@ class SupportMessageAPIView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
         message = data.get("message")
+        if not message:
+            return Response(status=HTTPStatus.OK)
         chat = message.get("chat", {})
         if not chat:
             return Response(status=HTTPStatus.OK)
