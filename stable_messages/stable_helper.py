@@ -198,6 +198,9 @@ def check_remains(eng_text, user, chat_id):
 
 
 def handle_text_message(message: dict, translator):
+    chat = message.get("chat", {})
+    if not chat:
+        return "", "", "", ""
     chat_id = message.get("chat", {}).get("id")
     message_text = message.get("text") or message.get("caption")
     if not message_text:
