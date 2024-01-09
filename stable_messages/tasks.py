@@ -410,7 +410,7 @@ def check_not_sent_messages():
             message.save()
 
 
-# @shared_task
+@shared_task
 def send_message_to_stable(user_id, eng_text, message_id):
     stable_settings = StableSettings.get_solo()
     message = StableMessage.objects.filter(id=message_id).first()
