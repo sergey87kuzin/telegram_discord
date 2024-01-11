@@ -380,7 +380,7 @@ def check_not_sent_messages():
         stable_request_id__isnull=False,
         single_image__isnull=True,
         answer_sent=False
-    )
+    ).exclude(stable_request_id="")
     for message in not_sent_messages:
         fetch_url = f"https://stablediffusionapi.com/api/v3/fetch/{message.stable_request_id}"
         headers = {'Content-Type': 'application/json'}
@@ -389,12 +389,20 @@ def check_not_sent_messages():
             return
         response = requests.post(url=fetch_url, headers=headers, data=json.dumps({"key": stable_account.api_key}))
         if response_data := response.json():
+            if response_data == {"message": ""}:
+                user = message.user
+                user.remain_messages += 1
+                user.save()
+                message.answer_sent = True
             if response_data.get("status") in ("error", "failed") or "error_id" in response_data:
                 stable_bot.send_message(
                     chat_id=message.telegram_chat_id,
                     text=f"<pre>❌Ошибка генерации\n✅ вам добавлена 1 генерация, отправьте запрос заново\n{message.initial_text}</pre>",
                     parse_mode="HTML"
                 )
+                user = message.user
+                user.remain_messages += 1
+                user.save()
                 message.answer_sent = True
             if response_data.get("status") == "success":
                 output = response_data.get("output")
