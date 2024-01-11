@@ -4,6 +4,7 @@ from random import randint
 import requests
 from celery import shared_task
 from django.conf import settings
+from django.db.models import Q
 from django.urls import reverse_lazy
 from telebot import types
 
@@ -378,9 +379,8 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
 def check_not_sent_messages():
     not_sent_messages = StableMessage.objects.filter(
         stable_request_id__isnull=False,
-        single_image__isnull=True,
         answer_sent=False
-    ).exclude(stable_request_id="")
+    ).filter(Q(single_image__isnull=True) | Q(single_image="")).exclude(stable_request_id="")
     for message in not_sent_messages:
         fetch_url = f"https://stablediffusionapi.com/api/v3/fetch/{message.stable_request_id}"
         headers = {'Content-Type': 'application/json'}
