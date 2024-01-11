@@ -42,6 +42,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "stable_messages.tasks.check_not_sent_messages",
         "schedule": timedelta(minutes=10),
         "options": {"queue": "telegram"},
+    },
+    "resend_messages": {
+        "task": "stable_messages.tasks.resend_messages",
+        "schedule": crontab(minute=30, hour=3),
+        "options": {"queue": "telegram1"},
     }
     # "send_discord_answers": {
     #     "task": "discord_messages.tasks.send_messages_to_telegram",
