@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from random import randint
 
 import requests
@@ -6,6 +7,7 @@ from celery import shared_task
 from django.conf import settings
 from django.db.models import Q
 from django.urls import reverse_lazy
+from django.utils import timezone
 from telebot import types
 
 from discord_messages.telegram_helper import bot as stable_bot
@@ -503,3 +505,17 @@ def send_message_to_stable_3(user_id, eng_text, message_id):
 @shared_task
 def send_message_to_stable_4(user_id, eng_text, message_id):
     send_message_to_stable(user_id, eng_text, message_id)
+
+
+@shared_task
+def resend_messages():
+    not_sent_messages = StableMessage.objects.filter(
+        eng_text__startswith="button_",
+        answer_sent=False,
+        created_at__lt=timezone.now() - timedelta(hours=1)
+    ).filter(Q(stable_request_id="") | Q(stable_request_id__isnull=True))
+    for message in not_sent_messages:
+        if message.message_type == StableMessageTypeChoices.UPSCALED:
+            send_upscale_to_stable(message.id)
+        elif message.message_type == StableMessageTypeChoices.VARY:
+            send_vary_to_stable(message.id)
