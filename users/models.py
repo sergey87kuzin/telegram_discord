@@ -21,6 +21,7 @@ class Style(models.Model):
 
 
 class CustomSettings(models.Model):
+    name = models.CharField("Название настроек", max_length=128, default="Какие-то настройки")
     model_id = models.CharField(
         "Номер модели",
         max_length=256,
@@ -49,6 +50,9 @@ class CustomSettings(models.Model):
     class Meta:
         verbose_name = "Кастомные настройки для пользователя"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class User(AbstractUser):
