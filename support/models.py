@@ -7,6 +7,7 @@ class SupportMessage(models.Model):
     telegram_message_id = models.CharField("ИД сообщения телеграм", max_length=128, blank=True, null=True)
     answer_to_id = models.CharField("ИД сообщения, на которое отвечаем", max_length=128, blank=True, null=True)
     message_text = models.CharField("Текст сообщения", max_length=2048, blank=True, null=True)
+    image = models.CharField("ИД картинки, прикрепленной к сообщению", max_length=1024, blank=True, null=True)
     answered = models.BooleanField("Отвечено", default=False)
 
     class Meta:

@@ -34,12 +34,16 @@ class SupportMessageAPIView(APIView):
             user = User.objects.filter(username=username[1:]).first()
             if user:
                 answer_to_id = user.chat_id
+        photo_id = None
+        if photos := message.get("photo"):
+            photo_id = photos[-1].get("file_id")
         support_message = SupportMessage.objects.create(
             telegram_username=telegram_username,
             message_text=message_text,
             telegram_chat_id=chat_id,
             telegram_message_id=message.get("id"),
-            answer_to_id=answer_to_id
+            answer_to_id=answer_to_id,
+            image=photo_id
         )
         if str(chat_id) in settings.ADMIN_CHAT_IDS:
             if answer_to_id:
@@ -47,12 +51,16 @@ class SupportMessageAPIView(APIView):
                     chat_id=answer_to_id,
                     text=message_text
                 )
+                if photo_id:
+                    support_bot.send_photo(chat_id=answer_to_id, photo=photo_id)
         else:
             for chat_id in settings.ADMIN_CHAT_IDS:
                 support_bot.send_message(
                     chat_id=chat_id,
                     text=f"@{telegram_username}: {message_text}"
                 )
+                if photo_id:
+                    support_bot.send_photo(chat_id=chat_id, photo=photo_id)
             support_message.answered = True
             support_message.save()
         return Response(status=HTTPStatus.OK)
