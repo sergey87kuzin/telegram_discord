@@ -72,6 +72,7 @@ def send_vary_to_stable(created_message_id):
     stable_settings = StableSettings.get_solo()
     controlnet_model = stable_settings.controlnet_model
     controlnet_type = stable_settings.controlnet_type
+    controlnet_conditioning_scale = stable_settings.controlnet_conditioning_scale
     num_inference_steps = stable_settings.vary_num_inference_steps or "31"
     guidance_scale = stable_settings.vary_guidance_scale or 7.5
     strength = stable_settings.vary_strength or 0.7
@@ -80,6 +81,7 @@ def send_vary_to_stable(created_message_id):
     if custom_settings := stable_message.user.custom_settings:
         controlnet_model = custom_settings.controlnet_model or controlnet_model
         controlnet_type = custom_settings.controlnet_type or controlnet_type
+        controlnet_conditioning_scale = custom_settings.controlnet_conditioning_scale or controlnet_conditioning_scale
         num_inference_steps = custom_settings.vary_num_inference_steps or num_inference_steps
         guidance_scale = custom_settings.vary_guidance_scale or guidance_scale
         strength = custom_settings.vary_strength or strength
@@ -95,6 +97,7 @@ def send_vary_to_stable(created_message_id):
             "negative_prompt": negative_prompt,
             "controlnet_model": controlnet_model,
             "controlnet_type": controlnet_type,
+            "controlnet_conditioning_scale": controlnet_conditioning_scale,
             "init_image": stable_message.first_image,
             "control_image": stable_message.first_image,
             "mask_image": stable_message.first_image,
@@ -103,7 +106,7 @@ def send_vary_to_stable(created_message_id):
             "samples": "4",
             "num_inference_steps": num_inference_steps,
             "safety_checker": "yes",
-            "enhance_prompt": "yes",
+            "enhance_prompt": "no",
             "guidance_scale": guidance_scale,
             "strength": strength,
             "seed": seed,
@@ -497,6 +500,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "num_inference_steps": num_inference_steps,
         "seed": str(seed),
         "guidance_scale": guidance_scale,
+        "enhance_prompt": "no",
         "safety_checker": "no",
         "multi_lingual": "no",
         "panorama": "no",

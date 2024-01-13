@@ -46,6 +46,7 @@ class CustomSettings(models.Model):
     vary_strength = models.FloatField("Вариации сила картинки", blank=True, null=True)
     controlnet_model = models.CharField("controlnet_model", max_length=256, blank=True, null=True)
     controlnet_type = models.CharField("controlnet_type", max_length=256, blank=True, null=True)
+    controlnet_conditioning_scale = models.FloatField("Шкала контролнет", blank=True, null=True)
 
     class Meta:
         verbose_name = "Кастомные настройки для пользователя"
