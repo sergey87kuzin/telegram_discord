@@ -397,11 +397,14 @@ def check_not_sent_messages():
                 user.save()
                 message.answer_sent = True
             if response_data.get("status") in ("error", "failed") or "error_id" in response_data:
-                stable_bot.send_message(
-                    chat_id=message.telegram_chat_id,
-                    text=f"<pre>❌Ошибка генерации\n✅ вам добавлена 1 генерация, отправьте запрос заново\n{message.initial_text}</pre>",
-                    parse_mode="HTML"
-                )
+                try:
+                    stable_bot.send_message(
+                        chat_id=message.telegram_chat_id,
+                        text=f"<pre>❌Ошибка генерации\n✅ вам добавлена 1 генерация, отправьте запрос заново\n{message.initial_text}</pre>",
+                        parse_mode="HTML"
+                    )
+                except Exception:
+                    pass
                 user = message.user
                 user.remain_messages += 1
                 user.save()

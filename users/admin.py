@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from bot_config.models import SiteSettings
 from discord_messages.telegram_helper import bot
-from users.models import User, Style
+from users.models import User, Style, CustomSettings
 
 
 class PaidFilter(SimpleListFilter):
@@ -50,7 +50,8 @@ class UserAdmin(BaseUserAdmin):
             "account",
             "stable_account",
             "preset",
-            "style"
+            "style",
+            "custom_settings"
         )}),
     )
     ordering = ["-id"]
@@ -76,6 +77,11 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Style)
 class StyleAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(CustomSettings)
+class CustomSettingsAdmin(admin.ModelAdmin):
     pass
 
 
