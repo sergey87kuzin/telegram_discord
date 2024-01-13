@@ -47,11 +47,14 @@ def get_user_prompts(user_id, eng_text):
         negative = ""
     if style := user.style:
         positive_prompt = style.positive_prompt.format(prompt=positive)
-        negative_prompt = negative + style.negative_prompt
+        negative_prompt = f"{negative} {style.negative_prompt}"
+    elif custom_settings := user.custom_settings:
+        positive_prompt = custom_settings.positive_prompt.format(prompt=positive)
+        negative_prompt = f"{negative} {custom_settings.negative_prompt}"
     else:
         stable_settings = StableSettings.get_solo()
-        positive_prompt = positive + stable_settings.positive_prompt
-        negative_prompt = negative + stable_settings.negative_prompt
+        positive_prompt = f"{positive} {stable_settings.positive_prompt}"
+        negative_prompt = f"{negative} {stable_settings.negative_prompt}"
     return positive_prompt, negative_prompt
 
 
@@ -65,31 +68,48 @@ def send_vary_to_stable(created_message_id):
     positive_prompt, negative_prompt = get_user_prompts(stable_message.user_id, text)
     seed = randint(0, 16000000)
     stable_message.seed = seed
+
+    stable_settings = StableSettings.get_solo()
+    controlnet_model = stable_settings.controlnet_model
+    controlnet_type = stable_settings.controlnet_type
+    num_inference_steps = stable_settings.vary_num_inference_steps or "31"
+    guidance_scale = stable_settings.vary_guidance_scale or 7.5
+    strength = stable_settings.vary_strength or 0.7
+    lora_model = stable_settings.lora_model
+    lora_strength = stable_settings.lora_strength
+    if custom_settings := stable_message.user.custom_settings:
+        controlnet_model = custom_settings.controlnet_model or controlnet_model
+        controlnet_type = custom_settings.controlnet_type or controlnet_type
+        num_inference_steps = custom_settings.vary_num_inference_steps or num_inference_steps
+        guidance_scale = custom_settings.vary_guidance_scale or guidance_scale
+        strength = custom_settings.vary_strength or strength
+        lora_model = custom_settings.lora_model or lora_model
+        lora_strength = custom_settings.lora_strength or lora_strength
+
     vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
     headers = {'Content-Type': 'application/json'}
-    stable_settings = StableSettings.get_solo()
     data = json.dumps(
         {
             "key": stable_account.api_key,
             "prompt": positive_prompt,
             "negative_prompt": negative_prompt,
-            "controlnet_model": stable_settings.controlnet_model,
-            "controlnet_type": stable_settings.controlnet_type,
+            "controlnet_model": controlnet_model,
+            "controlnet_type": controlnet_type,
             "init_image": stable_message.first_image,
             "control_image": stable_message.first_image,
             "mask_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
             "samples": "4",
-            "num_inference_steps": stable_settings.vary_num_inference_steps or "31",
+            "num_inference_steps": num_inference_steps,
             "safety_checker": "yes",
             "enhance_prompt": "yes",
-            "guidance_scale": stable_settings.vary_guidance_scale or 7.5,
-            "strength": stable_settings.vary_strength or 0.7,
+            "guidance_scale": guidance_scale,
+            "strength": strength,
             "seed": seed,
             "base64": "no",
-            "lora_model": stable_settings.lora_model,
-            "lora_strength": stable_settings.lora_strength,
+            "lora_model": lora_model,
+            "lora_strength": lora_strength,
             "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
             "track_id": stable_message.id
         }
@@ -430,6 +450,28 @@ def send_message_to_stable(user_id, eng_text, message_id):
     stable_account = StableAccount.objects.filter(stable_users=user_id).first()
     if not stable_account:
         return
+
+    custom_settings = message.user.custom_settings
+    model_id = stable_settings.model_id or "juggernaut-xl"
+    num_inference_steps = stable_settings.num_inference_steps or "31"
+    guidance_scale = stable_settings.guidance_scale or 7
+    sampling_method = stable_settings.sampling_method or "euler"
+    algorithm_type = stable_settings.algorithm_type or ""
+    scheduler = stable_settings.scheduler or "DPMSolverMultistepScheduler"
+    embeddings_models = stable_settings.embeddings_model or None
+    lora_model = stable_settings.lora_model
+    lora_strength = stable_settings.lora_strength
+    if custom_settings:
+        model_id = custom_settings.model_id or model_id
+        num_inference_steps = custom_settings.num_inference_steps or num_inference_steps
+        guidance_scale = custom_settings.guidance_scale or guidance_scale
+        sampling_method = custom_settings.sampling_method or sampling_method
+        algorithm_type = custom_settings.algorithm_type
+        scheduler = custom_settings.scheduler or scheduler
+        embeddings_models = custom_settings.embeddings_model or embeddings_models
+        lora_model = custom_settings.lora_model or lora_model
+        lora_strength = custom_settings.lora_strength or lora_strength
+
     scale = ""
     if "--ar " in eng_text:
         scale = eng_text.split("--ar ")[-1]
@@ -446,26 +488,26 @@ def send_message_to_stable(user_id, eng_text, message_id):
     }
     data = json.dumps({
         "key": stable_account.api_key,
-        "model_id": stable_settings.model_id or "juggernaut-xl",
+        "model_id": model_id,
         "prompt": positive_prompt,
         "negative_prompt": negative_prompt,
         "width": width,
         "height": height,
         "samples": "4",
-        "num_inference_steps": stable_settings.num_inference_steps or "31",
+        "num_inference_steps": num_inference_steps,
         "seed": str(seed),
-        "guidance_scale": stable_settings.guidance_scale or 7,
+        "guidance_scale": guidance_scale,
         "safety_checker": "no",
         "multi_lingual": "no",
         "panorama": "no",
         "self_attention": "yes",
         "upscale": "no",
-        "lora_model": stable_settings.lora_model,
-        "lora_strength": stable_settings.lora_strength,
-        "sampling_method": stable_settings.sampling_method or "euler",
-        "algorithm_type": stable_settings.algorithm_type or "",
-        "scheduler": stable_settings.scheduler or "DPMSolverMultistepScheduler",
-        "embeddings_model": stable_settings.embeddings_model or None,
+        "lora_model": lora_model,
+        "lora_strength": lora_strength,
+        "sampling_method": sampling_method,
+        "algorithm_type": algorithm_type,
+        "scheduler": scheduler,
+        "embeddings_model": embeddings_models,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
         "track_id": message_id,
         "tomesd": "yes",
