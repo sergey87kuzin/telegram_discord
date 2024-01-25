@@ -10,6 +10,7 @@ from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import bot as stable_bot
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler, style_handler
 from stable_messages.models import StableMessage
+from .ban_list import BAN_LIST
 from .choices import StableMessageTypeChoices, SCALES
 from .tasks import send_upscale_to_stable, send_zoom_to_stable, send_vary_to_stable, handle_image_message, \
     send_message_to_stable
@@ -202,6 +203,8 @@ def handle_text_message(message: dict, translator):
     if not chat:
         return "", "", "", ""
     chat_id = message.get("chat", {}).get("id")
+    if chat_id in BAN_LIST:
+        return "", "", "", ""
     message_text = message.get("text") or message.get("caption")
     if not message_text:
         stable_bot.send_message(
@@ -275,6 +278,8 @@ def handle_telegram_callback(message_data: dict):
         button_data = message_data.get("callback_query")
         if button_data:
             chat_id = button_data.get("from", {}).get("id")
+            if chat_id in BAN_LIST:
+                return "", "", ""
             message_text = button_data.get("data")
             if StableMessage.objects.filter(eng_text=message_text).exists():
                 stable_bot.send_message(chat_id=chat_id, text="Вы уже нажимали на эту кнопку)")
