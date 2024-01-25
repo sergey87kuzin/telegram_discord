@@ -17,13 +17,16 @@ class FreeFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "0":
-            return queryset.filter(user__remain_paid_messages=0)
+            return queryset.filter(
+                user__remain_paid_messages=0,
+                user__date_of_payment__isnull=True
+            )
 
 
 @admin.register(StableMessage)
 class StableMessageAdmin(admin.ModelAdmin):
     search_fields = ("initial_text", "eng_text", "user__username", "stable_request_id")
-    list_filter = ("user", FreeFilter)
+    list_filter = (FreeFilter,)
     list_display = (
         "initial_text",
         "eng_text",
