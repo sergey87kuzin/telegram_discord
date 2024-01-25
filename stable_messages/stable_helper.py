@@ -181,7 +181,7 @@ def check_remains(eng_text, user, chat_id):
                     chat_id=chat_id,
                     text="Пожалуйста, оплатите доступ к боту",
                 )
-                return "", "", ""
+                return True
         if user.remain_paid_messages > 0:
             user.remain_paid_messages -= 1
             user.save()
