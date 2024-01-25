@@ -5,8 +5,7 @@ from orders.models import Order
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    search_fields = ("user", "created_at")
-    list_filter = ("user", "created_at")
+    search_fields = ("user__username", "created_at")
     list_display = (
         "id",
         "user",
