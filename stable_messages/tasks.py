@@ -342,6 +342,30 @@ def send_stable_messages_to_telegram(account_id: int):
             send_zoomed_message(message)
 
 
+def send_stable_messages_robot():
+    time.sleep(0.2)
+    messages_to_send = StableMessage.objects.filter(
+        answer_sent=False,
+        single_image__icontains=".",
+        user__account_id=5
+    ).order_by("id").distinct("id")[:20]
+    for message in messages_to_send:
+        urls_in_answer = [message.initial_text, message.single_image]
+        try:
+            if message.second_image:
+                urls_in_answer.append(message.second_image)
+                urls_in_answer.append(message.third_image)
+                urls_in_answer.append(message.fourth_image)
+        except Exception:
+            print("single_image")
+        result_text = "\n".join(urls_in_answer)
+        stable_bot.send_message(
+            chat_id=message.telegram_chat_id,
+            text=result_text,
+            parse_mode="HTML"
+        )
+
+
 @shared_task(time_limit=360)
 def send_stable_messages_to_telegram_1():
     send_stable_messages_to_telegram(account_id=1)
@@ -360,6 +384,7 @@ def send_stable_messages_to_telegram_3():
 @shared_task(time_limit=360)
 def send_stable_messages_to_telegram_4():
     send_stable_messages_to_telegram(account_id=4)
+    send_stable_messages_robot()
 
 
 def get_sizes(scale):
