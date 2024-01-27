@@ -12,7 +12,7 @@ from telebot import types
 from bot_config.models import SiteSettings
 from discord_messages.choices import DiscordTypes
 from discord_messages.constants import INFO_TEXT, PRESET_INFO_TEXT, STYLE_INFO_TEXT, MENU_INFORMATION_TEXT, \
-    SUPPORT_TEXT, PASSWORD_TEXT
+    SUPPORT_TEXT, PASSWORD_TEXT, PAYMENT_TEXT
 from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord
@@ -281,6 +281,7 @@ def handle_command(message):
         bot.send_message(chat_id, text="@ai_stocker_help_bot")
         return
     elif message_text == "/payment":
+        bot.send_message(chat_id, text=PAYMENT_TEXT, parse_mode="HTML")
         bot.send_message(chat_id, text=f"{settings.SITE_DOMAIN}/payments-page/")
         return
     elif message_text == "/lessons":
