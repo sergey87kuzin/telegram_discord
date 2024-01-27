@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import timedelta
 from random import randint
 
@@ -324,6 +325,7 @@ def send_zoomed_message(message):
 
 # @shared_task(time_limit=360)
 def send_stable_messages_to_telegram(account_id: int):
+    time.sleep(0.2)
     messages_to_send = StableMessage.objects.filter(
         answer_sent=False,
         single_image__icontains=".",
