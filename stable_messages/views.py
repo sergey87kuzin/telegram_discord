@@ -26,7 +26,7 @@ class GetTelegramCallback(APIView):
                 send_message_to_stable_1.apply_async([user.id, eng_text, message_id], queue="telegram1")
             elif user.account.queue_number == 1:
                 send_message_to_stable_2.apply_async([user.id, eng_text, message_id], queue="telegram2")
-            elif user.account.queue_number == 2:
+            elif user.account.queue_number in (2, 5):
                 send_message_to_stable_3.apply_async([user.id, eng_text, message_id], queue="telegram3")
             elif user.account.queue_number == 3:
                 send_message_to_stable_4.apply_async([user.id, eng_text, message_id], queue="telegram4")
