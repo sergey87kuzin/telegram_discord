@@ -350,7 +350,6 @@ def send_stable_messages_to_telegram_1():
 @shared_task(time_limit=360)
 def send_stable_messages_to_telegram_2():
     send_stable_messages_to_telegram(account_id=2)
-    send_stable_messages_to_telegram(account_id=5)
 
 
 @shared_task(time_limit=360)
