@@ -364,6 +364,8 @@ def send_stable_messages_robot():
             text=result_text,
             parse_mode="HTML"
         )
+        message.answer_sent = True
+        message.save()
 
 
 @shared_task(time_limit=360)
