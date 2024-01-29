@@ -65,6 +65,7 @@ class User(AbstractUser):
     is_active = models.BooleanField("Telegram подтвержден", default=False)
     remain_messages = models.PositiveIntegerField("Оставшиеся генерации", default=10)
     remain_paid_messages = models.PositiveIntegerField("Оставшиеся платные генерации", default=0)
+    is_test_user = models.BooleanField("Тестовый пользователь", default=False)
     account = models.ForeignKey(
         DiscordAccount,
         on_delete=models.SET_NULL,

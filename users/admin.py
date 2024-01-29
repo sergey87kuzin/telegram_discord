@@ -47,6 +47,7 @@ class UserAdmin(BaseUserAdmin):
             "remain_messages",
             "remain_paid_messages",
             "is_active",
+            "is_test_user",
             "account",
             "stable_account",
             "preset",
