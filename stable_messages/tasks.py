@@ -476,7 +476,7 @@ def check_not_sent_messages():
 
 
 @shared_task
-def send_message_to_stable(user_id, eng_text, message_id):
+def send_message_to_stable(user_id, eng_text, message_id, count: str = "4"):
     stable_settings = StableSettings.get_solo()
     message = StableMessage.objects.filter(id=message_id).first()
     stable_account = StableAccount.objects.filter(stable_users=user_id).first()
@@ -525,7 +525,7 @@ def send_message_to_stable(user_id, eng_text, message_id):
         "negative_prompt": negative_prompt,
         "width": width,
         "height": height,
-        "samples": "4",
+        "samples": count,
         "num_inference_steps": num_inference_steps,
         "seed": str(seed),
         "guidance_scale": guidance_scale,

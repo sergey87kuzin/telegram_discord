@@ -1,5 +1,6 @@
 import logging
 import re
+from datetime import timedelta
 
 import requests
 from deep_translator import GoogleTranslator
@@ -281,7 +282,10 @@ def handle_telegram_callback(message_data: dict):
             if chat_id in BAN_LIST:
                 return "", "", ""
             message_text = button_data.get("data")
-            if StableMessage.objects.filter(eng_text=message_text).exists():
+            if StableMessage.objects.filter(
+                eng_text=message_text,
+                created_at__gt=now() - timedelta(minutes=1)
+            ).exists():
                 stable_bot.send_message(chat_id=chat_id, text="Вы уже нажимали на эту кнопку)")
                 return "", "", ""
             chat_username = button_data.get("from", {}).get("username")
@@ -355,11 +359,15 @@ def handle_telegram_callback(message_data: dict):
     if not eng_text or not check_remains(eng_text, user, chat_id):
         return "", "", ""
     try:
+        message_type = StableMessageTypeChoices.FIRST
+        if user.is_test_user:
+            message_type = StableMessageTypeChoices.DOUBLE
         created_message = StableMessage.objects.create(
             initial_text=message_text,
             eng_text=eng_text,
             telegram_chat_id=chat_id,
             user=user,
+            message_type=message_type
         )
     except Exception:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")
