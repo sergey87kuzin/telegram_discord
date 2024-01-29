@@ -45,7 +45,6 @@ class GetStableCallback(APIView):
         message_id = data.get("track_id")
         if images and data.get("status") == "success":
             message = StableMessage.objects.filter(Q(id=message_id) | Q(stable_request_id=data.get("id"))).first()
-            message.single_image = images[0]
             user = message.user
             if user.is_test_user and message.message_type == StableMessageTypeChoices.DOUBLE:
                 message.first_image = images[0]
@@ -54,6 +53,7 @@ class GetStableCallback(APIView):
                 message.refresh_from_db()
                 send_vary_to_stable.apply_async([message.id], countdown=3)
                 return Response(status=HTTPStatus.OK)
+            message.single_image = images[0]
             try:
                 message.first_image = images[0]
                 message.second_image = images[1]
