@@ -235,14 +235,19 @@ def send_first_messages(message: StableMessage):
         buttons_u_markup = add_buttons_to_message(new_message.id)
         try:
             photo = requests.get(image)
-            stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+            stable_bot.send_photo(
+                chat_id=message.telegram_chat_id,
+                photo=photo.content,
+                caption=new_message.initial_text,
+                reply_markup=buttons_u_markup
+            )
         except Exception:
             stable_bot.send_message(
                 message.telegram_chat_id,
                 text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
                 parse_mode="HTML"
             )
-        stable_bot.send_message(message.telegram_chat_id, text=new_message.initial_text, reply_markup=buttons_u_markup)
+            stable_bot.send_message(message.telegram_chat_id, text=new_message.initial_text, reply_markup=buttons_u_markup)
     message.answer_sent = True
     message.save()
 
@@ -284,21 +289,26 @@ def send_varied_message(message):
             seed=message.seed
         )
         new_message.refresh_from_db()
+        markup = add_buttons_to_message(new_message.id)
         try:
             photo = requests.get(image)
-            stable_bot.send_photo(chat_id=message.telegram_chat_id, photo=photo.content)
+            stable_bot.send_photo(
+                chat_id=message.telegram_chat_id,
+                photo=photo.content,
+                caption=f"Вариация: {message.initial_text}",
+                reply_markup=markup
+            )
         except Exception:
             stable_bot.send_message(
                 message.telegram_chat_id,
                 text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
                 parse_mode="HTML"
             )
-        markup = add_buttons_to_message(new_message.id)
-        stable_bot.send_message(
-            chat_id=message.telegram_chat_id,
-            text=f"Вариация: {message.initial_text}",
-            reply_markup=markup
-        )
+            stable_bot.send_message(
+                chat_id=message.telegram_chat_id,
+                text=f"Вариация: {message.initial_text}",
+                reply_markup=markup
+            )
     message.answer_sent = True
     message.save()
 
