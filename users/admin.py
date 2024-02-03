@@ -83,7 +83,15 @@ class StyleAdmin(admin.ModelAdmin):
 
 @admin.register(CustomSettings)
 class CustomSettingsAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ["name"]
+    actions = ["make_copy"]
+
+    def make_copy(self, request, queryset):
+        new_settings = queryset.first()
+        new_settings.pk = None
+        new_settings.save()
+
+    make_copy.short_description = "Сделать копию"
 
 
 admin.site.register(User, UserAdmin)
