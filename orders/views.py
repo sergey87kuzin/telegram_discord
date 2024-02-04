@@ -85,6 +85,9 @@ class NotificationView(GenericAPIView):
         try:
             int(order_id)
         except Exception:
+            chat_ids = ["1792622682", "344637537"]
+            for chat_id in chat_ids:
+                payment_bot.send_message(chat_id, text="Новая оплата марафона")
             return Response(status=HTTPStatus.OK, data={})
         if order := Order.objects.filter(id=order_id).select_related("user").first():
             utc = pytz.UTC
