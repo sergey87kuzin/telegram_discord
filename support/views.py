@@ -30,7 +30,11 @@ class SupportMessageAPIView(APIView):
         telegram_username = message.get("chat", {}).get("username")
         answer_to_id = None
         if reply := message.get("reply_to_message"):
-            username = reply.get("text").split(":")[0]
+            username = "SergeyAKuzin"
+            if reply.get("text"):
+                username = reply.get("text").split(":")[0]
+            if reply.get("caption"):
+                username = reply.get("caption").split(":")[0]
             user = User.objects.filter(username=username[1:]).first()
             if user:
                 answer_to_id = user.chat_id
