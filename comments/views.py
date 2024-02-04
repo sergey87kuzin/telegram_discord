@@ -47,7 +47,7 @@ class CommentMessageAPIView(APIView):
             telegram_chat_id=chat_id,
             telegram_message_id=message.get("id"),
             answer_to_id=answer_to_id,
-            image=str(message)  # photo_id
+            image=photo_id
         )
         if str(chat_id) in settings.ADMIN_CHAT_IDS:
             if answer_to_id:
