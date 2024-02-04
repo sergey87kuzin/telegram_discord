@@ -220,7 +220,7 @@ CELERY_TASK_ROUTES = {
     "discord_messages.tasks.send_message_to_discord_task_1": {"queue": "messages1"},
     "discord_messages.tasks.send_message_to_discord_task_2": {"queue": "messages2"},
     "discord_messages.tasks.send_message_to_discord_task_3": {"queue": "messages3"},
-    "stable_messages.tasks.send_upscale_to_stable": {"queue": "messages1"},
+    "stable_messages.tasks.send_upscale_to_stable": {"queue": "telegram1"},
     "stable_messages.tasks.send_zoom_to_stable": {"queue": "messages1"},
     "stable_messages.tasks.send_stable_messages_to_telegram_1": {"queue": "telegram"},
     "stable_messages.tasks.send_stable_messages_to_telegram_2": {"queue": "messages"},
