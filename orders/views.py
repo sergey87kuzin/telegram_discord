@@ -82,6 +82,10 @@ class NotificationView(GenericAPIView):
         if request.data.get("payment_status") != "success":
             return Response(status=HTTPStatus.OK, data={})
         order_id = request.data.get("order_num")
+        try:
+            int(order_id)
+        except Exception:
+            return Response(status=HTTPStatus.OK, data={})
         if order := Order.objects.filter(id=order_id).select_related("user").first():
             utc = pytz.UTC
             order.payment_status = "Paid"
