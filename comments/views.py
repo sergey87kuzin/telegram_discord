@@ -2,10 +2,12 @@ from http import HTTPStatus
 
 import telebot
 from django.conf import settings
+from django.utils.timezone import now
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from comments.models import CommentMessage
+from courses.models import UserCourses
 from users.models import User
 
 comment_bot = telebot.TeleBot(settings.COMMENT_TELEGRAM_TOKEN)
@@ -28,6 +30,13 @@ class CommentMessageAPIView(APIView):
         if message_text == "/start":
             return Response(status=HTTPStatus.OK)
         telegram_username = message.get("chat", {}).get("username")
+        if not UserCourses.objects.filter(
+            user__username=telegram_username,
+            buying_date__lte=now(),
+            expires_at__gte=now()
+        ).exists():
+            comment_bot.send_message(chat_id=chat_id, text="У вас нет доступа к курсу")
+            return Response(status=HTTPStatus.OK)
         answer_to_id = None
         if reply := message.get("reply_to_message"):
             username = "SergeyAKuzin"
