@@ -25,6 +25,7 @@ urlpatterns = [
         name="alternative_payments"
     ),
     path("support/", include("support.urls")),
+    path("comments/", include("comments.urls")),
 ]
 
 
