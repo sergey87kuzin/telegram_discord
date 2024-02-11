@@ -17,6 +17,7 @@ from discord_messages.denied_words import check_words
 from discord_messages.discord_helper import send_u_line_button_command_to_discord, get_message_seed, \
     send_vary_strong_message, send_vary_soft_message, send_message_to_discord
 from discord_messages.models import ConfirmMessage, Message, DiscordAccount
+from orders.helper import create_order_from_menu
 from users.models import User, Style
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -290,6 +291,27 @@ def handle_command(message):
             text=f"{settings.SITE_DOMAIN}/courses/course/2/",
         )
         return
+    elif message_text == "/tariff200":
+        payment_url = create_order_from_menu("day", username)
+        if not payment_url:
+            bot.send_message(chat_id, text="Невозможно создать ссылку, обратитесь в техподдержку")
+            return
+        bot.send_message(
+            chat_id,
+            text=f"<a href='{payment_url}'>Ссылка на полату</a>",
+            parse_mode="HTML"
+        )
+        return
+    elif message_text == "/tariff1000":
+        payment_url = create_order_from_menu("month", username)
+        if not payment_url:
+            bot.send_message(chat_id, text="Невозможно создать ссылку, обратитесь в техподдержку")
+            return
+        bot.send_message(
+            chat_id,
+            text=f"<a href='{payment_url}'>Ссылка на полату</a>",
+            parse_mode="HTML"
+        )
     bot.send_message(chat_id, "Некорректное значение")
 
 
