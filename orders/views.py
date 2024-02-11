@@ -104,7 +104,9 @@ class NotificationView(GenericAPIView):
                     buying_date=datetime.now().replace(tzinfo=utc)
                 )
                 user.remain_paid_messages = order.message_count
-                user.save(update_fields=["remain_paid_messages"])
+                user.date_of_payment = datetime.now()
+                user.date_payment_expired = datetime.now() + timedelta(days=90)
+                user.save()
                 return Response(status=HTTPStatus.OK, data={})
             user.date_of_payment = datetime.now()
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
