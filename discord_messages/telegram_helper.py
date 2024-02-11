@@ -312,6 +312,7 @@ def handle_command(message):
             text=f"<a href='{payment_url}'>Ссылка на полату</a>",
             parse_mode="HTML"
         )
+        return
     bot.send_message(chat_id, "Некорректное значение")
 
 
