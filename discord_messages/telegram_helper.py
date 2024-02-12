@@ -298,7 +298,7 @@ def handle_command(message):
             return
         bot.send_message(
             chat_id,
-            text=f"<a href='{payment_url}'>Ссылка на полату</a>",
+            text=f"<a href='{payment_url}'>Ссылка на оплату</a>",
             parse_mode="HTML"
         )
         return
@@ -309,7 +309,7 @@ def handle_command(message):
             return
         bot.send_message(
             chat_id,
-            text=f"<a href='{payment_url}'>Ссылка на полату</a>",
+            text=f"<a href='{payment_url}'>Ссылка на оплату</a>",
             parse_mode="HTML"
         )
         return
