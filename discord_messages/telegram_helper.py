@@ -298,6 +298,12 @@ def handle_command(message):
             return
         bot.send_message(
             chat_id,
+            text="""<pre>Если у вас еще остались генерации, они сгорят при покупке новых.
+            Не покупайте новые генерации, пока не израсходуете предыдущие</pre>""",
+            parse_mode="HTML"
+        )
+        bot.send_message(
+            chat_id,
             text=f"<a href='{payment_url}'>Ссылка на оплату</a>",
             parse_mode="HTML"
         )
@@ -307,6 +313,12 @@ def handle_command(message):
         if not payment_url:
             bot.send_message(chat_id, text="Невозможно создать ссылку, обратитесь в техподдержку")
             return
+        bot.send_message(
+            chat_id,
+            text="""<pre>Если у вас еще остались генерации, они сгорят при покупке новых.
+                    Не покупайте новые генерации, пока не израсходуете предыдущие</pre>""",
+            parse_mode="HTML"
+        )
         bot.send_message(
             chat_id,
             text=f"<a href='{payment_url}'>Ссылка на оплату</a>",
