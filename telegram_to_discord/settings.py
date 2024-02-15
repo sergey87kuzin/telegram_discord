@@ -234,7 +234,7 @@ CELERY_TASK_ROUTES = {
     "stable_messages.tasks.send_message_to_stable_3": {"queue": "telegram3"},
     "stable_messages.tasks.send_message_to_stable_4": {"queue": "telegram4"},
     "stable_messages.tasks.send_message_to_stable": {"queue": "messages2"},
-    "stable_messages.tasks.resend_messages": {"queue": "telegram1"}
+    "stable_messages.tasks.resend_messages": {"queue": "messages1"}
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
