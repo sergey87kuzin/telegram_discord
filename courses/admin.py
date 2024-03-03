@@ -2,7 +2,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 
-from courses.models import Course, Lesson, UserCourses, LessonTextBlock, Review
+from courses.models import Course, Lesson, UserCourses, LessonTextBlock, Review, Prolongation
 
 
 class LessonTextBlockAdminForm(forms.ModelForm):
@@ -26,6 +26,11 @@ class LessonTextBlockAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Prolongation)
+class ProlongationAdmin(admin.ModelAdmin):
     pass
 
 
