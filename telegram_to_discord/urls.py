@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from courses.views import PaymentsPageView
 from discord_messages.views import IndexView
 
 urlpatterns = [
@@ -18,7 +19,7 @@ urlpatterns = [
     path("courses/", include("courses.urls")),
     path("stable/", include("stable_messages.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
-    path("payments-page/", TemplateView.as_view(template_name="payments_page.html"), name="payments"),
+    path("payments-page/", PaymentsPageView.as_view(), name="payments"),
     path(
         "alternative-payments/",
         TemplateView.as_view(template_name="alternative_payment_methods.html"),

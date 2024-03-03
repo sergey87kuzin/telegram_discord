@@ -29,6 +29,24 @@ class Course(models.Model):
         return self.name
 
 
+class Prolongation(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="prolongations",
+        verbose_name="Курс",
+    )
+    cost = models.PositiveIntegerField("Стоимость курса")
+    duration = models.PositiveIntegerField("Продолжительность курса, дней")
+
+    class Meta:
+        verbose_name = "Продление курса"
+        verbose_name_plural = "Продления курсов"
+
+    def __str__(self):
+        return f"Продление курса {self.course.name}"
+
+
 class Lesson(models.Model):
     course = models.ForeignKey(
         Course,
@@ -129,7 +147,7 @@ class UserCourses(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.buying_date = now()
-        self.expires_at = self.buying_date + timedelta(days=self.course.duration)
+            self.expires_at = self.buying_date + timedelta(days=self.course.duration)
         super().save(*args, **kwargs)
 
     # @property

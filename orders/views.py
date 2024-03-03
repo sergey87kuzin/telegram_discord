@@ -14,7 +14,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from bot_config.models import SiteSettings
-from courses.models import Course, UserCourses
+from courses.models import Course, UserCourses, Prolongation
 from orders.helper import create_prodamus_order_object
 from orders.models import Order
 
@@ -31,6 +31,7 @@ class CreateOrderView(generic.View):
             return redirect("index")
         term = request.GET.get("term")
         course = None
+        prolongation = None
         if term == "month":
             cost = site_settings.month_tariff_cost
             days = 30
@@ -45,7 +46,13 @@ class CreateOrderView(generic.View):
                 cost = course.cost
                 days = course.duration
                 message_count = site_settings.month_tariff_count
-        if not term and not course_id:
+        prolongation_id = request.GET.get("prolongation_id")
+        if prolongation_id:
+            if prolongation := Prolongation.objects.filter(id=prolongation_id).first():
+                cost = prolongation.cost
+                days = prolongation.duration
+                message_count = site_settings.month_tariff_count
+        if not term and not course_id and not prolongation:
             return redirect(reverse_lazy("index"))
 
         order = Order.objects.create(
@@ -57,6 +64,9 @@ class CreateOrderView(generic.View):
         if course:
             order.course_id = course.id
             order.save()
+        if prolongation:
+            order.prolongation_id = prolongation_id
+            order.save()
         order_string = create_prodamus_order_object(order)
         response = requests.get(
             url=settings.PAYMENT_URL + order_string,
@@ -65,6 +75,7 @@ class CreateOrderView(generic.View):
             },
         )
         order.payment_url = response.text
+        order.save()
         return redirect(response.text)
 
 
@@ -107,6 +118,21 @@ class NotificationView(GenericAPIView):
                 user.date_of_payment = datetime.now()
                 user.date_payment_expired = datetime.now() + timedelta(days=90)
                 user.save()
+                return Response(status=HTTPStatus.OK, data={})
+            if order.prolongation_id:
+                prolongation = Prolongation.objects.filter(id=order.prolongation_id).first()
+                course = UserCourses.objects.filter(
+                    user_id=order.user_id,
+                    course_id=prolongation.course_id,
+                ).first()
+                if not course:
+                    return Response(status=HTTPStatus.OK, data={})
+                user.remain_paid_messages = order.message_count
+                user.date_of_payment = datetime.now()
+                user.date_payment_expired = datetime.now() + timedelta(days=prolongation.duration)
+                user.save()
+                course.expires_at = datetime.now() + timedelta(days=prolongation.duration)
+                course.save()
                 return Response(status=HTTPStatus.OK, data={})
             user.date_of_payment = datetime.now()
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)

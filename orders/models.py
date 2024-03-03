@@ -1,6 +1,6 @@
 from django.db import models
 
-from courses.models import Course
+from courses.models import Course, Prolongation
 from users.models import User
 
 
@@ -31,6 +31,14 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         related_name="orders",
         verbose_name="Курс",
+        blank=True,
+        null=True
+    )
+    prolongation = models.ForeignKey(
+        Prolongation,
+        on_delete=models.SET_NULL,
+        related_name="orders",
+        verbose_name="Продление",
         blank=True,
         null=True
     )

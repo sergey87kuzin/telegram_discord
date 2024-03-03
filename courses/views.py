@@ -6,11 +6,11 @@ from django.db.models import Q, Case, When
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.timezone import now
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from courses.models import Course, UserCourses, Lesson, LessonTextBlock, Review
+from courses.models import Course, UserCourses, Lesson, LessonTextBlock, Review, Prolongation
 
 
 class CoursesListView(ListView):
@@ -175,3 +175,19 @@ class SendReview(APIView):
             user_id=data.get("user")
         )
         return Response(status=HTTPStatus.CREATED)
+
+
+class PaymentsPageView(TemplateView):
+    template_name = "payments_page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        if not user.is_authenticated:
+            return context
+        courses = Course.objects.filter(users__user=user)
+        prolongations = Prolongation.objects.filter(
+            course__in=courses
+        ).distinct()
+        context["prolongations"] = prolongations
+        return context
