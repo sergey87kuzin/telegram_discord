@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import generic
 
+from courses.models import UserCourses
 from users.models import User
 
 
@@ -31,6 +32,8 @@ class Profile(generic.DetailView):
             context["is_mobile"] = True
         else:
             context["is_mobile"] = False
+        if self.request.user.is_authenticated:
+            context["courses"] = UserCourses.objects.filter(user=self.request.user)
         return context
 
 

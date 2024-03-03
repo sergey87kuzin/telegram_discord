@@ -2,7 +2,9 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 
+from bot_config.models import SiteSettings
 from courses.models import Course, Lesson, UserCourses, LessonTextBlock, Review, Prolongation
+from discord_messages.telegram_helper import bot
 
 
 class LessonTextBlockAdminForm(forms.ModelForm):
@@ -71,3 +73,18 @@ class UserCoursesAdmin(admin.ModelAdmin):
         "buying_date",
         "expires_at",
     )
+    actions = ["send_message"]
+
+    def send_message(self, request, queryset):
+        site_settings = SiteSettings.get_solo()
+        for course in queryset:
+            if course.user.chat_id:
+                try:
+                    bot.send_message(
+                        chat_id=course.user.chat_id,
+                        text=site_settings.notice_message
+                    )
+                except Exception:
+                    pass
+
+    send_message.short_description = "Отправить сообщение"
