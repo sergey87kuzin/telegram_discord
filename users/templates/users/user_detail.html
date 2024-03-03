@@ -59,6 +59,13 @@
             КУРСЫ
         </div>
         <br><br>
+        {% for course in courses %}
+            <div class="btn col-12 dark-green-background" style="width:100%">
+                    <span class="black_text text_in_center">
+                        Ваш курс {{ course.course.name }} активен до {{ course.expires_at }}
+                    </span>
+            </div>
+        {% endfor %}
     </div>
 </div>
     {% else %}
