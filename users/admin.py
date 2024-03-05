@@ -55,7 +55,7 @@ class UserAdmin(BaseUserAdmin):
             "custom_settings"
         )}),
         ("Статус пользователя", {
-            "fields": ("is_staff",)
+            "fields": ("is_staff", "is_superuser")
         })
     )
     ordering = ["-id"]
