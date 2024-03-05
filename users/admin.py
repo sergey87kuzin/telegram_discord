@@ -54,6 +54,9 @@ class UserAdmin(BaseUserAdmin):
             "style",
             "custom_settings"
         )}),
+        ("Статус пользователя", {
+            "fields": ("is_staff",)
+        })
     )
     ordering = ["-id"]
     form = UserChangeForm
