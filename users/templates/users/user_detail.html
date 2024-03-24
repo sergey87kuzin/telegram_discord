@@ -95,6 +95,18 @@
         <div class="col-12 margin_from_top">
             <a class="btn dark-green-background" href="{% url 'orders:create' %}?term=month">Тариф 1000</a>
         </div>
+        <br><br>
+        <div style="text-align: center">
+            КУРСЫ
+        </div>
+        <br><br>
+        {% for course in courses %}
+            <div class="col-12 margin_from_top">
+                    <span class="btn black_text dark-green-background">
+                        Ваш курс {{ course.course.name }} активен до {{ course.expires_at }}
+                    </span>
+            </div>
+        {% endfor %}
         <div class="col-12 margin_from_top">
             <a href="{% url 'auth:logout' %}" class="btn dark-green-background" style="color: black;">Выход из аккаунта</a>
         </div>
