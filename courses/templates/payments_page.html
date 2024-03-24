@@ -33,7 +33,7 @@
                 </div>
                 {% for prolongation in prolongations %}
                     <div class="col margin_from_top">
-                        <span>Продление курса {{ prolongation.course.name }} на {{ prolongation.course.duration }} дней</span>
+                        <span>Продление курса {{ prolongation.course.name }} на {{ prolongation.duration }} дней</span>
                         <a class="green-grey-button" href="{% url 'orders:create' %}?prolongation_id={{ prolongation.id }}">Продлить</a>
                     </div>
                 {% endfor %}
