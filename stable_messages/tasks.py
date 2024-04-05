@@ -396,7 +396,7 @@ def send_stable_messages_to_telegram_3():
 @shared_task(time_limit=360)
 def send_stable_messages_to_telegram_4():
     send_stable_messages_to_telegram(account_id=4)
-    send_stable_messages_robot()
+    # send_stable_messages_robot()
 
 
 def get_sizes(scale):
@@ -424,6 +424,7 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
         scale = eng_text.split("--ar ")[-1]
     width, height = get_sizes(scale)
     seed = randint(0, 16000000)
+    new_endpoint = True in User.objects.filter(id=user_id).values_list("is_test_user", flat=True)
     created_message = StableMessage.objects.create(
         initial_text=eng_text,
         eng_text=eng_text,
@@ -433,10 +434,14 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
         message_type=StableMessageTypeChoices.FIRST,
         width=width,
         height=height,
-        seed=seed
+        seed=seed,
+        new_endpoint=new_endpoint
     )
     created_message.refresh_from_db()
-    send_vary_to_stable(created_message_id=created_message.id)
+    if new_endpoint:
+        send_vary_to_stable_new(created_message_id=created_message.id)
+    else:
+        send_vary_to_stable(created_message_id=created_message.id)
 
 
 @shared_task
@@ -447,6 +452,8 @@ def check_not_sent_messages():
     ).filter(Q(single_image__isnull=True) | Q(single_image="")).exclude(stable_request_id="")
     for message in not_sent_messages:
         fetch_url = f"https://stablediffusionapi.com/api/v3/fetch/{message.stable_request_id}"
+        if message.new_endpoint:
+            fetch_url = f"https://modelslab.com/api/v6/realtime/fetch/{message.stable_request_id}"
         headers = {'Content-Type': 'application/json'}
         stable_account = StableAccount.objects.filter(stable_users__id=message.user_id).first()
         if not stable_account:
@@ -606,4 +613,124 @@ def resend_messages():
         if message.message_type == StableMessageTypeChoices.UPSCALED:
             send_upscale_to_stable(message.id)
         elif message.message_type == StableMessageTypeChoices.VARY:
-            send_vary_to_stable(message.id)
+            if message.new_endpoint:
+                send_vary_to_stable_new(message.id)
+            else:
+                send_vary_to_stable(message.id)
+
+
+@shared_task
+def send_message_to_stable_new(user_id, eng_text, message_id, count: str = "4"):
+    message = StableMessage.objects.filter(id=message_id).first()
+    stable_account = StableAccount.objects.filter(stable_users=user_id).first()
+    if not stable_account:
+        return
+
+    custom_settings = message.user.custom_settings
+    enhance_style = ""
+    if custom_settings:
+        enhance_style = custom_settings.enhance_style
+    scale = ""
+    if "--ar " in eng_text:
+        scale = eng_text.split("--ar ")[-1]
+    width, height = get_sizes(scale)
+    seed = randint(0, 16000000)
+    message.width = width
+    message.height = height
+    message.seed = seed
+    message.save()
+    positive_prompt, negative_prompt = get_user_prompts(user_id, eng_text)
+    text_message_url = "https://modelslab.com/api/v6/realtime/text2img"
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = json.dumps({
+        "key": stable_account.api_key,
+        "prompt": positive_prompt,
+        "negative_prompt": negative_prompt,
+        "width": width,
+        "height": height,
+        "samples": count,
+        "seed": str(seed),
+        "enhance_prompt": False,
+        "safety_checker": False,
+        "instant_response": False,
+        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
+        "track_id": message_id,
+        "enhance_style": enhance_style
+    })
+
+    response = requests.post(url=text_message_url, headers=headers, data=data)
+    if response_data := response.json():
+        message.stable_request_id = response_data.get("id")
+        single_images = response_data.get("output")
+        try:
+            message.first_image = single_images[0]
+            message.second_image = single_images[1]
+            message.third_image = single_images[2]
+            message.fourth_image = single_images[3]
+        except Exception:
+            # todo решить, что делать, если фотки не пришли
+            print("no images")
+        message.save()
+    else:
+        stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка создания сообщения")
+
+
+@shared_task
+def send_vary_to_stable_new(created_message_id):
+    stable_message = StableMessage.objects.get(id=created_message_id)
+    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
+    if not stable_account:
+        return
+    text = stable_message.initial_text
+    positive_prompt, negative_prompt = get_user_prompts(stable_message.user_id, text)
+    seed = randint(0, 16000000)
+    stable_message.seed = seed
+
+    stable_settings = StableSettings.get_solo()
+    strength = stable_settings.vary_strength or 0.7
+    enhance_style = ""
+    if custom_settings := stable_message.user.custom_settings:
+        strength = custom_settings.vary_strength or strength
+        enhance_style = custom_settings.enhance_style
+
+    vary_image_url = "https://modelslab.com/api/v6/realtime/img2img"
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps(
+        {
+            "key": stable_account.api_key,
+            "prompt": positive_prompt,
+            "negative_prompt": negative_prompt,
+            "init_image": stable_message.single_image,  #.first_image,
+            "width": stable_message.width,
+            "height": stable_message.height,
+            "samples": "4",
+            "safety_checker": True,
+            "enhance_prompt": False,
+            "strength": strength,
+            "seed": seed,
+            "base64": False,
+            "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
+            "track_id": stable_message.id,
+            "enhance_style": enhance_style
+        }
+    )
+
+    response = requests.post(url=vary_image_url, headers=headers, data=data)
+    if response_data := response.json():
+        stable_message.stable_request_id = response_data.get("id")
+        if response_data.get("status") == "success":
+            stable_message.single_image = response_data.get("output")[0]
+            stable_message.first_image = response_data.get("output")[0]
+            stable_message.second_image = response_data.get("output")[1]
+            stable_message.third_image = response_data.get("output")[2]
+            stable_message.fourth_image = response_data.get("output")[3]
+        elif response_data.get("status") == "processing":
+            stable_message.first_image = response_data.get("future_links")[0]
+            stable_message.second_image = response_data.get("future_links")[1]
+            stable_message.third_image = response_data.get("future_links")[2]
+            stable_message.fourth_image = response_data.get("future_links")[3]
+        stable_message.save()
+        if response_data.get("status") == "error":
+            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")

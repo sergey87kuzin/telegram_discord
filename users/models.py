@@ -47,6 +47,7 @@ class CustomSettings(models.Model):
     controlnet_model = models.CharField("controlnet_model", max_length=256, blank=True, null=True)
     controlnet_type = models.CharField("controlnet_type", max_length=256, blank=True, null=True)
     controlnet_conditioning_scale = models.FloatField("Шкала контролнет", blank=True, null=True)
+    enhance_style = models.CharField("Дополнительный стиль", max_length=256, blank=True, null=True)
 
     class Meta:
         verbose_name = "Кастомные настройки для пользователя"
