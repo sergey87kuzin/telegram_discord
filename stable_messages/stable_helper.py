@@ -14,7 +14,7 @@ from stable_messages.models import StableMessage
 from .ban_list import BAN_LIST
 from .choices import StableMessageTypeChoices, SCALES
 from .tasks import send_upscale_to_stable, send_zoom_to_stable, send_vary_to_stable, handle_image_message, \
-    send_message_to_stable
+    send_message_to_stable, send_vary_to_stable_new
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -136,6 +136,7 @@ def handle_vary_button(message_text, chat_id):
     if not first_message:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при отдалении((")
         return
+    new_endpoint = True in User.objects.filter(id=first_message.user_id).values_list("is_test_user", flat=True)
     created_message = StableMessage.objects.create(
         initial_text=first_message.initial_text,
         eng_text=message_text,
@@ -145,10 +146,14 @@ def handle_vary_button(message_text, chat_id):
         message_type=StableMessageTypeChoices.VARY,
         width=first_message.width,
         height=first_message.height,
-        seed=first_message.seed
+        seed=first_message.seed,
+        new_endpoint=new_endpoint
     )
     created_message.refresh_from_db()
-    send_vary_to_stable.delay(created_message.id)
+    if new_endpoint:
+        send_vary_to_stable_new.delay(created_message.id)
+    else:
+        send_vary_to_stable.delay(created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
@@ -360,14 +365,17 @@ def handle_telegram_callback(message_data: dict):
         return "", "", ""
     try:
         message_type = StableMessageTypeChoices.FIRST
+        new_endpoint = False
         if user.is_test_user:
-            message_type = StableMessageTypeChoices.DOUBLE
+            # message_type = StableMessageTypeChoices.DOUBLE
+            new_endpoint = True
         created_message = StableMessage.objects.create(
             initial_text=message_text,
             eng_text=eng_text,
             telegram_chat_id=chat_id,
             user=user,
-            message_type=message_type
+            message_type=message_type,
+            new_endpoint=new_endpoint
         )
     except Exception:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")
