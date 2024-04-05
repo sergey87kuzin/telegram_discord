@@ -702,7 +702,7 @@ def send_vary_to_stable_new(created_message_id):
             "key": stable_account.api_key,
             "prompt": positive_prompt,
             "negative_prompt": negative_prompt,
-            "init_image": stable_message.single_image,  #.first_image,
+            "init_image": stable_message.first_image,
             "width": stable_message.width,
             "height": stable_message.height,
             "samples": "4",
