@@ -628,8 +628,10 @@ def send_message_to_stable_new(user_id, eng_text, message_id, count: str = "4"):
 
     custom_settings = message.user.custom_settings
     enhance_style = ""
+    enhance_prompt = False
     if custom_settings:
         enhance_style = custom_settings.enhance_style
+        enhance_prompt = True
     scale = ""
     if "--ar " in eng_text:
         scale = eng_text.split("--ar ")[-1]
@@ -652,7 +654,7 @@ def send_message_to_stable_new(user_id, eng_text, message_id, count: str = "4"):
         "height": height,
         "samples": count,
         "seed": str(seed),
-        "enhance_prompt": False,
+        "enhance_prompt": enhance_prompt,
         "safety_checker": False,
         "instant_response": False,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
@@ -691,9 +693,11 @@ def send_vary_to_stable_new(created_message_id):
     stable_settings = StableSettings.get_solo()
     strength = stable_settings.vary_strength or 0.7
     enhance_style = ""
+    enhance_prompt = False
     if custom_settings := stable_message.user.custom_settings:
         strength = custom_settings.vary_strength or strength
         enhance_style = custom_settings.enhance_style
+        enhance_prompt = True
 
     vary_image_url = "https://modelslab.com/api/v6/realtime/img2img"
     headers = {'Content-Type': 'application/json'}
@@ -707,7 +711,7 @@ def send_vary_to_stable_new(created_message_id):
             "height": stable_message.height,
             "samples": "4",
             "safety_checker": True,
-            "enhance_prompt": False,
+            "enhance_prompt": enhance_prompt,
             "strength": strength,
             "seed": seed,
             "base64": False,
