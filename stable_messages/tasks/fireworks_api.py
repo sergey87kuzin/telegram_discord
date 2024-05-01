@@ -57,4 +57,5 @@ def get_fireworks_generation(stable_message_id: int):
         raise Exception(str(response.json()))
 
     message.single_image = f"{settings.SITE_DOMAIN}{file_name}"
+    message.first_image = f"{settings.SITE_DOMAIN}{file_name}"
     message.save()
