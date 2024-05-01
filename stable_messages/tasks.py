@@ -29,8 +29,8 @@ def send_upscale_to_stable(created_message_id):
         "key": stable_account.api_key,
         "url": stable_message.first_image,
         "scale": 4,
-        "webhook": None,  # settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
-        "face_enhance": False
+        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
+        "face_enhance": True
     })
     response = requests.post(url=upscale_image_url, headers=headers, data=data)
     if response_data := response.json():
@@ -659,7 +659,7 @@ def send_message_to_stable_new(user_id, eng_text, message_id, count: str = "4"):
         "instant_response": False,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
         "track_id": message_id,
-        "enhance_style": enhance_style
+        "enhance_style": enhance_style,
     })
 
     response = requests.post(url=text_message_url, headers=headers, data=data)
