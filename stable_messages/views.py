@@ -39,8 +39,7 @@ class GetTelegramCallback(APIView):
 class GetTelegramCallbackForFireWorks(APIView):
     def post(self, request):
         logger.warning("get message")
-        # user, eng_text, message_id = handle_telegram_callback(request.data)
-        user, eng_text, message_id = 13, "some_text", 111
+        user, eng_text, message_id = handle_telegram_callback(request.data)
         if user and eng_text and message_id:
             get_fireworks_generation.delay(message_id)
         return Response(HTTPStatus.OK)
