@@ -230,6 +230,7 @@ CELERY_TASK_ROUTES = {
     "stable_messages.tasks.send_vary_to_stable_new": {"queue": "messages2"},
     "stable_messages.tasks.handle_image_message": {"queue": "messages"},
     "stable_messages.tasks.check_not_sent_messages": {"queue": "telegram"},
+    "stable_messages.tasks.get_fireworks_generation": {"queue": "telegram"},
     "stable_messages.tasks.send_message_to_stable_1": {"queue": "telegram1"},
     "stable_messages.tasks.send_message_to_stable_2": {"queue": "telegram2"},
     "stable_messages.tasks.send_message_to_stable_3": {"queue": "telegram3"},
@@ -247,6 +248,9 @@ LOGINAS_REDIRECT_URL = '/users'
 PAYMENT_URL = env.str("PAYMENT_URL")
 PRODAMUS_SYSTEM_CODE = env.str("PRODAMUS_SYSTEM_CODE")
 PRODAMUS_SECRET_KEY = env.str("PRODAMUS_SECRET_KEY")
+
+FIREWORKS_API_KEY = env.str("FIREWORKS_API_KEY")
+FIREWORKS_TELEGRAM_TOKEN = env.str("FIREWORKS_TELEGRAM_TOKEN")
 
 TECH_BOT_URL = env.str("TECH_BOT_URL")
 
