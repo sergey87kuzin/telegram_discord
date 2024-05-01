@@ -9,7 +9,7 @@ from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
 from .choices import StableMessageTypeChoices
 from .tasks import send_message_to_stable_1, send_message_to_stable_2, send_message_to_stable_3, \
-    send_message_to_stable_4, send_message_to_stable_new, send_vary_to_stable_new
+    send_message_to_stable_4, send_message_to_stable_new, send_vary_to_stable_new, get_fireworks_generation
 from stable_messages.stable_helper import handle_telegram_callback
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,14 @@ class GetTelegramCallback(APIView):
             elif user.account.queue_number == 3:
                 send_message_to_stable_4.apply_async([user.id, eng_text, message_id], queue="telegram4")
         return Response(HTTPStatus.OK)
+
+
+class GetTelegramCallbackForFireWorks(APIView):
+    def post(self, request):
+        logger.warning("get message")
+        user, eng_text, message_id = handle_telegram_callback(request.data)
+        if user and eng_text and message_id:
+            get_fireworks_generation.delay(message_id)
 
 
 class GetStableCallback(APIView):
