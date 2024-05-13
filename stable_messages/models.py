@@ -84,3 +84,26 @@ class StableSettings(SingletonModel):
     class Meta:
         verbose_name = "Настройки stable"
         verbose_name_plural = verbose_name
+
+
+class VideoMessages(models.Model):
+    telegram_chat_id = models.CharField("Номер чата телеграм", max_length=128)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="video_messages",
+        verbose_name="Автор",
+    )
+    request_id = models.CharField("ID запроса в fireworks", max_length=512, blank=True, null=True)
+    initial_image = models.CharField("Картинка-основа", max_length=512, blank=True, null=True)
+    video = models.CharField("Сгенерированное видео", max_length=512, blank=True, null=True)
+    successfully_generated = models.BooleanField("Успешно сгенерировано", default=False)
+    is_sent = models.BooleanField("Отправлено", default=False)
+    created_at = models.DateTimeField("Создано", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Видео сообщение"
+        verbose_name_plural = "Видео сообщения"
+
+    def __str__(self):
+        return f"Видео сообщение пользователя {self.user.username} от {self.created_at.strftime('mm-DD:HH-MM')}"

@@ -268,7 +268,8 @@ def handle_text_message(message: dict, translator):
     if user.preset and user.preset not in message_text and user.preset not in eng_text:
         message_text = message_text + user.preset
         eng_text = eng_text + user.preset
-    if photos := message.get("photo"):
+    photos = message.get("photo")
+    if photos:
         handle_image_message.delay(eng_text, chat_id, photos, chat_username, user.id)
         return "", "", "", ""
     return user, message_text, eng_text, chat_id

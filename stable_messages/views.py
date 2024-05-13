@@ -1,18 +1,22 @@
 import logging
 from http import HTTPStatus
 
+import telebot
+from django.conf import settings
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from discord_messages.telegram_helper import bot
 from stable_messages.models import StableMessage
+from users.models import User
+from .ban_list import BAN_LIST
 from .choices import StableMessageTypeChoices
 from .tasks import send_message_to_stable_1, send_message_to_stable_2, send_message_to_stable_3, \
-    send_message_to_stable_4, send_message_to_stable_new, send_vary_to_stable_new, get_fireworks_generation
+    send_message_to_stable_4, send_message_to_stable_new, send_vary_to_stable_new, create_video_from_image
 from stable_messages.stable_helper import handle_telegram_callback
 
 logger = logging.getLogger(__name__)
+bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
 
 
 class GetTelegramCallback(APIView):
@@ -39,9 +43,28 @@ class GetTelegramCallback(APIView):
 class GetTelegramCallbackForFireWorks(APIView):
     def post(self, request):
         logger.warning("get message")
-        user, eng_text, message_id = handle_telegram_callback(request.data)
-        if user and eng_text and message_id:
-            get_fireworks_generation.delay(message_id)
+        message = request.data.get("message")
+        chat = message.get("chat", {})
+        if not chat:
+            return "", "", "", ""
+        chat_id = message.get("chat", {}).get("id")
+        if chat_id in BAN_LIST:
+            return "", "", "", ""
+        message_text = message.get("text") or message.get("caption")
+        if message_text == "/start":
+            bot.send_message(chat_id, "Hi")
+            return Response(HTTPStatus.OK)
+        chat_username = message.get("chat", {}).get("username")
+        user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
+        if not user:
+            logger.warning(f"Не найден пользователь(, user = {chat_username}")
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы не зарегистрированы в приложении</pre>",
+                parse_mode="HTML"
+            )
+        photos = message.get("photo")
+        create_video_from_image(chat_id, photos, chat_username, user.id, message_text)
         return Response(HTTPStatus.OK)
 
 

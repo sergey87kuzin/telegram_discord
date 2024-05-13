@@ -47,6 +47,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "stable_messages.tasks.tasks.resend_messages",
         "schedule": timedelta(minutes=65),
         "options": {"queue": "telegram1"},
+    },
+    "fetch_videos": {
+        "task": "stable_messages.tasks.fireworks_api.fetch_video",
+        "schedule": timedelta(minutes=5),
+        "options": {"queue": "telegram"},
     }
     # "send_discord_answers": {
     #     "task": "discord_messages.tasks.send_messages_to_telegram",
