@@ -64,7 +64,7 @@ class GetTelegramCallbackForFireWorks(APIView):
                 parse_mode="HTML"
             )
         photos = message.get("photo")
-        create_video_from_image(chat_id, photos, chat_username, user.id, message_text)
+        create_video_from_image.delay(chat_id, photos, chat_username, user.id, message_text)
         return Response(HTTPStatus.OK)
 
 
