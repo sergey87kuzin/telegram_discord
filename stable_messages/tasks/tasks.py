@@ -342,14 +342,17 @@ def send_stable_messages_to_telegram(account_id: int):
         user__account_id=account_id
     ).order_by("id").distinct("id")[:20]
     for message in messages_to_send:
-        if message.message_type == StableMessageTypeChoices.FIRST:
-            send_first_messages(message)
-        elif message.message_type == StableMessageTypeChoices.UPSCALED:
-            send_upscaled_message(message)
-        elif message.message_type == StableMessageTypeChoices.VARY:
-            send_varied_message(message)
-        elif message.message_type == StableMessageTypeChoices.ZOOM:
-            send_zoomed_message(message)
+        try:
+            if message.message_type == StableMessageTypeChoices.FIRST:
+                send_first_messages(message)
+            elif message.message_type == StableMessageTypeChoices.UPSCALED:
+                send_upscaled_message(message)
+            elif message.message_type == StableMessageTypeChoices.VARY:
+                send_varied_message(message)
+            elif message.message_type == StableMessageTypeChoices.ZOOM:
+                send_zoomed_message(message)
+        except Exception:
+            pass
 
 
 def send_stable_messages_robot():
