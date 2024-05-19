@@ -35,12 +35,10 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         return
     image = Image.open(f"./media/messages/{file_name}")
     width, height = image.size
-    if width > height:
+    if width >= height:
         new_image = image.resize((1024, 576))
-    elif width < height:
-        new_image = image.resize((576, 1024))
     else:
-        new_image = image.resize((768, 768))
+        new_image = image.resize((576, 1024))
     new_file_name = f"{chat_username}{count}_new.{extension}"
     new_image.save(f"./media/messages/{new_file_name}")
     image_url = settings.SITE_DOMAIN + "/media/messages/" + new_file_name
@@ -108,7 +106,7 @@ def fetch_video():
             print("Generation in-progress, try again in 10 seconds.")
         elif response.status_code == 200:
             print("Generation complete!")
-            now_time = now().strftime("%d-%m_%H:%m:%S")
+            now_time = now().strftime("%d-%m_%H:%M:%S")
             with open(f"./media/videos/video{message.user.username}-{now_time}.mp4", 'wb') as file:
                 file.write(response.content)
                 message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{now_time}.mp4"
