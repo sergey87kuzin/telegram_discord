@@ -108,7 +108,7 @@ def fetch_video():
             print("Generation in-progress, try again in 10 seconds.")
         elif response.status_code == 200:
             print("Generation complete!")
-            now_time = now().strftime("%d-%m_%H:%m:%S")
+            now_time = now().strftime("%d-%m_%H:%M:%S")
             with open(f"./media/videos/video{message.user.username}-{now_time}.mp4", 'wb') as file:
                 file.write(response.content)
                 message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{now_time}.mp4"
