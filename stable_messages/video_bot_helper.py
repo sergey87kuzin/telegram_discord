@@ -95,7 +95,7 @@ def handle_command_video_bot(user: User, message_text: str):
         site_settings = SiteSettings.get_solo()
         bot.send_message(
             user.chat_id,
-            text=site_settings.settings_lesson_link,
+            text=site_settings.settings_lesson_link or "Пока нет ссылки",
         )
     elif message_text == "/mybot":
         bot.send_message(
