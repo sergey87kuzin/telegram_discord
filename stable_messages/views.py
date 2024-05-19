@@ -14,6 +14,7 @@ from .choices import StableMessageTypeChoices
 from .tasks import send_message_to_stable_1, send_message_to_stable_2, send_message_to_stable_3, \
     send_message_to_stable_4, send_message_to_stable_new, send_vary_to_stable_new, create_video_from_image
 from stable_messages.stable_helper import handle_telegram_callback
+from .video_bot_helper import handle_start_command_video_bot, handle_command_video_bot
 
 logger = logging.getLogger(__name__)
 bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
@@ -51,10 +52,10 @@ class GetTelegramCallbackForFireWorks(APIView):
         if chat_id in BAN_LIST:
             return "", "", "", ""
         message_text = message.get("text") or message.get("caption")
-        if message_text == "/start":
-            bot.send_message(chat_id, "Hi")
-            return Response(HTTPStatus.OK)
         chat_username = message.get("chat", {}).get("username")
+        if message_text == "/start":
+            handle_start_command_video_bot(chat_id, chat_username)
+            return Response(HTTPStatus.OK)
         user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
         if not user:
             logger.warning(f"Не найден пользователь(, user = {chat_username}")
@@ -63,8 +64,28 @@ class GetTelegramCallbackForFireWorks(APIView):
                 text="<pre>Вы не зарегистрированы в приложении</pre>",
                 parse_mode="HTML"
             )
+            return Response(HTTPStatus.OK)
+        if message_text.startswith("/"):
+            handle_command_video_bot(user, message_text)
+            return Response(HTTPStatus.OK)
         photos = message.get("photo")
-        create_video_from_image.delay(chat_id, photos, chat_username, user.id, message_text)
+        if not photos:
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>Вы забыли приложить картинку :)</pre>",
+                parse_mode="HTML"
+            )
+            return Response(HTTPStatus.OK)
+        if user.remain_video_messages > 0:
+            user.remain_video_messages -= 1
+            user.save()
+            create_video_from_image.delay(chat_id, photos, chat_username, user.id, message_text)
+        else:
+            bot.send_message(
+                chat_id=chat_id,
+                text="<pre>У Вас закончились генерации</pre>",
+                parse_mode="HTML"
+            )
         return Response(HTTPStatus.OK)
 
 

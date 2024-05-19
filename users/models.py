@@ -66,6 +66,7 @@ class User(AbstractUser):
     is_active = models.BooleanField("Telegram подтвержден", default=False)
     remain_messages = models.PositiveIntegerField("Оставшиеся генерации", default=10)
     remain_paid_messages = models.PositiveIntegerField("Оставшиеся платные генерации", default=0)
+    remain_video_messages = models.PositiveIntegerField("Оставшиеся генерации видео", default=0)
     is_test_user = models.BooleanField("Тестовый пользователь", default=False)
     account = models.ForeignKey(
         DiscordAccount,
@@ -98,6 +99,7 @@ class User(AbstractUser):
         null=True
     )
     custom_settings = models.ForeignKey(CustomSettings, on_delete=models.SET_NULL, blank=True, null=True)
+    used_test_video_payment = models.BooleanField("Оплачивал тестовые генерации", default=False)
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
