@@ -100,7 +100,7 @@ def handle_command_video_bot(user: User, message_text: str):
     elif message_text == "/mybot":
         bot.send_message(
             user.chat_id,
-            text=f"<pre>Доступные анимации: {user.remain_video_messages} шт.",
+            text=f"<pre>Доступные анимации: {user.remain_video_messages} шт.</pre>",
             parse_mode="HTML"
         )
     elif message_text == "/support":
