@@ -121,7 +121,7 @@ def handle_command_video_bot(user: User, message_text: str):
             text=VideoBotMenu.INFO,
             parse_mode="HTML"
         )
-    elif message_text in ("testpay", "pay25", "pay85", "pay150"):
+    elif message_text in ("/testpay", "/pay25", "/pay85", "/pay150"):
         payment_url = create_order_from_video_bot_menu(message_text, user)
         if not payment_url:
             bot.send_message(user.chat_id, text="Невозможно создать ссылку, обратитесь в техподдержку")
