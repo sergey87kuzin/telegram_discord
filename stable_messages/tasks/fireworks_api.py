@@ -108,10 +108,10 @@ def fetch_video():
             print("Generation in-progress, try again in 10 seconds.")
         elif response.status_code == 200:
             print("Generation complete!")
-            count = VideoMessages.objects.all().count()
-            with open(f"./media/videos/video{message.user.username}-{count}.mp4", 'wb') as file:
+            now_time = now().strftime("%d-%m %H:%m:%S")
+            with open(f"./media/videos/video{message.user.username}-{now_time}.mp4", 'wb') as file:
                 file.write(response.content)
-                message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{count}.mp4"
+                message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{now_time}.mp4"
                 bot.send_message(message.telegram_chat_id, f"{message.variables or '1.8:127'}. Скачайте готовое видео тут: {message.video}")
                 message.is_sent = True
                 message.save()
