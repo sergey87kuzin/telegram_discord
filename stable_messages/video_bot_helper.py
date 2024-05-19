@@ -109,11 +109,19 @@ def handle_command_video_bot(user: User, message_text: str):
             text=VideoBotMenu.TECH_SUPPORT,
             parse_mode="HTML"
         )
+        bot.send_message(
+            user.chat_id,
+            text="@ai_stocker_help_bot"
+        )
     elif message_text == "/images":
         bot.send_message(
             user.chat_id,
             text=VideoBotMenu.IMAGE_BOT,
             parse_mode="HTML"
+        )
+        bot.send_message(
+            user.chat_id,
+            text="@tomidjourneybot"
         )
     elif message_text == "/info":
         bot.send_message(
