@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import requests
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import telebot
 from celery import shared_task
@@ -9,7 +9,7 @@ from django.conf import settings
 from PIL import Image
 from django.utils.timezone import now
 
-from stable_messages.models import StableMessage, StableSettings, VideoMessages
+from stable_messages.models import VideoMessages
 from users.models import User
 
 
@@ -31,7 +31,7 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
     except Exception as e:
         user.remain_video_messages += 1
         user.save()
-        bot.send_message(chat_id, text="<pre>Ошибка обработки картинки</pre>", parse_mode="HTML")
+        bot.send_message(chat_id, text="<pre>Ошибка обработки изображения</pre>", parse_mode="HTML")
         return
     image = Image.open(f"./media/messages/{file_name}")
     width, height = image.size
@@ -80,7 +80,7 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         created_message.request_id = response.json().get('id')
         created_message.successfully_generated = True
         created_message.save()
-        bot.send_message(chat_id, "Картинка принята в генерацию")
+        bot.send_message(chat_id, "Изображение принято в генерацию")
     else:
         user.remain_video_messages += 1
         user.save()
@@ -112,7 +112,7 @@ def fetch_video():
             with open(f"./media/videos/video{message.user.username}-{count}.mp4", 'wb') as file:
                 file.write(response.content)
                 message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{count}.mp4"
-                bot.send_message(message.telegram_chat_id, f"Скачайте сохраненное видео тут: {message.video}")
+                bot.send_message(message.telegram_chat_id, f"{message.variables or '1.8:127'}. Скачайте готовое видео тут: {message.video}")
                 message.is_sent = True
                 message.save()
         else:
