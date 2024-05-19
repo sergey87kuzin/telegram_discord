@@ -15,7 +15,7 @@ bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
 
 
 def create_order_from_video_bot_menu(tariff: str, user: User):
-    if tariff == "test" and user.used_test_video_payment:
+    if tariff == "/testpay" and user.used_test_video_payment:
         bot.send_message(
             user.chat_id,
             text="<pre>Вы уже использовали тестовую оплату</pre>",
@@ -23,19 +23,19 @@ def create_order_from_video_bot_menu(tariff: str, user: User):
         )
         return
     TARIFF_COSTS = {
-        "testpay": {
+        "/testpay": {
             "cost": 100,
             "message_count": 4
         },
-        "pay25": {
+        "/pay25": {
             "cost": 1000,
             "message_count": 40
         },
-        "pay85": {
+        "/pay85": {
             "cost": 2975,
             "message_count": 85
         },
-        "pay150": {
+        "/pay150": {
             "cost": 4500,
             "message_count": 150
         }
