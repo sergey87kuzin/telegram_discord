@@ -27,7 +27,7 @@ class PaidFilter(SimpleListFilter):
 class UserAdmin(BaseUserAdmin):
     change_form_template = 'loginas/change_form.html'
     list_display = (
-        "id", "username", "is_active", "remain_paid_messages", "remain_messages"
+        "id", "username", "is_active", "remain_paid_messages", "remain_messages", "remain_video_messages"
     )
     add_fieldsets = (
         (
@@ -46,6 +46,7 @@ class UserAdmin(BaseUserAdmin):
             "date_payment_expired",
             "remain_messages",
             "remain_paid_messages",
+            "remain_video_messages",
             "is_active",
             "is_test_user",
             "account",
