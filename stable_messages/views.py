@@ -65,7 +65,7 @@ class GetTelegramCallbackForFireWorks(APIView):
                 parse_mode="HTML"
             )
             return Response(HTTPStatus.OK)
-        if message_text.startswith("/"):
+        if message_text and message_text.startswith("/"):
             handle_command_video_bot(user, message_text)
             return Response(HTTPStatus.OK)
         photos = message.get("photo")
