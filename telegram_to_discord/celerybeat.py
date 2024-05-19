@@ -51,7 +51,12 @@ CELERY_BEAT_SCHEDULE = {
     "fetch_videos": {
         "task": "stable_messages.tasks.fireworks_api.fetch_video",
         "schedule": timedelta(minutes=5),
-        "options": {"queue": "telegram"},
+        "options": {"queue": "telegram2"},
+    },
+    "clear_space": {
+        "task": "stable_messages.tasks.fireworks_api.clear_space",
+        "schedule": crontab(minute="5", hour="23"),
+        "options": {"queue": "telegram2"},
     }
     # "send_discord_answers": {
     #     "task": "discord_messages.tasks.send_messages_to_telegram",

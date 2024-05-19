@@ -1,10 +1,13 @@
+from pathlib import Path
+
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import telebot
 from celery import shared_task
 from django.conf import settings
 from PIL import Image
+from django.utils.timezone import now
 
 from stable_messages.models import StableMessage, StableSettings, VideoMessages
 from users.models import User
@@ -13,61 +16,9 @@ from users.models import User
 bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
 
 
-def get_user_prompts(user_id, eng_text):
-    user = User.objects.filter(id=user_id).first()
-    if "--no " in eng_text:
-        positive, negative = eng_text.split("--no ")
-    else:
-        positive = eng_text
-        negative = ""
-    if style := user.style:
-        positive_prompt = style.positive_prompt.format(prompt=positive)
-        negative_prompt = f"{negative} {style.negative_prompt}"
-    elif custom_settings := user.custom_settings:
-        positive_prompt = custom_settings.positive_prompt.format(prompt=positive)
-        negative_prompt = f"{negative} {custom_settings.negative_prompt}"
-    else:
-        stable_settings = StableSettings.get_solo()
-        positive_prompt = f"{positive} {stable_settings.positive_prompt}"
-        negative_prompt = f"{negative} {stable_settings.negative_prompt}"
-    return positive_prompt, negative_prompt
-
-
-@shared_task
-def get_fireworks_generation(stable_message_id: int):
-
-    message = StableMessage.objects.filter(id=stable_message_id).first()
-    positive_prompt, negative_prompt = get_user_prompts(message.user_id, message.eng_text)
-
-    response = requests.post(
-        f"https://api.stability.ai/v2beta/stable-image/generate/sd3",
-        headers={
-            "authorization": f"Bearer {settings.FIREWORKS_API_KEY}",
-            "accept": "image/*"
-        },
-        files={"none": ''},
-        data={
-            "prompt": positive_prompt,
-            "output_format": "jpeg",
-            "aspect_ratio": "16:9",
-            "model": "sd3-turbo"
-        },
-    )
-
-    if response.status_code == 200:
-        file_name = f"/media/tmp/{datetime.now().strftime('%m-%d %H:%M:%S')}.jpeg"
-        with open(f".{file_name}", 'wb') as file:
-            file.write(response.content)
-    else:
-        raise Exception(str(response.json()))
-
-    message.single_image = f"{settings.SITE_DOMAIN}{file_name}"
-    message.first_image = f"{settings.SITE_DOMAIN}{file_name}"
-    message.save()
-
-
 @shared_task
 def create_video_from_image(chat_id, photos, chat_username, user_id, message_text=None):
+    user = User.objects.filter(id=user_id).first()
     try:
         count = VideoMessages.objects.all().count()
         photo_id = photos[-1].get("file_id")
@@ -78,10 +29,18 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         with open(f"media/messages/{file_name}", 'wb') as new_file:
             new_file.write(downloaded_file)
     except Exception as e:
-        bot.send_message(chat_id, text="Ошибка обработки картинки")
+        user.remain_video_messages += 1
+        user.save()
+        bot.send_message(chat_id, text="<pre>Ошибка обработки картинки</pre>", parse_mode="HTML")
         return
     image = Image.open(f"./media/messages/{file_name}")
-    new_image = image.resize((1024, 576))
+    width, height = image.size
+    if width > height:
+        new_image = image.resize((1024, 576))
+    elif width < height:
+        new_image = image.resize((576, 1024))
+    else:
+        new_image = image.resize((768, 768))
     new_file_name = f"{chat_username}{count}_new.{extension}"
     new_image.save(f"./media/messages/{new_file_name}")
     image_url = settings.SITE_DOMAIN + "/media/messages/" + new_file_name
@@ -89,6 +48,7 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         initial_image=image_url,
         telegram_chat_id=chat_id,
         user_id=user_id,
+        variables=message_text
     )
     cfg_scale = 1.8
     motion_bucket_id = 127
@@ -98,7 +58,9 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
             cfg_scale = round(float(str_cfg_scale), 1)
             motion_bucket_id = int(str_motion_bucket_id)
         except Exception:
-            bot.send_message(chat_id, "Неверно указаны параметры видео")
+            user.remain_video_messages += 1
+            user.save()
+            bot.send_message(chat_id, "<pre>Неверно указаны параметры видео</pre>", parse_mode="HTML")
             return
     response = requests.post(
         f"https://api.stability.ai/v2beta/image-to-video",
@@ -120,7 +82,9 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         created_message.save()
         bot.send_message(chat_id, "Картинка принята в генерацию")
     else:
-        bot.send_message(chat_id, "Ошибка генерации видео. Пожалуйста, попробуйте позже")
+        user.remain_video_messages += 1
+        user.save()
+        bot.send_message(chat_id, "<pre>Ошибка генерации видео. Пожалуйста, попробуйте позже</pre>", parse_mode="HTML")
 
 
 @shared_task
@@ -145,11 +109,24 @@ def fetch_video():
         elif response.status_code == 200:
             print("Generation complete!")
             count = VideoMessages.objects.all().count()
-            with open(f"./media/videos/video{message.id}.mp4", 'wb') as file:
+            with open(f"./media/videos/video{message.user.username}-{count}.mp4", 'wb') as file:
                 file.write(response.content)
-                message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.id}.mp4"
+                message.video = f"{settings.SITE_DOMAIN}/media/videos/video{message.user.username}-{count}.mp4"
                 bot.send_message(message.telegram_chat_id, f"Скачайте сохраненное видео тут: {message.video}")
                 message.is_sent = True
                 message.save()
         else:
             raise Exception(str(response.json()))
+
+
+def clear_space():
+    for video_message in VideoMessages.objects.filter(
+        created_at__lte=now() - timedelta(hours=24)
+    ):
+        video = Path(video_message.video.replace(settings.SITE_DOMAIN, "."))
+        video.unlink(missing_ok=True)
+        message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, "."))
+        message.unlink(missing_ok=True)
+        message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, ".").replace("_new", ""))
+        message.unlink(missing_ok=True)
+        video_message.delete()

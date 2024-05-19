@@ -100,6 +100,7 @@ class VideoMessages(models.Model):
     successfully_generated = models.BooleanField("Успешно сгенерировано", default=False)
     is_sent = models.BooleanField("Отправлено", default=False)
     created_at = models.DateTimeField("Создано", auto_now_add=True)
+    variables = models.CharField("Параметры генерации", max_length=64, blank=True, null=True)
 
     class Meta:
         verbose_name = "Видео сообщение"

@@ -134,6 +134,10 @@ class NotificationView(GenericAPIView):
                 course.expires_at = datetime.now() + timedelta(days=prolongation.duration)
                 course.save()
                 return Response(status=HTTPStatus.OK, data={})
+            if order.video_message_count:
+                user.remain_video_messages += order.video_message_count
+                user.save()
+                return Response(status=HTTPStatus.OK, data={})
             user.date_of_payment = datetime.now()
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
             user.remain_paid_messages = order.message_count

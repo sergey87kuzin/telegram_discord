@@ -58,6 +58,7 @@ class Order(models.Model):
         null=True
     )
     message_count = models.PositiveIntegerField("Число генераций", default=0)
+    video_message_count = models.PositiveIntegerField("Число видео генераций", default=0)
 
     class Meta:
         verbose_name = "Заказ"
