@@ -74,7 +74,10 @@ def handle_start_message(message):
             return
         site_settings = SiteSettings.get_solo()
         if site_settings.say_hi_video:
-            bot.send_video_note(chat_id, site_settings.say_hi_video.file.file)
+            try:
+                bot.send_video_note(chat_id, site_settings.say_hi_video.file.file)
+            except Exception:
+                pass
         bot.send_message(
             chat_id,
             text="https://www.youtube.com/watch?v=PupAadTlhNQ"
