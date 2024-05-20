@@ -80,8 +80,11 @@ def handle_start_command_video_bot(chat_id: str, chat_username: str):
         chat_id,
         text="Добро пожаловать"
     )
-    if site_settings.say_hi_video:
-        bot.send_video_note(chat_id, site_settings.say_hi_video.file.file)
+    if site_settings.say_hi_video_video_bot:
+        try:
+            bot.send_video_note(chat_id, site_settings.say_hi_video_video_bot.file.file)
+        except Exception:
+            pass
 
 
 def handle_command_video_bot(user: User, message_text: str):
