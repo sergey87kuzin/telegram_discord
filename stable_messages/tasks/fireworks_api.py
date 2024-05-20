@@ -117,6 +117,7 @@ def fetch_video():
             raise Exception(str(response.json()))
 
 
+@shared_task
 def clear_space():
     for video_message in VideoMessages.objects.filter(
         created_at__lte=now() - timedelta(hours=24)
