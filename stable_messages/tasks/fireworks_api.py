@@ -122,10 +122,12 @@ def clear_space():
     for video_message in VideoMessages.objects.filter(
         created_at__lte=now() - timedelta(hours=24)
     ):
-        video = Path(video_message.video.replace(settings.SITE_DOMAIN, "."))
-        video.unlink(missing_ok=True)
-        message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, "."))
-        message.unlink(missing_ok=True)
-        message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, ".").replace("_new", ""))
-        message.unlink(missing_ok=True)
+        if video_message.video:
+            video = Path(video_message.video.replace(settings.SITE_DOMAIN, "."))
+            video.unlink(missing_ok=True)
+        if video_message.initial_image:
+            message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, "."))
+            message.unlink(missing_ok=True)
+            message = Path(video_message.initial_image.replace(settings.SITE_DOMAIN, ".").replace("_new", ""))
+            message.unlink(missing_ok=True)
         video_message.delete()
