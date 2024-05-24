@@ -29,9 +29,10 @@ urlpatterns = [
     path("comments/", include("comments.urls")),
 ]
 
+handler404 = TemplateView.as_view(template_name="error.html")
+handler500 = TemplateView.as_view(template_name="error.html")
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL,
-                          document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL,
+                      document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL,
+                      document_root=settings.STATIC_ROOT)

@@ -24,7 +24,7 @@ environ.Env.read_env(str(os.path.join(BASE_DIR, "./.env")))
 
 SECRET_KEY = env.str("SECRET_KEY")
 
-DEBUG = env.str("DEBUG")
+DEBUG = env.bool("DEBUG")
 
 SITE_DOMAIN = env.str("SITE_DOMAIN")
 

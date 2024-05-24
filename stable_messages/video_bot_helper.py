@@ -15,6 +15,12 @@ bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
 
 
 def create_order_from_video_bot_menu(tariff: str, user: User):
+    if tariff == "/testpay":
+        bot.send_message(
+            user.chat_id,
+            text="<pre>Тестовая оплата применяется только один раз</pre>",
+            parse_mode="HTML"
+        )
     if tariff == "/testpay" and user.used_test_video_payment:
         bot.send_message(
             user.chat_id,
@@ -85,6 +91,10 @@ def handle_start_command_video_bot(chat_id: str, chat_username: str):
             bot.send_video_note(chat_id, site_settings.say_hi_video_video_bot.file.file)
         except Exception:
             pass
+    bot.send_message(
+        chat_id,
+        text=site_settings.settings_lesson_link
+    )
 
 
 def handle_command_video_bot(user: User, message_text: str):
