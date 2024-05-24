@@ -179,7 +179,7 @@ MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     str(BASE_DIR / "static"),
-    "/var/html/static/"
+    "/var/html/telegram_discord/static/"
 ]
 
 # Default primary key field type
