@@ -19,13 +19,14 @@ bot = telebot.TeleBot(settings.FIREWORKS_TELEGRAM_TOKEN)
 @shared_task
 def create_video_from_image(chat_id, photos, chat_username, user_id, message_text=None):
     user = User.objects.filter(id=user_id).first()
+    now_time = now().strftime("%d-%m_%H:%M:%S")
     try:
         count = VideoMessages.objects.all().count()
         photo_id = photos[-1].get("file_id")
         file_info = bot.get_file(photo_id)
         downloaded_file = bot.download_file(file_info.file_path)
         extension = file_info.file_path.split(".")[-1]
-        file_name = f"{chat_username}{count}.{extension}"
+        file_name = f"{chat_username}{now_time}.{extension}"
         with open(f"media/messages/{file_name}", 'wb') as new_file:
             new_file.write(downloaded_file)
     except Exception as e:
@@ -39,7 +40,7 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
         new_image = image.resize((1024, 576))
     else:
         new_image = image.resize((576, 1024))
-    new_file_name = f"{chat_username}{count}_new.{extension}"
+    new_file_name = f"{chat_username}{now_time}_new.{extension}"
     new_image.save(f"./media/messages/{new_file_name}")
     image_url = settings.SITE_DOMAIN + "/media/messages/" + new_file_name
     created_message = VideoMessages.objects.create(
