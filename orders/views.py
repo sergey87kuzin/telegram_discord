@@ -136,6 +136,8 @@ class NotificationView(GenericAPIView):
                 return Response(status=HTTPStatus.OK, data={})
             if order.video_message_count:
                 user.remain_video_messages += order.video_message_count
+                if order.video_message_count < 10:
+                    user.used_test_video_payment = True
                 user.save()
                 return Response(status=HTTPStatus.OK, data={})
             user.date_of_payment = datetime.now()
