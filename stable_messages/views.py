@@ -46,13 +46,13 @@ class GetTelegramCallbackForFireWorks(APIView):
         logger.warning("get message")
         message = request.data.get("message")
         if not message:
-            return "", "", "", ""
+            return Response(HTTPStatus.OK)
         chat = message.get("chat", {})
         if not chat:
-            return "", "", "", ""
+            return Response(HTTPStatus.OK)
         chat_id = message.get("chat", {}).get("id")
         if chat_id in BAN_LIST:
-            return "", "", "", ""
+            return Response(HTTPStatus.OK)
         message_text = message.get("text") or message.get("caption")
         chat_username = message.get("chat", {}).get("username")
         if message_text == "/start":
