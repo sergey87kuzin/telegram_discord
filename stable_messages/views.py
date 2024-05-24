@@ -45,6 +45,8 @@ class GetTelegramCallbackForFireWorks(APIView):
     def post(self, request):
         logger.warning("get message")
         message = request.data.get("message")
+        if not message:
+            return "", "", "", ""
         chat = message.get("chat", {})
         if not chat:
             return "", "", "", ""
