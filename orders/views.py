@@ -139,6 +139,9 @@ class NotificationView(GenericAPIView):
                 if order.video_message_count < 10:
                     user.used_test_video_payment = True
                 user.save()
+                chat_ids = ["1792622682", "344637537"]
+                for chat_id in chat_ids:
+                    payment_bot.send_message(chat_id, text=f"Оплата видео")
                 return Response(status=HTTPStatus.OK, data={})
             user.date_of_payment = datetime.now()
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
