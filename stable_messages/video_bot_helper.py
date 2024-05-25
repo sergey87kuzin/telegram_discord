@@ -18,13 +18,13 @@ def create_order_from_video_bot_menu(tariff: str, user: User):
     if tariff == "/testpay":
         bot.send_message(
             user.chat_id,
-            text="<pre>Тестовая оплата применяется только один раз</pre>",
+            text="<pre>Тестовые генерации можно приобрести только один раз</pre>",
             parse_mode="HTML"
         )
     if tariff == "/testpay" and user.used_test_video_payment:
         bot.send_message(
             user.chat_id,
-            text="<pre>Вы уже использовали тестовую оплату</pre>",
+            text="<pre>Вы уже использовали тестовые генерации</pre>",
             parse_mode="HTML"
         )
         return
