@@ -35,7 +35,7 @@ def create_order_from_video_bot_menu(tariff: str, user: User):
         },
         "/pay25": {
             "cost": 1000,
-            "message_count": 40
+            "message_count": 25
         },
         "/pay85": {
             "cost": 2975,
