@@ -55,6 +55,12 @@ class GetTelegramCallbackForFireWorks(APIView):
             return Response(HTTPStatus.OK)
         message_text = message.get("text") or message.get("caption")
         chat_username = message.get("chat", {}).get("username")
+        if not chat_username:
+            bot.send_message(
+                chat_id,
+                text="Пожалуйста, установите своему аккаунту username"
+            )
+            return Response(HTTPStatus.OK)
         if message_text == "/start":
             handle_start_command_video_bot(chat_id, chat_username)
             return Response(HTTPStatus.OK)
