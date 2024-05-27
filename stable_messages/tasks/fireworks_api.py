@@ -120,7 +120,10 @@ def fetch_video():
             user.save()
             message.successfully_generated = False
             message.save()
-            raise Warning(str(response.json()))
+            bot.send_message(
+                message.telegram_chat_id,
+                text="К сожалению, генерация не удалась. Мы добавили вам генерацию взамен неуспешной"
+            )
 
 
 @shared_task
