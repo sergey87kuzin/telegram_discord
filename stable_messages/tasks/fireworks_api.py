@@ -115,7 +115,12 @@ def fetch_video():
                 message.is_sent = True
                 message.save()
         else:
-            raise Exception(str(response.json()))
+            user = message.user
+            user.remain_video_messages += 1
+            user.save()
+            message.successfully_generated = False
+            message.save()
+            raise Warning(str(response.json()))
 
 
 @shared_task

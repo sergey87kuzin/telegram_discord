@@ -13,11 +13,11 @@ CELERY_BEAT_SCHEDULE = {
     #     "schedule": timedelta(minutes=30),
     #     "options": {"queue": "telegram"},
     # },
-    "delete_messages": {
-        "task": "discord_messages.tasks.tasks.delete_old_messages",
-        "schedule": crontab(minute="0", hour="0"),
-        "options": {"queue": "telegram"},
-    },
+    # "delete_messages": {
+    #     "task": "discord_messages.tasks.tasks.delete_old_messages",
+    #     "schedule": crontab(minute="0", hour="0"),
+    #     "options": {"queue": "telegram"},
+    # },
     "send_stable_to_telegram_1": {
         "task": "stable_messages.tasks.tasks.send_stable_messages_to_telegram_1",
         "schedule": timedelta(seconds=63),
