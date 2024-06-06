@@ -106,14 +106,13 @@ class GetStableCallback(APIView):
         data = request.data
         images = data.get("output")
         message_id = data.get("track_id")
-        if images and data.get("status") == "success":
+        if images and data.get("status") in ("success", "error", ):
             message = StableMessage.objects.filter(Q(id=message_id) | Q(stable_request_id=data.get("id"))).first()
             user = message.user
             if user.is_test_user and message.message_type == StableMessageTypeChoices.DOUBLE:
                 message.first_image = images[0]
                 message.message_type = StableMessageTypeChoices.FIRST
                 message.save()
-                message.refresh_from_db()
                 send_vary_to_stable_new.apply_async([message.id], countdown=3)
                 return Response(status=HTTPStatus.OK)
             message.single_image = images[0]
@@ -125,7 +124,7 @@ class GetStableCallback(APIView):
             except Exception:
                 print("wrong one")
             message.save()
-        if data.get("status") in ("error", "failed"):
+        if data.get("status") in ("failed",):
             try:
                 bot.send_message(
                     chat_id="1792622682",
@@ -144,7 +143,6 @@ class GetStableCallback(APIView):
                 user = message.user
                 user.remain_messages += 1
                 user.save()
-                user.refresh_from_db()
         return Response(status=HTTPStatus.OK)
 
 
