@@ -126,6 +126,13 @@ class GetStableCallback(APIView):
                 print("wrong one")
             message.save()
         if data.get("status") in ("error", "failed"):
+            try:
+                bot.send_message(
+                    chat_id="1792622682",
+                    text=str(data)
+                )
+            except Exception:
+                raise Warning("No admin message")
             message = StableMessage.objects.filter(stable_request_id=data.get("id")).first()
             if message:
                 bot.send_message(
