@@ -42,7 +42,7 @@ def send_upscale_to_stable(created_message_id):
 def get_user_prompts(user_id, eng_text):
     user = User.objects.filter(id=user_id).first()
     if "--no " in eng_text:
-        positive, negative = eng_text.split("--no ")
+        positive, negative = eng_text.split("--no ", 1)
     else:
         positive = eng_text
         negative = ""
@@ -558,6 +558,7 @@ def send_message_to_stable(user_id, eng_text, message_id, count: str = "4"):
         "lora_model": lora_model,
         "lora_strength": lora_strength,
         "sampling_method": sampling_method,
+        "instant_response": True,
         "algorithm_type": algorithm_type,
         "scheduler": scheduler,
         "embeddings_model": embeddings_models,
