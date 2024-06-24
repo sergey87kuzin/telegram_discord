@@ -298,7 +298,7 @@ def send_varied_message(message):
                 caption=f"Вариация: {message.initial_text}",
                 reply_markup=markup
             )
-        except Exception:
+        except Exception as e:
             stable_bot.send_message(
                 message.telegram_chat_id,
                 text=f"<a href='{image}'>Скачайте увеличенное фото тут</a>",
