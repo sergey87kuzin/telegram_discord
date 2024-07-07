@@ -3,6 +3,8 @@ import logging
 from http import HTTPStatus
 
 import requests
+from django.conf import settings
+
 from discord_messages.models import DiscordAccount, DiscordConnection, Message
 
 
@@ -57,7 +59,7 @@ def send_message_to_discord(text, account: DiscordAccount, connection: DiscordCo
     discord_url = f"https://discord.com/api/v9/interactions"
     data = {
         "type": 2,
-        "application_id": "936929561302675456",
+        "application_id": settings.APPLICATION_ID,
         "channel_id": account.channel_id,
         "session_id": account.session_id,
         "data": {
@@ -72,7 +74,7 @@ def send_message_to_discord(text, account: DiscordAccount, connection: DiscordCo
             }],
             "application_command": {
                 "id": "938956540159881230",
-                "application_id": "936929561302675456",
+                "application_id": settings.APPLICATION_ID,
                 "version": "1166847114203123795",
                 "default_member_permissions": None,
                 "type": 1,
@@ -118,7 +120,7 @@ def send_u_line_button_command_to_discord(
     button = message.buttons.get(button_key)
     discord_url = f"https://discord.com/api/v9/interactions"
     data = {
-        "application_id": "936929561302675456",
+        "application_id": settings.APPLICATION_ID,
         "channel_id": account.channel_id,
         "guild_id": None,
         "message_flags": 0,

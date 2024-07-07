@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from solo.admin import SingletonModelAdmin
 
-from stable_messages.models import StableMessage, StableAccount, StableSettings, VideoMessages
+from stable_messages.models import StableMessage, StableAccount, StableSettings, VideoMessages, TestMessage, \
+    SetVideoVariables
 
 
 class FreeFilter(SimpleListFilter):
@@ -58,5 +59,24 @@ class VideoMessagesAdmin(admin.ModelAdmin):
         "initial_image",
         "video",
         "is_sent",
+        "created_at"
+    )
+
+
+@admin.register(SetVideoVariables)
+class SetVideoVariablesAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(TestMessage)
+class TestMessageAdmin(admin.ModelAdmin):
+    search_fields = ("text", "user__username", "stable_request_id")
+    list_filter = (FreeFilter,)
+    list_display = (
+        "text",
+        "user",
+        "stable_request_id",
+        "single_image",
+        "answer_sent",
         "created_at"
     )

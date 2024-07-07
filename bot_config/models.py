@@ -27,7 +27,8 @@ class SiteSettings(SingletonModel):
         max_length=512
     )
     say_hi_video_video_bot = models.FileField("Приветственное видео для видео бота", blank=True, null=True)
-    settings_lesson_link = models.CharField("Ссылка на урок по настройкам", max_length=11024, blank=True, null=True)
+    settings_lesson_link = models.CharField("Ссылка на урок по настройкам", max_length=1024, blank=True, null=True)
+    queue_number = models.PositiveIntegerField("Номер очереди для отправки сообщений", default=0)
 
     class Meta:
         verbose_name = "Настройки сайта"

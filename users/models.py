@@ -98,6 +98,12 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
+    video_preset = models.CharField(
+        "Суффикс для всех видео сообщений пользователя",
+        max_length=16,
+        blank=True,
+        null=True
+    )
     custom_settings = models.ForeignKey(CustomSettings, on_delete=models.SET_NULL, blank=True, null=True)
     used_test_video_payment = models.BooleanField("Оплачивал тестовые генерации", default=False)
     USERNAME_FIELD = "username"

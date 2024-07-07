@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from stable_messages.stable_helper import stable_bot
+from stable_messages.helpers.stable_helper import stable_bot
 
 
 class Command(BaseCommand):

@@ -1,11 +1,10 @@
 from datetime import timedelta
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from stable_messages.models import StableMessage
-from stable_messages.stable_helper import stable_bot
+from stable_messages.helpers.stable_helper import stable_bot
 
 
 class Command(BaseCommand):

@@ -65,7 +65,6 @@ def get_discord_messages():
     или увеличение одной(от этого зависят кнопки под картинкой))
     :return:
     """
-    time.sleep(1)
     not_answered_messages = list(Message.objects.filter(
         Q(seed_send=False, seed__isnull=False) | Q(answer_sent=False)
     ).values_list("id", flat=True))

@@ -4,39 +4,19 @@ from datetime import timedelta
 from random import randint
 
 import requests
+from PIL import Image
 from celery import shared_task
 from django.conf import settings
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.timezone import now
 from telebot import types
 
 from discord_messages.telegram_helper import bot as stable_bot
 from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES, SCALES
-from stable_messages.models import StableMessage, StableAccount, StableSettings
+from stable_messages.models import StableMessage, StableAccount, StableSettings, VideoMessages, SetVideoVariables
 from users.models import User
-
-
-@shared_task
-def send_upscale_to_stable(created_message_id):
-    stable_message = StableMessage.objects.get(id=created_message_id)
-    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
-    if not stable_account:
-        return
-    upscale_image_url = "https://stablediffusionapi.com/api/v5/super_resolution"
-    headers = {'Content-Type': 'application/json'}
-    data = json.dumps({
-        "key": stable_account.api_key,
-        "url": stable_message.first_image,
-        "scale": 4,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
-        "face_enhance": True
-    })
-    response = requests.post(url=upscale_image_url, headers=headers, data=data)
-    if response_data := response.json():
-        stable_message.stable_request_id = response_data.get("id")
-        stable_message.single_image = response_data.get("output")
-        stable_message.save()
 
 
 def get_user_prompts(user_id, eng_text):
@@ -59,132 +39,6 @@ def get_user_prompts(user_id, eng_text):
     return positive_prompt, negative_prompt
 
 
-@shared_task
-def send_vary_to_stable(created_message_id):
-    stable_message = StableMessage.objects.get(id=created_message_id)
-    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
-    if not stable_account:
-        return
-    text = stable_message.initial_text
-    positive_prompt, negative_prompt = get_user_prompts(stable_message.user_id, text)
-    seed = randint(0, 16000000)
-    stable_message.seed = seed
-
-    stable_settings = StableSettings.get_solo()
-    controlnet_model = stable_settings.controlnet_model
-    controlnet_type = stable_settings.controlnet_type
-    controlnet_conditioning_scale = stable_settings.controlnet_conditioning_scale
-    num_inference_steps = stable_settings.vary_num_inference_steps or "31"
-    guidance_scale = stable_settings.vary_guidance_scale or 7.5
-    strength = stable_settings.vary_strength or 0.7
-    lora_model = stable_settings.lora_model
-    lora_strength = stable_settings.lora_strength
-    if custom_settings := stable_message.user.custom_settings:
-        controlnet_model = custom_settings.controlnet_model or controlnet_model
-        controlnet_type = custom_settings.controlnet_type or controlnet_type
-        controlnet_conditioning_scale = custom_settings.controlnet_conditioning_scale or controlnet_conditioning_scale
-        num_inference_steps = custom_settings.vary_num_inference_steps or num_inference_steps
-        guidance_scale = custom_settings.vary_guidance_scale or guidance_scale
-        strength = custom_settings.vary_strength or strength
-        lora_model = custom_settings.lora_model or lora_model
-        lora_strength = custom_settings.lora_strength or lora_strength
-
-    vary_image_url = "https://stablediffusionapi.com/api/v3/img2img"
-    headers = {'Content-Type': 'application/json'}
-    data = json.dumps(
-        {
-            "key": stable_account.api_key,
-            "prompt": positive_prompt,
-            "negative_prompt": negative_prompt,
-            "controlnet_model": controlnet_model,
-            "controlnet_type": controlnet_type,
-            "controlnet_conditioning_scale": controlnet_conditioning_scale,
-            "init_image": stable_message.first_image,
-            "control_image": stable_message.first_image,
-            "mask_image": stable_message.first_image,
-            "width": stable_message.width,
-            "height": stable_message.height,
-            "samples": "4",
-            "num_inference_steps": num_inference_steps,
-            "safety_checker": "yes",
-            "enhance_prompt": "no",
-            "guidance_scale": guidance_scale,
-            "strength": strength,
-            "seed": seed,
-            "base64": "no",
-            "lora_model": lora_model,
-            "lora_strength": lora_strength,
-            "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-            "track_id": stable_message.id
-        }
-    )
-
-    response = requests.post(url=vary_image_url, headers=headers, data=data)
-    if response_data := response.json():
-        stable_message.stable_request_id = response_data.get("id")
-        if response_data.get("status") == "success":
-            stable_message.single_image = response_data.get("output")[0]
-            stable_message.first_image = response_data.get("output")[0]
-            stable_message.second_image = response_data.get("output")[1]
-            stable_message.third_image = response_data.get("output")[2]
-            stable_message.fourth_image = response_data.get("output")[3]
-        elif response_data.get("status") == "processing":
-            stable_message.single_image = response_data.get("output")
-        stable_message.save()
-        if response_data.get("status") == "error":
-            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")
-
-
-def get_zoom_sizes(scale):
-    result = (64, 64)
-    return ZOOM_SCALES.get(scale) or result
-
-
-@shared_task
-def send_zoom_to_stable(created_message_id, direction):
-    stable_message = StableMessage.objects.get(id=created_message_id)
-    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
-    if not stable_account:
-        return
-    text = stable_message.initial_text
-    positive_prompt, negative_prompt = get_user_prompts(stable_message.user_id, text)
-    zoom_image_url = "https://stablediffusionapi.com/api/v5/outpaint"
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    scale = text.split("--ar ")[-1]
-    width, height = get_zoom_sizes(scale)
-    data = json.dumps({
-        "key": stable_account.api_key,
-        "prompt": positive_prompt,
-        "negative_prompt": negative_prompt,
-        "image": stable_message.first_image,
-        "width": stable_message.width,
-        "height": stable_message.height,
-        "strength": 0.9,
-        "translation_factor": 0.1,
-        "seed": stable_message.seed,
-        # "height_translation_per_step": height,
-        # "width_translation_per_step": width,
-        "num_inference_steps": 31,
-        "as_video": "no",
-        "num_interpolation_steps": 51,
-        "walk_type": [direction],
-        "track_id": stable_message.id,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-    })
-
-    response = requests.post(url=zoom_image_url, headers=headers, data=data)
-    if response_data := response.json():
-        if response_data.get("status") == "error" or "error_id" in response_data:
-            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка отдаления")
-            return
-        stable_message.stable_request_id = response_data.get("id")
-        if response_data.get("status") == "success":
-            stable_message.single_image = response_data.get("output")[0]
-        stable_message.save()
-
-
 def add_buttons_to_message(message_id):
     buttons_data = (
         # ("⬅️", f"button_move&&left&&{message_id}"),
@@ -194,6 +48,7 @@ def add_buttons_to_message(message_id):
         # ("🔍", f"button_zoom&&{message_id}"),
         ("4️⃣x", f"button_upscale&&{message_id}"),
         ("🔢", f"button_vary&&{message_id}"),
+        ("🎦", f"button_visualize&&{message_id}"),
         ("🔄", f"button_send_again&&{message_id}")
     )
     buttons_u_markup = types.InlineKeyboardMarkup()
@@ -334,13 +189,9 @@ def send_zoomed_message(message):
 
 
 # @shared_task(time_limit=360)
-def send_stable_messages_to_telegram(account_id: int):
+def send_stable_messages_to_telegram(messages_ids: list[int]):
     time.sleep(0.2)
-    messages_to_send = StableMessage.objects.filter(
-        answer_sent=False,
-        single_image__icontains=".",
-        user__account_id=account_id
-    ).order_by("id").distinct("id")[:20]
+    messages_to_send = StableMessage.objects.filter(id__in=messages_ids)
     for message in messages_to_send:
         try:
             if message.message_type == StableMessageTypeChoices.FIRST:
@@ -382,23 +233,23 @@ def send_stable_messages_robot():
 
 
 @shared_task(time_limit=360)
-def send_stable_messages_to_telegram_1():
-    send_stable_messages_to_telegram(account_id=1)
+def send_stable_messages_to_telegram_1(messages_ids: list[int]):
+    send_stable_messages_to_telegram(messages_ids)
 
 
 @shared_task(time_limit=360)
-def send_stable_messages_to_telegram_2():
-    send_stable_messages_to_telegram(account_id=2)
+def send_stable_messages_to_telegram_2(messages_ids: list[int]):
+    send_stable_messages_to_telegram(messages_ids)
 
 
 @shared_task(time_limit=360)
-def send_stable_messages_to_telegram_3():
-    send_stable_messages_to_telegram(account_id=3)
+def send_stable_messages_to_telegram_3(messages_ids: list[int]):
+    send_stable_messages_to_telegram(messages_ids)
 
 
 @shared_task(time_limit=360)
-def send_stable_messages_to_telegram_4():
-    send_stable_messages_to_telegram(account_id=4)
+def send_stable_messages_to_telegram_4(messages_ids: list[int]):
+    send_stable_messages_to_telegram(messages_ids)
     # send_stable_messages_robot()
 
 
@@ -408,43 +259,83 @@ def get_sizes(scale):
 
 
 @shared_task
+def send_stable_messages_to_telegram_workflow():
+    messages_to_send = list(StableMessage.objects.filter(
+        answer_sent=False,
+        single_image__icontains=".",
+    ).values_list("id", flat=True).distinct()[:80])
+    messages_len = len(messages_to_send)
+    if messages_len == 0:
+        return
+    send_stable_messages_to_telegram_1.delay(messages_to_send[:20])
+    if messages_len >= 20:
+        send_stable_messages_to_telegram_2.delay(messages_to_send[20:40])
+        if messages_len >= 40:
+            send_stable_messages_to_telegram_3.delay(messages_to_send[40:60])
+            if messages_len >= 60:
+                send_stable_messages_to_telegram_4.delay(messages_to_send[60:80])
+
+
+@shared_task
 def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_username: str, user_id: int):
+    user = User.objects.filter(id=user_id).first()
+    if user.remain_video_messages <= 0:
+        stable_bot.send_message(
+            user.telegram_chat_id,
+            text="У вас не осталось видео генераций"
+        )
+        return
+    if "--ar " in eng_text:
+        eng_text = eng_text.split("--ar ")[0]
+    now_time = now().strftime("%d-%m_%H:%M:%S")
     try:
-        count = StableMessage.objects.all().count()
-        photo_id = photos[1].get("file_id")
+        photo_id = photos[-1].get("file_id")
         file_info = stable_bot.get_file(photo_id)
         downloaded_file = stable_bot.download_file(file_info.file_path)
         extension = file_info.file_path.split(".")[-1]
-        file_name = f"{chat_username}{count}.{extension}"
+        file_name = f"{chat_username}{now_time}.{extension}"
         with open(f"media/messages/{file_name}", 'wb') as new_file:
             new_file.write(downloaded_file)
-        image_url = settings.SITE_DOMAIN + "/media/messages/" + file_name
     except Exception as e:
-        stable_bot.send_message(chat_id, text="Ошибка обработки картинки")
+        user.remain_video_messages += 1
+        user.save()
+        stable_bot.send_message(chat_id, text="<pre>Ошибка обработки изображения</pre>", parse_mode="HTML")
         return
-    scale = ""
-    if "--ar " in eng_text:
-        scale = eng_text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
-    seed = randint(0, 16000000)
-    new_endpoint = True in User.objects.filter(id=user_id).values_list("is_test_user", flat=True)
-    created_message = StableMessage.objects.create(
-        initial_text=eng_text,
-        eng_text=eng_text,
+    image = Image.open(f"./media/messages/{file_name}")
+    width, height = image.size
+    if width >= height:
+        new_image = image.resize((1024, 576))
+        width, height = 1024, 576
+    else:
+        new_image = image.resize((576, 1024))
+        width, height = 576, 1024
+    new_file_name = f"{chat_username}{now_time}_new.{extension}"
+    new_image.save(f"./media/messages/{new_file_name}")
+    image_url = settings.SITE_DOMAIN + "/media/messages/" + new_file_name
+
+    video_message = VideoMessages.objects.create(
         telegram_chat_id=chat_id,
         user_id=user_id,
-        first_image=image_url,
-        message_type=StableMessageTypeChoices.FIRST,
+        initial_image=image_url,
+        prompt=eng_text,
         width=width,
         height=height,
-        seed=seed,
-        new_endpoint=new_endpoint
     )
-    created_message.refresh_from_db()
-    if new_endpoint:
-        send_vary_to_stable_new(created_message_id=created_message.id)
-    else:
-        send_vary_to_stable(created_message_id=created_message.id)
+    SetVideoVariables.objects.update_or_create(
+        username=user.username,
+        defaults={
+            "username": user.username,
+            "video_message": video_message,
+            "is_set": False
+        }
+    )
+    stable_bot.send_message(
+        chat_id=chat_id,
+        text="Пожалуйста, задайте параметры видео в формате С:М,"
+             " где С от 0 до 10 с шагом 0.1,"
+             " М от 1 до 255 с шагом 1."
+             " Например 1.7:24"
+    )
 
 
 @shared_task
@@ -452,7 +343,7 @@ def check_not_sent_messages():
     not_sent_messages = StableMessage.objects.filter(
         stable_request_id__isnull=False,
         answer_sent=False
-    ).filter(Q(single_image__isnull=True) | Q(single_image="")).exclude(stable_request_id="")
+    ).filter(Q(single_image__isnull=True) | Q(single_image="") | Q(single_image="[]")).exclude(stable_request_id="")
     for message in not_sent_messages:
         fetch_url = f"https://stablediffusionapi.com/api/v3/fetch/{message.stable_request_id}"
         if message.new_endpoint:
@@ -493,252 +384,3 @@ def check_not_sent_messages():
                     except Exception:
                         pass
             message.save()
-
-
-@shared_task
-def send_message_to_stable(user_id, eng_text, message_id, count: str = "4"):
-    stable_settings = StableSettings.get_solo()
-    message = StableMessage.objects.filter(id=message_id).first()
-    stable_account = StableAccount.objects.filter(stable_users=user_id).first()
-    if not stable_account:
-        return
-
-    custom_settings = message.user.custom_settings
-    model_id = stable_settings.model_id or "juggernaut-xl"
-    num_inference_steps = stable_settings.num_inference_steps or "31"
-    guidance_scale = stable_settings.guidance_scale or 7
-    sampling_method = stable_settings.sampling_method or "euler"
-    algorithm_type = stable_settings.algorithm_type or ""
-    scheduler = stable_settings.scheduler or "DPMSolverMultistepScheduler"
-    embeddings_models = stable_settings.embeddings_model or None
-    lora_model = stable_settings.lora_model
-    lora_strength = stable_settings.lora_strength
-    if custom_settings:
-        model_id = custom_settings.model_id or model_id
-        num_inference_steps = custom_settings.num_inference_steps or num_inference_steps
-        guidance_scale = custom_settings.guidance_scale or guidance_scale
-        sampling_method = custom_settings.sampling_method or sampling_method
-        algorithm_type = custom_settings.algorithm_type
-        scheduler = custom_settings.scheduler or scheduler
-        embeddings_models = custom_settings.embeddings_model or embeddings_models
-        lora_model = custom_settings.lora_model or lora_model
-        lora_strength = custom_settings.lora_strength or lora_strength
-
-    scale = ""
-    if "--ar " in eng_text:
-        scale = eng_text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
-    seed = randint(0, 16000000)
-    message.width = width
-    message.height = height
-    message.seed = seed
-    message.save()
-    positive_prompt, negative_prompt = get_user_prompts(user_id, eng_text)
-    text_message_url = "https://modelslab.com/api/v6/images/text2img"
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    data = json.dumps({
-        "key": stable_account.api_key,
-        "model_id": model_id,
-        "prompt": positive_prompt,
-        "negative_prompt": negative_prompt,
-        "width": width,
-        "height": height,
-        "samples": count,
-        "num_inference_steps": num_inference_steps,
-        "seed": str(seed),
-        "guidance_scale": guidance_scale,
-        "enhance_prompt": "no",
-        "safety_checker": "no",
-        "multi_lingual": "no",
-        "panorama": "no",
-        "self_attention": "yes",
-        "upscale": "no",
-        "lora_model": lora_model,
-        "lora_strength": lora_strength,
-        "sampling_method": sampling_method,
-        "instant_response": True,
-        "algorithm_type": algorithm_type,
-        "scheduler": scheduler,
-        "embeddings_model": embeddings_models,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-        "track_id": message_id,
-        "tomesd": "yes",
-        "use_karras_sigmas": "yes",
-        "vae": None,
-    })
-
-    response = requests.post(url=text_message_url, headers=headers, data=data)
-    if response_data := response.json():
-        message.stable_request_id = response_data.get("id")
-        single_images = response_data.get("future_links")
-        try:
-            message.first_image = single_images[0]
-            message.second_image = single_images[1]
-            message.third_image = single_images[2]
-            message.fourth_image = single_images[3]
-        except Exception:
-            # todo решить, что делать, если фотки не пришли
-            print("no images")
-        message.save()
-    else:
-        stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка создания сообщения")
-
-
-@shared_task
-def send_message_to_stable_1(user_id, eng_text, message_id):
-    send_message_to_stable(user_id, eng_text, message_id)
-
-
-@shared_task
-def send_message_to_stable_2(user_id, eng_text, message_id):
-    send_message_to_stable(user_id, eng_text, message_id)
-
-
-@shared_task
-def send_message_to_stable_3(user_id, eng_text, message_id):
-    send_message_to_stable(user_id, eng_text, message_id)
-
-
-@shared_task
-def send_message_to_stable_4(user_id, eng_text, message_id):
-    send_message_to_stable(user_id, eng_text, message_id)
-
-
-@shared_task
-def resend_messages():
-    not_sent_messages = StableMessage.objects.filter(
-        eng_text__startswith="button_",
-        answer_sent=False,
-        created_at__lt=timezone.now() - timedelta(hours=1)
-    ).filter(Q(stable_request_id="") | Q(stable_request_id__isnull=True))
-    for message in not_sent_messages:
-        if message.message_type == StableMessageTypeChoices.UPSCALED:
-            send_upscale_to_stable(message.id)
-        elif message.message_type == StableMessageTypeChoices.VARY:
-            if message.new_endpoint:
-                send_vary_to_stable_new(message.id)
-            else:
-                send_vary_to_stable(message.id)
-
-
-@shared_task
-def send_message_to_stable_new(user_id, eng_text, message_id, count: str = "4"):
-    message = StableMessage.objects.filter(id=message_id).first()
-    stable_account = StableAccount.objects.filter(stable_users=user_id).first()
-    if not stable_account:
-        return
-
-    custom_settings = message.user.custom_settings
-    enhance_style = ""
-    enhance_prompt = False
-    if custom_settings:
-        enhance_style = custom_settings.enhance_style
-        enhance_prompt = True
-    scale = ""
-    if "--ar " in eng_text:
-        scale = eng_text.split("--ar ")[-1]
-    width, height = get_sizes(scale)
-    seed = randint(0, 16000000)
-    message.width = width
-    message.height = height
-    message.seed = seed
-    message.save()
-    positive_prompt, negative_prompt = get_user_prompts(user_id, eng_text)
-    text_message_url = "https://modelslab.com/api/v6/realtime/text2img"
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    data = json.dumps({
-        "key": stable_account.api_key,
-        "prompt": positive_prompt,
-        "negative_prompt": negative_prompt,
-        "width": width,
-        "height": height,
-        "samples": count,
-        "seed": str(seed),
-        "enhance_prompt": enhance_prompt,
-        "safety_checker": False,
-        "instant_response": False,
-        "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-        "track_id": message_id,
-        "enhance_style": enhance_style,
-    })
-
-    response = requests.post(url=text_message_url, headers=headers, data=data)
-    if response_data := response.json():
-        message.stable_request_id = response_data.get("id")
-        single_images = response_data.get("output")
-        try:
-            message.first_image = single_images[0]
-            message.second_image = single_images[1]
-            message.third_image = single_images[2]
-            message.fourth_image = single_images[3]
-        except Exception:
-            # todo решить, что делать, если фотки не пришли
-            print("no images")
-        message.save()
-    else:
-        stable_bot.send_message(chat_id=message.telegram_chat_id, text="Ошибка создания сообщения")
-
-
-@shared_task
-def send_vary_to_stable_new(created_message_id):
-    stable_message = StableMessage.objects.get(id=created_message_id)
-    stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
-    if not stable_account:
-        return
-    text = stable_message.initial_text
-    positive_prompt, negative_prompt = get_user_prompts(stable_message.user_id, text)
-    seed = randint(0, 16000000)
-    stable_message.seed = seed
-
-    stable_settings = StableSettings.get_solo()
-    strength = stable_settings.vary_strength or 0.7
-    enhance_style = ""
-    enhance_prompt = False
-    if custom_settings := stable_message.user.custom_settings:
-        strength = custom_settings.vary_strength or strength
-        enhance_style = custom_settings.enhance_style
-        enhance_prompt = True
-
-    vary_image_url = "https://modelslab.com/api/v6/realtime/img2img"
-    headers = {'Content-Type': 'application/json'}
-    data = json.dumps(
-        {
-            "key": stable_account.api_key,
-            "prompt": positive_prompt,
-            "negative_prompt": negative_prompt,
-            "init_image": stable_message.first_image,
-            "width": stable_message.width,
-            "height": stable_message.height,
-            "samples": "4",
-            "safety_checker": True,
-            "enhance_prompt": enhance_prompt,
-            "strength": strength,
-            "seed": seed,
-            "base64": False,
-            "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
-            "track_id": stable_message.id,
-            "enhance_style": enhance_style
-        }
-    )
-
-    response = requests.post(url=vary_image_url, headers=headers, data=data)
-    if response_data := response.json():
-        stable_message.stable_request_id = response_data.get("id")
-        if response_data.get("status") == "success":
-            stable_message.single_image = response_data.get("output")[0]
-            stable_message.first_image = response_data.get("output")[0]
-            stable_message.second_image = response_data.get("output")[1]
-            stable_message.third_image = response_data.get("output")[2]
-            stable_message.fourth_image = response_data.get("output")[3]
-        elif response_data.get("status") == "processing":
-            stable_message.first_image = response_data.get("future_links")[0]
-            stable_message.second_image = response_data.get("future_links")[1]
-            stable_message.third_image = response_data.get("future_links")[2]
-            stable_message.fourth_image = response_data.get("future_links")[3]
-        stable_message.save()
-        if response_data.get("status") == "error":
-            stable_bot.send_message(chat_id=stable_message.telegram_chat_id, text="Ошибка изменения")

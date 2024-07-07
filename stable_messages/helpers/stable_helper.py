@@ -10,11 +10,10 @@ from telebot import types
 from discord_messages.denied_words import check_words
 from discord_messages.telegram_helper import bot as stable_bot
 from discord_messages.telegram_helper import handle_start_message, handle_command, preset_handler, style_handler
-from stable_messages.models import StableMessage
-from .ban_list import BAN_LIST
-from .choices import StableMessageTypeChoices, SCALES
-from .tasks import send_upscale_to_stable, send_zoom_to_stable, send_vary_to_stable, handle_image_message, \
-    send_message_to_stable, send_vary_to_stable_new
+from stable_messages.models import StableMessage, VideoMessages, SetVideoVariables
+from stable_messages.ban_list import BAN_LIST
+from stable_messages.choices import StableMessageTypeChoices, SCALES
+from stable_messages.tasks import handle_image_message
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -25,7 +24,32 @@ def get_sizes(scale):
     return SCALES.get(scale) or result
 
 
+def check_remains(eng_text, user, chat_id):
+    if not eng_text.startswith("button_u&&"):
+        if user.remain_messages == 0:
+            if not user.date_of_payment or user.date_payment_expired < now():
+                stable_bot.send_message(
+                    chat_id=chat_id,
+                    text="Пожалуйста, оплатите доступ к боту",
+                )
+                return False
+        if user.remain_paid_messages > 0:
+            user.remain_paid_messages -= 1
+            user.save()
+        elif user.remain_messages > 0:
+            user.remain_messages -= 1
+            user.save()
+        else:
+            stable_bot.send_message(
+                chat_id=chat_id,
+                text="У вас не осталось генераций",
+            )
+            return False
+    return True
+
+
 def add_buttons_to_u_message(created_message_id):
+    """Первоначальный вариант клавиатуры для сообщений миджорни, ныне не используется"""
     BUTTONS = {
         "Zoom Out 1.5x": f"button_zoom_1.5x&&{created_message_id}",
         "Zoom Out 2x": f"button_zoom_2x&&{created_message_id}",
@@ -46,6 +70,7 @@ def add_buttons_to_u_message(created_message_id):
 
 
 def handle_u_button(message_text, chat_id):
+    """Первоначальный вариант, в котором предполагалось получение коллажа из 4 картинок. не используется"""
     answer_text = "Увеличиваем"
     prefix, button_number, stable_message_id = message_text.split("&&")
     first_message = StableMessage.objects.filter(id=stable_message_id).first()
@@ -93,16 +118,16 @@ def handle_upscale_button(message_text, chat_id):
     if not first_message:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при увеличении((")
         return
-    created_message = StableMessage.objects.create(
+    StableMessage.objects.create(
         initial_text=first_message.initial_text,
         eng_text=message_text,
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
         first_image=first_message.single_image,
-        message_type=StableMessageTypeChoices.UPSCALED
+        message_type=StableMessageTypeChoices.UPSCALED,
+        sent_to_stable=False
     )
-    created_message.refresh_from_db()
-    send_upscale_to_stable.delay(created_message.id)
+    # send_upscale_to_stable.delay(created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
@@ -122,10 +147,10 @@ def handle_zoom_button(message_text, chat_id, direction):
         message_type=StableMessageTypeChoices.ZOOM,
         width=first_message.width,
         height=first_message.height,
-        seed=first_message.seed
+        seed=first_message.seed,
+        sent_to_stable=False
     )
-    created_message.refresh_from_db()
-    send_zoom_to_stable.delay(created_message.id, direction)
+    # send_zoom_to_stable.delay(created_message.id, direction)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
@@ -147,13 +172,13 @@ def handle_vary_button(message_text, chat_id):
         width=first_message.width,
         height=first_message.height,
         seed=first_message.seed,
-        new_endpoint=new_endpoint
+        new_endpoint=new_endpoint,
+        sent_to_stable=False
     )
-    created_message.refresh_from_db()
-    if new_endpoint:
-        send_vary_to_stable_new.delay(created_message.id)
-    else:
-        send_vary_to_stable.delay(created_message.id)
+    # if new_endpoint:
+    #     send_vary_to_stable_new.delay(created_message.id)
+    # else:
+    #     send_vary_to_stable.delay(created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
 
 
@@ -173,35 +198,78 @@ def handle_repeat_button(message_text, chat_id):
         message_type=StableMessageTypeChoices.FIRST,
         width=first_message.width,
         height=first_message.height,
-        seed=first_message.seed
+        seed=first_message.seed,
+        sent_to_stable=False
     )
-    created_message.refresh_from_db()
-    send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
+    # send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=f"Творим волшебство: {answer_text}")
 
 
-def check_remains(eng_text, user, chat_id):
-    if not eng_text.startswith("button_u&&"):
-        if user.remain_messages == 0:
-            if not user.date_of_payment or user.date_payment_expired < now():
-                stable_bot.send_message(
-                    chat_id=chat_id,
-                    text="Пожалуйста, оплатите доступ к боту",
-                )
-                return False
-        if user.remain_paid_messages > 0:
-            user.remain_paid_messages -= 1
-            user.save()
-        elif user.remain_messages > 0:
-            user.remain_messages -= 1
-            user.save()
-        else:
+def handle_visualize_button(message_text, user, chat_id):
+    prefix, stable_message_id = message_text.split("&&")
+    first_message = StableMessage.objects.filter(id=stable_message_id).first()
+    if not first_message:
+        stable_bot.send_message(chat_id=chat_id, text="Ошибка при визуализации((")
+        return
+    video_message = VideoMessages.objects.create(
+        telegram_chat_id=chat_id,
+        user=user,
+        initial_image=first_message.single_image,
+        prompt=first_message.initial_text,
+        width=first_message.width,
+        height=first_message.height,
+    )
+    SetVideoVariables.objects.update_or_create(
+        username=user.username,
+        defaults={
+            "username": user.username,
+            "video_message": video_message,
+            "is_set": False
+        }
+    )
+    stable_bot.send_message(
+        chat_id=chat_id,
+        text="Пожалуйста, задайте параметры видео в формате С:М,"
+             " где С от 0 до 10 с шагом 0.1,"
+             " М от 1 до 255 с шагом 1."
+             " Например 1.7:24"
+    )
+
+
+def set_video_message_variables(username: str, variables: str, chat_id: str):
+    pattern = re.compile("^[0-9]{1,2}[.,]?[0-9]?:[0-9]{1,3}$")
+    if not pattern.match(variables):
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="Неверные значения переменных. Пожалуйста, введите их снова",
+            parse_mode="HTML"
+        )
+        return
+    try:
+        c, m = variables.split(":")
+        c = float(c.replace(",", "."))
+        m = int(m)
+        if not 0 <= c <= 10 or not 1 <= m <= 255:
             stable_bot.send_message(
                 chat_id=chat_id,
-                text="У вас не осталось генераций",
+                text="Неверные значения переменных. Пожалуйста, введите их снова",
+                parse_mode="HTML"
             )
-            return False
-    return True
+            return
+    except Exception:
+        stable_bot.send_message(
+            chat_id=chat_id,
+            text="Неверные значения переменных. Пожалуйста, введите их снова",
+            parse_mode="HTML"
+        )
+        return
+    set_video_variables = SetVideoVariables.objects.filter(username=username).first()
+    video_message = set_video_variables.video_message
+    video_message.variables = variables
+    video_message.save()
+    set_video_variables.is_set = True
+    set_video_variables.save()
+    stable_bot.send_message(chat_id=chat_id, text=f"Начали генерацию видео. Это может занять какое-то время")
 
 
 def handle_text_message(message: dict, translator):
@@ -237,6 +305,9 @@ def handle_text_message(message: dict, translator):
             text="<pre>Вы отправили пустое сообщение</pre>",
             parse_mode="HTML"
         )
+        return "", "", "", ""
+    if SetVideoVariables.objects.filter(username=chat_username, is_set=False).exists():
+        set_video_message_variables(chat_username, message_text, chat_id)
         return "", "", "", ""
     eng_text = translator.translate(message_text)
     if not eng_text:
@@ -286,21 +357,22 @@ def handle_telegram_callback(message_data: dict):
         if button_data:
             chat_id = button_data.get("from", {}).get("id")
             if chat_id in BAN_LIST:
-                return "", "", ""
+                return
             message_text = button_data.get("data")
             if StableMessage.objects.filter(
                 eng_text=message_text,
                 created_at__gt=now() - timedelta(minutes=1)
             ).exists():
                 stable_bot.send_message(chat_id=chat_id, text="Вы уже нажимали на эту кнопку)")
-                return "", "", ""
+                return
             chat_username = button_data.get("from", {}).get("username")
             if message_text.startswith("preset&&"):
                 preset_handler(chat_id, chat_username, message_text)
-                return "", "", ""
+                return
             if message_text.startswith("style&&"):
                 style_handler(chat_id, chat_username, message_text)
-                return "", "", ""
+                return
+            # Пр нажатии на кнопку заменяем ее на символ нажатия
             reply_markup = button_data.get("message").get("reply_markup")
             buttons_markup = types.InlineKeyboardMarkup()
             buttons_markup.row_width = len(reply_markup.get("inline_keyboard")[0])
@@ -330,56 +402,67 @@ def handle_telegram_callback(message_data: dict):
             if not message_text or not chat_username or not chat_id:
                 logger.warning(f"Ошибка кнопки чата. {chat_id}, {chat_username}, {message_text}")
                 stable_bot.send_message(chat_id=chat_id, text="С этой кнопкой что-то не так")
-                return "", "", ""
+                return
             eng_text = message_text
             user = User.objects.filter(username__iexact=chat_username).first()
             if not user:
                 logger.warning(f"Не найден пользователь(, user = {chat_username}")
                 stable_bot.send_message(chat_id=chat_id, text="Вы не зарегистрированы в приложении")
-                return "", "", ""
-            if not check_remains(eng_text, user, chat_id):
-                return "", "", ""
+                return
+            if message_text.startswith("button_visualize&&"):
+                if user.remain_paid_messages <= 0:
+                    stable_bot.send_message(
+                        chat_id=chat_id,
+                        text="<pre>У вас закончились видео генерации</pre>",
+                        parse_mode="HTML"
+                    )
+                    return
+                handle_visualize_button(message_text, user, chat_id)
+                return
+            else:
+                if not check_remains(eng_text, user, chat_id):
+                    return
             if message_text.startswith("button_upscale"):
                 handle_upscale_button(message_text, chat_id)
-                return "", "", ""
+                return
             elif message_text.startswith("button_zoom&&"):
                 handle_zoom_button(message_text, chat_id, "back")
-                return "", "", ""
+                return
             elif message_text.startswith("button_move"):
                 direction = message_text.split("&&")[1]
                 handle_zoom_button(message_text, chat_id, direction)
-                return "", "", ""
+                return
             elif message_text.startswith("button_vary"):
                 handle_vary_button(message_text, chat_id)
-                return "", "", ""
+                return
             elif message_text.startswith("button_send_again&&"):
                 handle_repeat_button(message_text, chat_id)
-                return "", "", ""
+                return
         else:
             user = User.objects.first()
             stable_bot.send_message(
                 chat_id=user.chat_id,
                 text="Кто-то опять косячит :)",
             )
-            return "", "", ""
+            return
     if not eng_text or not check_remains(eng_text, user, chat_id):
-        return "", "", ""
+        return
     try:
         message_type = StableMessageTypeChoices.FIRST
         new_endpoint = False
         if user.is_test_user:
             # message_type = StableMessageTypeChoices.DOUBLE
             new_endpoint = True
-        created_message = StableMessage.objects.create(
+        StableMessage.objects.create(
             initial_text=message_text,
             eng_text=eng_text,
             telegram_chat_id=chat_id,
             user=user,
             message_type=message_type,
-            new_endpoint=new_endpoint
+            new_endpoint=new_endpoint,
+            sent_to_stable=False
         )
     except Exception:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")
-        return "", "", ""
+        return
     stable_bot.send_message(chat_id=chat_id, text=answer_text)
-    return user, eng_text, created_message.id

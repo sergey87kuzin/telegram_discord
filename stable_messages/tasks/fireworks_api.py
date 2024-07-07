@@ -21,7 +21,6 @@ def create_video_from_image(chat_id, photos, chat_username, user_id, message_tex
     user = User.objects.filter(id=user_id).first()
     now_time = now().strftime("%d-%m_%H:%M:%S")
     try:
-        count = VideoMessages.objects.all().count()
         photo_id = photos[-1].get("file_id")
         file_info = bot.get_file(photo_id)
         downloaded_file = bot.download_file(file_info.file_path)
