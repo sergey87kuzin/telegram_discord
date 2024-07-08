@@ -173,7 +173,7 @@ USE_TZ = True
 
 MEDIA_ROOT = str(BASE_DIR / "media")
 # if DEBUG:
-# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # else:
 # STATIC_ROOT = "/var/html/static/"
 MEDIA_URL = "/media/"
