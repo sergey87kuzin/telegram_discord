@@ -177,7 +177,10 @@ if DEBUG:
 else:
     STATIC_ROOT = "/var/html/static/"
 MEDIA_URL = "/media/"
-STATIC_URL = "/home/greytres/telegram_discord/static/"
+if DEBUG:
+    STATIC_URL = "/static"
+else:
+    STATIC_URL = "/var/html/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     "/var/html/static/",
