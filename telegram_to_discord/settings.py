@@ -178,10 +178,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 #     STATIC_ROOT = "/var/html/static/"
 MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
-#     "/var/html/static/",
-# ]
+STATICFILES_DIRS = (
+    os.path.join(STATIC_ROOT, 'css/'),
+    os.path.join(STATIC_ROOT, 'dist/'),
+    os.path.join(STATIC_ROOT, 'fonts/'),
+    os.path.join(STATIC_ROOT, 'img/'),
+    os.path.join(STATIC_ROOT, 'js/'),
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
