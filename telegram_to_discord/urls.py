@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 from django.views.generic import TemplateView
 
@@ -28,7 +27,7 @@ urlpatterns = [
     ),
     path("support/", include("support.urls")),
     path("comments/", include("comments.urls")),
-] + staticfiles_urlpatterns()
+]
 
 handler404 = TemplateView.as_view(template_name="error.html")
 handler500 = TemplateView.as_view(template_name="error.html")
