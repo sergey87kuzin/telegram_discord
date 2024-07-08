@@ -177,10 +177,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # else:
 #     STATIC_ROOT = "/var/html/static/"
 MEDIA_URL = "/media/"
-# if DEBUG:
-STATIC_URL = "/static/"
-# else:
-#     STATIC_URL = "/var/html/static/"
+if DEBUG:
+    STATIC_URL = "/static/"
+else:
+    STATIC_URL = "/var/html/static/"
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 #     "/var/html/static/",
