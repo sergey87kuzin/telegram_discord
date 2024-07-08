@@ -30,7 +30,7 @@ SITE_DOMAIN = env.str("SITE_DOMAIN")
 
 CSRF_TRUSTED_ORIGINS = [SITE_DOMAIN]
 
-ALLOWED_HOSTS = ["*", SITE_DOMAIN]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -177,10 +177,14 @@ if DEBUG:
 else:
     STATIC_ROOT = "/var/html/static/"
 MEDIA_URL = "/media/"
-STATIC_URL = "/static/"
+if DEBUG:
+    STATIC_URL = "/static"
+else:
+    STATIC_URL = "/var/html/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     "/var/html/static/",
+    "/home/greytres/telegram_discord/static/"
 ]
 
 # Default primary key field type
