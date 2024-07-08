@@ -194,7 +194,7 @@ def add_buttons_to_message(message_id):
         # ("🔍", f"button_zoom&&{message_id}"),
         # ("4️⃣x", f"button_upscale&&{message_id}"),
         # ("🔢", f"button_vary&&{message_id}"),
-        ("🔄", f"button_send_again&&{message_id}")
+        ("🔄", f"button_send_again&&{message_id}"),
     )
     buttons_u_markup = types.InlineKeyboardMarkup()
     buttons_u_markup.row_width = 4
