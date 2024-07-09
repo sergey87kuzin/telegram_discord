@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.timezone import now
 
 from discord_messages.models import DiscordAccount
 from stable_messages.choices import StableModels
@@ -120,4 +121,6 @@ class User(AbstractUser):
 
     @property
     def all_messages(self):
+        if not self.date_payment_expired or self.date_payment_expired < now():
+            return self.remain_messages
         return self.remain_messages + self.remain_paid_messages

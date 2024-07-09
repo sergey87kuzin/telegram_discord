@@ -641,7 +641,7 @@ def handle_message(request_data):
                     text="Пожалуйста, оплатите доступ к боту",
                 )
                 return "", "", ""
-        if user.remain_paid_messages > 0:
+        if user.date_of_payment and user.date_payment_expired >= now() and user.remain_paid_messages > 0:
             user.remain_paid_messages -= 1
             user.save()
         elif user.remain_messages > 0:
