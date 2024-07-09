@@ -30,7 +30,7 @@ SITE_DOMAIN = env.str("SITE_DOMAIN")
 
 CSRF_TRUSTED_ORIGINS = [SITE_DOMAIN]
 
-ALLOWED_HOSTS = ["*", SITE_DOMAIN]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -172,13 +172,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 MEDIA_ROOT = str(BASE_DIR / "media")
-if not DEBUG:
-    STATIC_ROOT = str(BASE_DIR / "staticfiles")
-else:
-    STATIC_ROOT = "/var/html/static/"
+# if DEBUG:
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# else:
+#     STATIC_ROOT = "/var/html/staticfiles/"
 MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [str(BASE_DIR / "static")]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/html/static/'
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

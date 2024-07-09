@@ -113,7 +113,7 @@ def fetch_video():
                 bot.send_message(message.telegram_chat_id, f"{message.variables or '1.8:127'}. Скачайте готовое видео тут: {message.video}")
                 message.is_sent = True
                 message.save()
-        elif response.status_code >= 500:
+        else:
             user = message.user
             user.remain_video_messages += 1
             user.save()
@@ -123,8 +123,6 @@ def fetch_video():
                 message.telegram_chat_id,
                 text="К сожалению, генерация не удалась. Мы добавили вам генерацию взамен неуспешной"
             )
-        else:
-            raise Warning(str(response.json()))
 
 
 @shared_task

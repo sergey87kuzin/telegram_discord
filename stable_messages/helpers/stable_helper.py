@@ -326,7 +326,7 @@ def handle_text_message(message: dict, translator):
             parse_mode="HTML"
         )
         return "", "", "", ""
-    eng_text = eng_text.replace("-- ", "--")
+    eng_text = eng_text.replace("-- ", "--").replace("blonde girl", "girl, blonde hair")
     user = User.objects.filter(username__iexact=chat_username, is_active=True).first()
     if not user:
         logger.warning(f"Не найден пользователь(, user = {chat_username}")
