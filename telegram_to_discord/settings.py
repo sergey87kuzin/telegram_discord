@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+import sentry_sdk
 from django.urls import reverse_lazy
 
 from .celerybeat import *  # noqa
@@ -305,3 +306,13 @@ CKEDITOR_CONFIGS = {
 
 ADMIN_CHAT_IDS = ["1792622682", "344637537"]
 
+sentry_sdk.init(
+    dsn="https://4782cc1bbbd88b8e1fca72a27abcd3a3@o4507786112729088.ingest.de.sentry.io/4507786121642064",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
