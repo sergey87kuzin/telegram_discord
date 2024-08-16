@@ -39,7 +39,7 @@ def send_video_messages_to_stable():
             "prompt": prompt,
             "width": width,
             "height": height,
-            "fps": 12,
+            "fps": 6,
             "num_frames": 25,  # max = 25
             "num_inference_steps": 25,  # max = 50
             "min_guidance_scale": guidance_scale,
@@ -106,3 +106,14 @@ def fetch_stable_video_messages():
                          f" вам добавлена одна генерация</pre>",
                     parse_mode="HTML"
                 )
+
+
+@shared_task
+def send_video_messages_to_telegram_workflow():
+    for video_message in VideoMessages.objects.filter(is_sent=False, video__isnull=False):
+        video_message.is_sent = True
+        video_message.save()
+        stable_bot.send_message(
+            video_message.telegram_chat_id,
+            f"{video_message.variables or '1.8:127'}. Скачайте готовое видео тут: {video_message.video}"
+        )

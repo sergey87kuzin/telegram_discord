@@ -8,10 +8,14 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 
 from discord_messages.telegram_helper import bot as stable_bot
-from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES
-from stable_messages.helpers.stable_helper import get_sizes
+from stable_messages.choices import StableMessageTypeChoices, ZOOM_SCALES, SCALES
 from stable_messages.models import StableMessage, StableSettings, StableAccount
 from stable_messages.tasks import get_user_prompts
+
+
+def get_sizes(scale):
+    result = ("1024", "1024")
+    return SCALES.get(scale) or result
 
 
 def send_message_to_stable(message, count: str = "4"):
@@ -81,7 +85,7 @@ def send_message_to_stable(message, count: str = "4"):
         "instant_response": True,
         "algorithm_type": algorithm_type,
         "scheduler": scheduler,
-        "embeddings_model": embeddings_models,
+        "embeddings_model": "vae-for-human" or embeddings_models,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:stable-webhook"),
         "track_id": message.id,
         "tomesd": "yes",
@@ -195,6 +199,7 @@ def send_vary_to_stable(created_message_id):
     stable_message.seed = seed
 
     stable_settings = StableSettings.get_solo()
+    model_id = stable_settings.model_id or "juggernaut-xl"
     controlnet_model = stable_settings.controlnet_model
     controlnet_type = stable_settings.controlnet_type
     controlnet_conditioning_scale = stable_settings.controlnet_conditioning_scale
@@ -205,6 +210,7 @@ def send_vary_to_stable(created_message_id):
     lora_strength = stable_settings.lora_strength
     scheduler = stable_settings.scheduler or "DPMSolverMultistepScheduler"
     if custom_settings := stable_message.user.custom_settings:
+        model_id = custom_settings.model_id or model_id
         controlnet_model = custom_settings.controlnet_model or controlnet_model
         controlnet_type = custom_settings.controlnet_type or controlnet_type
         controlnet_conditioning_scale = custom_settings.controlnet_conditioning_scale or controlnet_conditioning_scale
@@ -223,7 +229,7 @@ def send_vary_to_stable(created_message_id):
             "key": stable_account.api_key,
             "prompt": positive_prompt,
             "negative_prompt": negative_prompt,
-            "model_id": "stable-diffusion-3-medium",
+            "model_id": model_id or "stable-diffusion-3-medium",
             "controlnet_model": controlnet_model,
             "controlnet_type": controlnet_type,
             "controlnet_conditioning_scale": controlnet_conditioning_scale,

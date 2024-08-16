@@ -250,6 +250,7 @@ CELERY_TASK_ROUTES = {
     "stable_messages.tasks.tasks.send_stable_messages_to_telegram_workflow": {"queue": "messages"},
     "stable_messages.tasks.video_messages.send_video_messages_to_stable": {"queue": "stable"},
     "stable_messages.tasks.video_messages.fetch_stable_video_messages": {"queue": "telegram"},
+    "stable_messages.tasks.video_messages.send_video_messages_to_telegram_workflow": {"queue": "telegram"},
 }
 BROKER_CONNECTION_RETRY_ON_STARTUP = True
 

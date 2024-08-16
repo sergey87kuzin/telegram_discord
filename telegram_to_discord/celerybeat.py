@@ -53,6 +53,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*/1"),
         "options": {"queue": "stable"},
     },
+    "send_video_messages_to_telegram": {
+        "task": "stable_messages.tasks.video_messages.send_video_messages_to_telegram_workflow",
+        "schedule": crontab(minute="*/1"),
+        "options": {"queue": "telegram"},
+    },
     # "fetch_stable_video_messages": {
     #     "task": "stable_messages.tasks.video_messages.fetch_stable_video_messages",
     #     "schedule": crontab(minute="*/1"),

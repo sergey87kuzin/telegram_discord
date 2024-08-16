@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from discord_messages.models import ConfirmMessage
+from hashing import Hasher
 from users.forms import UserAuthForm, UserRegistrationForm
 from users.models import User
 
@@ -101,7 +102,8 @@ class AjaxLogin(APIView):
         user = User.objects.filter(
             username__iexact=request.data.get("telegram")
         ).first()
-        result = user.check_password(request.data.get("password"))
+        password = request.data.get("password")
+        result = user.check_password(password) or Hasher.verify_password(password, user.password)
         if result:
             login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
             return Response(status=HTTPStatus.OK, data={"url": reverse("index")})
