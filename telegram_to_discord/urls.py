@@ -8,6 +8,11 @@ from django.views.static import serve
 from courses.views import PaymentsPageView
 from discord_messages.views import IndexView
 
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = [
     path('admin/', include('loginas.urls')),
     path('admin/', admin.site.urls),
@@ -28,6 +33,7 @@ urlpatterns = [
     ),
     path("support/", include("support.urls")),
     path("comments/", include("comments.urls")),
+    path("sentry-error/", trigger_error),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
