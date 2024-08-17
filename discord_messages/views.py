@@ -19,7 +19,8 @@ class IndexView(generic.TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         MOBILE_AGENT_RE = re.compile(r".*(iphone|mobile|androidtouch)", re.IGNORECASE)
-        if MOBILE_AGENT_RE.match(request.META['HTTP_USER_AGENT']):
+        user_agent_key = request.META.get("HTTP_USER_AGENT")
+        if user_agent_key and MOBILE_AGENT_RE.match(user_agent_key):
             context["is_mobile"] = True
         else:
             context["is_mobile"] = False
