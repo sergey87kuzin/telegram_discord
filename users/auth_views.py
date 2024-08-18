@@ -101,6 +101,8 @@ class AjaxLogin(APIView):
         user = User.objects.filter(
             username__iexact=request.data.get("telegram")
         ).first()
+        if not user:
+            return Response(status=HTTPStatus.NOT_FOUND)
         result = user.check_password(request.data.get("password"))
         if result:
             login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
