@@ -102,12 +102,18 @@ class AjaxLogin(APIView):
             username__iexact=request.data.get("telegram")
         ).first()
         if not user:
-            return Response(status=HTTPStatus.NOT_FOUND)
+            return Response(
+                status=HTTPStatus.NOT_FOUND,
+                data={"error": "Пользователь не найден"}
+            )
         result = user.check_password(request.data.get("password"))
         if result:
             login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
             return Response(status=HTTPStatus.OK, data={"url": reverse("index")})
-        return Response(status=HTTPStatus.BAD_REQUEST)
+        return Response(
+            status=HTTPStatus.BAD_REQUEST,
+            data={"error": "Неверный пароль или ошибка регистрации"}
+        )
 
 
 @method_decorator(login_required, "dispatch")
