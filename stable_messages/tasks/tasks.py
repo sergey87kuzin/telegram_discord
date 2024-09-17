@@ -229,7 +229,8 @@ def send_first_messages(message: StableMessage):
             message_type=StableMessageTypeChoices.U,
             width=message.width,
             height=message.height,
-            seed=message.seed
+            seed=message.seed,
+            sent_to_stable=False
         )
         new_message.refresh_from_db()
         buttons_u_markup = add_buttons_to_message(new_message.id)
@@ -286,7 +287,8 @@ def send_varied_message(message):
             message_type=StableMessageTypeChoices.U,
             width=message.width,
             height=message.height,
-            seed=message.seed
+            seed=message.seed,
+            sent_to_stable=False
         )
         new_message.refresh_from_db()
         markup = add_buttons_to_message(new_message.id)
@@ -438,7 +440,8 @@ def handle_image_message(eng_text: str, chat_id: int, photos: list, chat_usernam
         width=width,
         height=height,
         seed=seed,
-        new_endpoint=new_endpoint
+        new_endpoint=new_endpoint,
+        sent_to_stable=False
     )
     created_message.refresh_from_db()
     if new_endpoint:
