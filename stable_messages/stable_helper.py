@@ -99,7 +99,8 @@ def handle_upscale_button(message_text, chat_id):
         telegram_chat_id=first_message.telegram_chat_id,
         user_id=first_message.user_id,
         first_image=first_message.single_image,
-        message_type=StableMessageTypeChoices.UPSCALED
+        message_type=StableMessageTypeChoices.UPSCALED,
+        sent_to_stable=False
     )
     created_message.refresh_from_db()
     send_upscale_to_stable.delay(created_message.id)
@@ -122,7 +123,8 @@ def handle_zoom_button(message_text, chat_id, direction):
         message_type=StableMessageTypeChoices.ZOOM,
         width=first_message.width,
         height=first_message.height,
-        seed=first_message.seed
+        seed=first_message.seed,
+        sent_to_stable=False
     )
     created_message.refresh_from_db()
     send_zoom_to_stable.delay(created_message.id, direction)
@@ -147,7 +149,8 @@ def handle_vary_button(message_text, chat_id):
         width=first_message.width,
         height=first_message.height,
         seed=first_message.seed,
-        new_endpoint=new_endpoint
+        new_endpoint=new_endpoint,
+        sent_to_stable=False
     )
     created_message.refresh_from_db()
     if new_endpoint:
@@ -173,7 +176,8 @@ def handle_repeat_button(message_text, chat_id):
         message_type=StableMessageTypeChoices.FIRST,
         width=first_message.width,
         height=first_message.height,
-        seed=first_message.seed
+        seed=first_message.seed,
+        sent_to_stable=False
     )
     created_message.refresh_from_db()
     send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
@@ -376,7 +380,8 @@ def handle_telegram_callback(message_data: dict):
             telegram_chat_id=chat_id,
             user=user,
             message_type=message_type,
-            new_endpoint=new_endpoint
+            new_endpoint=new_endpoint,
+            sent_to_stable=False,
         )
     except Exception:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка создания сообщения")

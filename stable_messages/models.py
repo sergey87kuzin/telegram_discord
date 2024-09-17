@@ -33,6 +33,7 @@ class StableMessage(models.Model):
         default=StableMessageTypeChoices.FIRST
     )
     new_endpoint = models.BooleanField("Новый сервис", default=False)
+    sent_to_stable = models.BooleanField("Отправлен в генерацию", default=False)
 
     class Meta:
         verbose_name = "Сообщение в stable"
