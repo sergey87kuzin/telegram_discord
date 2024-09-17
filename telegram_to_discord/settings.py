@@ -307,7 +307,7 @@ CKEDITOR_CONFIGS = {
 ADMIN_CHAT_IDS = ["1792622682", "344637537"]
 
 sentry_sdk.init(
-    dsn="https://4782cc1bbbd88b8e1fca72a27abcd3a3@o4507786112729088.ingest.de.sentry.io/4507786121642064",
+    dsn="https://904bb4226516821dfc3684dea7750c8f@o4507966814420992.ingest.de.sentry.io/4507966827069520",
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
     traces_sample_rate=1.0,
