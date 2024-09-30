@@ -41,6 +41,14 @@ def send_upscale_to_stable(created_message_id):
 
 def get_user_prompts(user_id, eng_text):
     user = User.objects.filter(id=user_id).first()
+    eng_text = (
+        eng_text
+        .replace("--ar 16:9", "")
+        .replace("--ar 9:16", "")
+        .replace("--ar 3:2", "")
+        .replace("--ar 2:3", "")
+        .replace("--ar 3:1", "")
+    )
     if "--no " in eng_text:
         positive, negative = eng_text.split("--no ", 1)
     else:
