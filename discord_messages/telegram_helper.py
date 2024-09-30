@@ -49,6 +49,7 @@ def handle_start_message(message):
     username = message.get("from", {}).get("username")
     chat_id = message.get("chat").get("id")
     if username:
+        password = None
         try:
             user, created = User.objects.get_or_create(
                 username__iexact=username,
@@ -56,10 +57,12 @@ def handle_start_message(message):
                 defaults={
                     "username": username,
                     "chat_id": chat_id,
+                    "is_active": True
                 }
             )
             if created:
-                user.set_password(str(random.randint(0, 99999999)).zfill(8))
+                password = str(random.randint(0, 99999999)).zfill(8)
+                user.set_password(password)
                 account = DiscordAccount.objects.annotate(users_count=Count("users")).order_by("users_count").first()
                 user.account = account
                 user.stable_account_id = 1
@@ -84,16 +87,26 @@ def handle_start_message(message):
         )
         register_reply_markup = types.InlineKeyboardMarkup()
         register_button = types.InlineKeyboardButton(
-            "Зарегистрироваться",
-            url=f"{settings.SITE_DOMAIN}/auth/registration/{user.id}/"
+            "Смотреть уроки",
+            url=f"{settings.SITE_DOMAIN}/courses/course/2/"  # /auth/registration/{user.id}/"
         )
         register_reply_markup.add(register_button)
-        bot.send_message(
-            chat_id,
-            text="<pre>Привет ✌️ Для продолжения регистрации нажмите на кнопку:</pre>",
-            reply_markup=register_reply_markup,
-            parse_mode="HTML"
-        )
+        if password:
+            bot.send_message(
+                chat_id,
+                text=f"""<pre>Привет ✌️ Для просмотра уроков нажмите на кнопку ниже:
+                            Логин {username}
+                            Пароль {password}</pre>""",
+                reply_markup=register_reply_markup,
+                parse_mode="HTML"
+            )
+        else:
+            bot.send_message(
+                chat_id,
+                text="<pre>Привет ✌️ Для просмотра уроков нажмите на кнопку ниже:</pre>",
+                reply_markup=register_reply_markup,
+                parse_mode="HTML"
+            )
     else:
         bot.send_message(
             chat_id,
