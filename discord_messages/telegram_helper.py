@@ -91,20 +91,16 @@ def handle_start_message(message):
             url=f"{settings.SITE_DOMAIN}/courses/course/2/"  # /auth/registration/{user.id}/"
         )
         register_reply_markup.add(register_button)
+        bot.send_message(
+            chat_id,
+            text="<pre>Привет ✌️ Уроки о продаже работ в интернете доступны по кнопке ниже:</pre>",
+            reply_markup=register_reply_markup,
+            parse_mode="HTML"
+        )
         if password:
             bot.send_message(
                 chat_id,
-                text=f"""<pre>Привет ✌️ Для просмотра уроков нажмите на кнопку ниже:
-                            Логин {username}
-                            Пароль {password}</pre>""",
-                reply_markup=register_reply_markup,
-                parse_mode="HTML"
-            )
-        else:
-            bot.send_message(
-                chat_id,
-                text="<pre>Привет ✌️ Для просмотра уроков нажмите на кнопку ниже:</pre>",
-                reply_markup=register_reply_markup,
+                text=f"<pre>Ваш логин {username} \nВаш пароль {password}</pre>",
                 parse_mode="HTML"
             )
     else:
