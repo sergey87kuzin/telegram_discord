@@ -1,3 +1,4 @@
+import requests
 from django.contrib import admin, auth
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.forms import UserChangeForm
@@ -5,6 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from bot_config.models import SiteSettings
 from discord_messages.telegram_helper import bot
+from telegram_to_discord.settings import SITE_DOMAIN
 from users.models import User, Style, CustomSettings
 
 
@@ -62,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["-id"]
     form = UserChangeForm
     search_fields = ("username", )
-    actions = ["send_message"]
+    actions = ["send_message", "send_to_all"]
     list_filter = (PaidFilter,)
 
     def send_message(self, request, queryset):
@@ -77,7 +79,11 @@ class UserAdmin(BaseUserAdmin):
                 except Exception:
                     pass
 
+    def send_to_all(self, request, queryset):
+        requests.post(f"{SITE_DOMAIN}/async/telegram/send_info_messages")
+
     send_message.short_description = "Отправить сообщение"
+    send_to_all.short_description = "Отправить всем"
 
 
 @admin.register(Style)
