@@ -44,6 +44,7 @@ class UserAdmin(BaseUserAdmin):
         ("Главная информация", {"fields": (
             "username",
             "chat_id",
+            "partner_id",
             "date_of_payment",
             "date_payment_expired",
             "remain_messages",
@@ -63,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
     )
     ordering = ["-id"]
     form = UserChangeForm
-    search_fields = ("username", )
+    search_fields = ("username", "chat_id")
     actions = ["send_message", "send_to_all"]
     list_filter = (PaidFilter,)
 

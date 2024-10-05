@@ -223,8 +223,12 @@ def handle_text_message(message: dict, translator):
             parse_mode="HTML"
         )
         return "", "", "", ""
-    if message_text == "/start":
-        handle_start_message(message)
+    if message_text.startswith("/start"):
+        start_data = message_text.split(" ")
+        partner_id = None
+        if start_data[0] == "/start" and len(start_data) == 2:
+            partner_id = start_data[1]
+        handle_start_message(message, partner_id)
         return "", "", "", ""
     if message_text.startswith("/"):
         handle_command(message)
