@@ -40,10 +40,11 @@ def send_confirm_code(user: User):
     bot.send_message(chat_id=telegram_id, text=random_code)
 
 
-def handle_start_message(message):
+def handle_start_message(message: dict, partner_id: str = None):
     """
     Обработка сообщения при старте бота
     :param message:
+    :param partner_id:
     :return:
     """
     username = message.get("from", {}).get("username")
@@ -57,7 +58,8 @@ def handle_start_message(message):
                 defaults={
                     "username": username,
                     "chat_id": chat_id,
-                    "is_active": True
+                    "is_active": True,
+                    "partner_id": partner_id,
                 }
             )
             if created:
