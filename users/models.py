@@ -60,6 +60,7 @@ class CustomSettings(models.Model):
 class User(AbstractUser):
     username = models.CharField("Ник telegram аккаунта", unique=True, max_length=32)
     chat_id = models.CharField("id чата с ботом", max_length=64, blank=True, null=True)
+    partner_id = models.CharField("id чата для начисления реферальных", max_length=16, blank=True, null=True)
     email = models.EmailField("E-mail", blank=True, null=True)
     date_of_payment = models.DateTimeField("Дата платежа", null=True, blank=True)
     date_payment_expired = models.DateTimeField("дата истечения платежа", null=True, blank=True)
@@ -86,6 +87,12 @@ class User(AbstractUser):
     )
     preset = models.CharField(
         "Суффикс для всех сообщений пользователя",
+        max_length=128,
+        blank=True,
+        null=True
+    )
+    video_preset = models.CharField(
+        "Суффикс для всех видео сообщений пользователя",
         max_length=128,
         blank=True,
         null=True
