@@ -179,6 +179,10 @@ body
         color: #000000;
         line-height: 31px;
     }
+    .text_in_center {
+        text-align: center;
+        justify-content: center;
+    }
     .text_in_button {
         margin-top: 45px;
         font-size: 20px;
