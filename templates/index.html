@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    {% if not is_mobile %}
+    {% if is_mobile %}
 <div id="allrecords" class="t-records tsort" data-hook="blocks-collection-content-node" data-blocks-animationoff="yes" data-tilda-mode="edit" style="position: relative;">
     <div class="record" off="" data-record-type="396" data-record-category="12" data-record-cod="T396" style="cursor: auto;">
         <div id="rec644135072" class="r" style=" " data-animationappear="off">
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="green_button green_button_pos">
-                        ПОПРОБОВАТЬ БЕСПЛАТНО
+                        <a href="https://t.me/ToMidjourneyBot">ПОПРОБОВАТЬ БЕСПЛАТНО</a>
                     </div>
                     <div class="they_sell" data-elem-id="1687347750777" data-elem-type="text">
                         <div class="tn-atom" style="line-height: 39px;">РАБОТЫ, СОЗДАННЫЕ В НЕЙРОСЕТИ, ПРОДАЮТСЯ!</div>
@@ -107,6 +107,11 @@
         </div>
         <div class="col-12">
             <a href="https://t.me/ToMidjourneyBot" class="green-grey-button margin_from_top">Перейти в бот</a>
+        </div>
+        <div class="col-12">
+            <p class="margin_from_top text_in_center">
+                ДЛЯ ОПЛАТЫ КУРСА НЕОБХОДИМО ВВЕСТИ ЛОГИН И ПАРОЛЬ БОТА В МЕНЮ САЙТА
+            </p>
         </div>
     </div>
     {% endif %}
