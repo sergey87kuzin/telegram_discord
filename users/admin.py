@@ -7,6 +7,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from bot_config.models import SiteSettings
 from discord_messages.telegram_helper import bot
 from telegram_to_discord.settings import SITE_DOMAIN
+from users.helper import add_generations
 from users.models import User, Style, CustomSettings
 
 
@@ -27,7 +28,7 @@ class PaidFilter(SimpleListFilter):
 
 
 class UserAdmin(BaseUserAdmin):
-    change_form_template = 'loginas/change_form.html'
+    change_form_template = 'change_form.html'
     list_display = (
         "id", "username", "is_active", "remain_paid_messages", "remain_messages", "remain_video_messages"
     )
@@ -85,6 +86,24 @@ class UserAdmin(BaseUserAdmin):
 
     send_message.short_description = "Отправить сообщение"
     send_to_all.short_description = "Отправить всем"
+
+    def response_change(self, request, obj: User):
+        if "add_20" in request.POST:
+            if obj.partner_id:
+                add_generations(
+                    chat_id=obj.partner_id,
+                    generations_to_add=20
+                )
+        if "add_100" in request.POST:
+            if obj.partner_id:
+                add_generations(
+                    chat_id=obj.partner_id,
+                    generations_to_add=100
+                )
+        if "set_password" in request.POST:
+            obj.set_password("12345")
+            obj.save()
+        return super().response_change(request, obj)
 
 
 @admin.register(Style)
