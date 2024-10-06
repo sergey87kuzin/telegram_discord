@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+
+    <div class="submit-row">
+        <input type="submit" value="Добавить 20 генераций" name="add_20">
+        <input type="submit" value="Добавить 100 генераций" name="add_100">
+        <input type="submit" value="Установить пароль" name="set_password">
+    </div>
+
+    {{ block.super }}
+
+{% endblock %}
