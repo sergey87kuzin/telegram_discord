@@ -88,22 +88,30 @@ class UserAdmin(BaseUserAdmin):
     send_to_all.short_description = "Отправить всем"
 
     def response_change(self, request, obj: User):
-        if "add_20" in request.POST:
-            if obj.partner_id:
-                add_generations(
-                    chat_id=obj.partner_id,
-                    generations_to_add=20
-                )
-        if "add_100" in request.POST:
-            if obj.partner_id:
-                add_generations(
-                    chat_id=obj.partner_id,
-                    generations_to_add=100
-                )
+        if "add_20" in request.POST and obj.partner_id:
+            add_generations(
+                chat_id=obj.partner_id,
+                generations_to_add=20
+            )
+        if "add_100" in request.POST and obj.partner_id:
+            add_generations(
+                chat_id=obj.partner_id,
+                generations_to_add=100
+            )
         if "set_password" in request.POST:
             obj.set_password("12345")
             obj.save()
         return super().response_change(request, obj)
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        if search_term and search_term.startswith("@"):
+            short_search_term = search_term[1:]
+            try:
+                queryset |= self.model.objects.filter(username__icontains=short_search_term)
+            except Exception:
+                pass
+        return queryset, use_distinct
 
 
 @admin.register(Style)
