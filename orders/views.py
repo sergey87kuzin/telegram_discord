@@ -17,7 +17,7 @@ from bot_config.models import SiteSettings
 from courses.models import Course, UserCourses, Prolongation
 from orders.helper import create_prodamus_order_object
 from orders.models import Order
-
+from users.helper import add_generations
 
 payment_bot = telebot.TeleBot(settings.PAYMENT_TELEGRAM_TOKEN)
 
@@ -147,4 +147,6 @@ class NotificationView(GenericAPIView):
             user.date_payment_expired = datetime.now() + timedelta(days=order.days)
             user.remain_paid_messages = order.message_count
             user.save()
+            if user.partner_id:
+                add_generations(chat_id=user.partner_id, generations_to_add=int(order.message_count / 10))
         return Response(status=HTTPStatus.OK, data={})
