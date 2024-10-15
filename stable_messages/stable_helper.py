@@ -173,7 +173,7 @@ def handle_repeat_button(message_text, chat_id):
     if user.preset and user.preset not in answer_text:
         width, height = get_sizes(user.preset.replace(" --ar ", ""))
     if "--ar" in answer_text:
-        answer_text = answer_text.split("--ar")[0]
+        answer_text = answer_text.split("--ar ")[0]
     created_message = StableMessage.objects.create(
         initial_text=answer_text,
         eng_text=answer_text,
