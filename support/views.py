@@ -28,6 +28,9 @@ class SupportMessageAPIView(APIView):
         if message_text == "/start":
             return Response(status=HTTPStatus.OK)
         telegram_username = message.get("chat", {}).get("username")
+        if not telegram_username:
+            support_bot.send_message(chat_id=chat_id, text="Пожалуйста, заполните ник для вашего аккаунта telegram")
+            return Response(status=HTTPStatus.OK)
         answer_to_id = None
         if reply := message.get("reply_to_message"):
             username = "SergeyAKuzin"
