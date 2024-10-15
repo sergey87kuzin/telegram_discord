@@ -174,7 +174,7 @@ def handle_repeat_button(message_text, chat_id):
     if user.preset and user.preset not in answer_text:
         scale = user.preset
         width, height = get_sizes(scale.split("--ar ")[-1])
-        stable_bot.send_message(chat_id=1792622682, text=f"{first_message.id}, {scale}, {width}, {height}")
+
     if "--ar" in answer_text:
         answer_text = answer_text.split("--ar ")[0]
     seed = randint(0, 16000000)
@@ -190,6 +190,7 @@ def handle_repeat_button(message_text, chat_id):
         seed=seed,
         sent_to_stable=False
     )
+    stable_bot.send_message(chat_id=1792622682, text=f"{created_message.id}, {width}, {height}")
     created_message.refresh_from_db()
     send_message_to_stable.delay(first_message.user_id, answer_text, created_message.id)
     stable_bot.send_message(chat_id=chat_id, text=f"Творим волшебство: {answer_text}")
