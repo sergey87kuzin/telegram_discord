@@ -1,6 +1,7 @@
 import logging
 import re
 from datetime import timedelta
+from random import randint
 
 import requests
 from deep_translator import GoogleTranslator
@@ -171,9 +172,11 @@ def handle_repeat_button(message_text, chat_id):
     answer_text = first_message.initial_text
     width, height = first_message.width, first_message.height
     if user.preset and user.preset not in answer_text:
-        width, height = get_sizes(user.preset.split("--ar ")[-1])
+        scale = user.preset
+        width, height = get_sizes(scale.split("--ar ")[-1])
     if "--ar" in answer_text:
         answer_text = answer_text.split("--ar ")[0]
+    seed = randint(0, 16000000)
     created_message = StableMessage.objects.create(
         initial_text=answer_text,
         eng_text=answer_text,
@@ -183,7 +186,7 @@ def handle_repeat_button(message_text, chat_id):
         message_type=StableMessageTypeChoices.FIRST,
         width=width,
         height=height,
-        seed=first_message.seed,
+        seed=seed,
         sent_to_stable=False
     )
     created_message.refresh_from_db()
