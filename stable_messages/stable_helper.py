@@ -166,7 +166,14 @@ def handle_repeat_button(message_text, chat_id):
     if not first_message:
         stable_bot.send_message(chat_id=chat_id, text="Ошибка при повторной генерации((")
         return
+    user = first_message.user
+
     answer_text = first_message.initial_text
+    width, height = first_message.width, first_message.height
+    if user.preset and user.preset not in answer_text:
+        width, height = get_sizes(user.preset.replace(" --ar ", ""))
+    if "--ar" in answer_text:
+        answer_text = answer_text.split("--ar")[0]
     created_message = StableMessage.objects.create(
         initial_text=answer_text,
         eng_text=answer_text,
@@ -174,8 +181,8 @@ def handle_repeat_button(message_text, chat_id):
         user_id=first_message.user_id,
         first_image=first_message.single_image,
         message_type=StableMessageTypeChoices.FIRST,
-        width=first_message.width,
-        height=first_message.height,
+        width=width,
+        height=height,
         seed=first_message.seed,
         sent_to_stable=False
     )
