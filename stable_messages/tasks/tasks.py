@@ -62,7 +62,7 @@ def get_user_prompts(user_id, eng_text):
         negative_prompt = f"{negative} {custom_settings.negative_prompt}"
     else:
         stable_settings = StableSettings.get_solo()
-        positive_prompt = f"{positive} {stable_settings.positive_prompt}"
+        positive_prompt = stable_settings.positive_prompt.format(prompt=positive)
         negative_prompt = f"{negative} {stable_settings.negative_prompt}"
     return positive_prompt, negative_prompt
 
@@ -515,7 +515,7 @@ def send_message_to_stable(user_id, eng_text, message_id, count: str = "4"):
         return
 
     custom_settings = message.user.custom_settings
-    model_id = stable_settings.model_id or "juggernaut-xl"
+    model_id = stable_settings.model_id or "flux"
     num_inference_steps = stable_settings.num_inference_steps or "31"
     guidance_scale = stable_settings.guidance_scale or 7
     sampling_method = stable_settings.sampling_method or "euler"
