@@ -26,7 +26,7 @@ class NoticeAdmin(admin.ModelAdmin):
                         bot.send_message(
                             chat_id=user.chat_id,
                             text=notice.text,
-                            parse_mode="HTML",
+                            parse_mode="HTML"
                         )
                     except Exception:
                         pass
