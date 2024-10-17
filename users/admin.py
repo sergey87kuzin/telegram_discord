@@ -74,9 +74,10 @@ class UserAdmin(BaseUserAdmin):
         for user in queryset:
             if user.chat_id:
                 try:
+                    message_text = site_settings.notice_message.replace("{next}", "\n\n")
                     bot.send_message(
                         chat_id=user.chat_id,
-                        text=site_settings.notice_message,
+                        text=message_text,
                         parse_mode="HTML"
                     )
                 except Exception:
