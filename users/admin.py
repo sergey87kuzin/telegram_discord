@@ -76,7 +76,8 @@ class UserAdmin(BaseUserAdmin):
                 try:
                     bot.send_message(
                         chat_id=user.chat_id,
-                        text=site_settings.notice_message
+                        text=site_settings.notice_message,
+                        parse_mode="HTML"
                     )
                 except Exception:
                     pass
