@@ -24,7 +24,7 @@ class SiteSettings(SingletonModel):
         "Сообщение для отправки пользователям",
         blank=True,
         null=True,
-        max_length=512
+        max_length=1024
     )
     say_hi_video_video_bot = models.FileField("Приветственное видео для видео бота", blank=True, null=True)
     settings_lesson_link = models.CharField("Ссылка на урок по настройкам", max_length=11024, blank=True, null=True)
