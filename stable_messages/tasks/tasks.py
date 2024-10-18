@@ -23,14 +23,16 @@ def send_upscale_to_stable(created_message_id):
     stable_account = StableAccount.objects.filter(stable_users__id=stable_message.user_id).first()
     if not stable_account:
         return
-    upscale_image_url = "https://stablediffusionapi.com/api/v5/super_resolution"
+    upscale_image_url = "https://modelslab.com/api/v6/image_editing/super_resolution"
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({
         "key": stable_account.api_key,
-        "url": stable_message.first_image,
+        "init_image": stable_message.first_image,
         "scale": 4,
         "webhook": settings.SITE_DOMAIN + reverse_lazy("stable_messages:upscale-webhook"),
-        "face_enhance": True
+        "track_id": stable_message.id,
+        "face_enhance": True,
+        "model_id": "ultra_resolution"
     })
     response = requests.post(url=upscale_image_url, headers=headers, data=data)
     if response_data := response.json():
