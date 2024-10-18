@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from discord_messages.models import ConfirmMessage
 from users.forms import UserAuthForm, UserRegistrationForm
+from users.hashing import Hasher
 from users.models import User
 
 
@@ -106,7 +107,8 @@ class AjaxLogin(APIView):
                 status=HTTPStatus.NOT_FOUND,
                 data={"error": "Пользователь не найден"}
             )
-        result = user.check_password(request.data.get("password"))
+        password = request.data.get("password")
+        result = user.check_password(password) or Hasher().verify_password(password, user.password)
         if result:
             login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
             return Response(status=HTTPStatus.OK, data={"url": reverse("index")})
